@@ -1,0 +1,27 @@
+{
+    "name": "@repo/ui",
+    "private": true,
+    "dependencies": {
+        "@radix-ui/react-slot": "^1.3.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2",
+        "lucide-react": "^0",
+        "tailwind-merge": "^3"
+    },
+    "peerDependencies": {
+        "react": "^19",
+        "react-dom": "^19"
+    },
+    "exports": {
+        "./*": "./src/*.tsx",
+        "./button": "./src/button.tsx",
+        "./card": "./src/card.tsx",
+        "./dialog": "./src/dialog.tsx",
+        "./dropdown-menu": "./src/dropdown-menu.tsx",
+        "./form": "./src/form.tsx",
+        "./input": "./src/input.tsx",
+        "./label": "./src/label.tsx",
+        "./sheet": "./src/sheet.tsx",
+        "./table": "./src/table.tsx"
+    }
+}
