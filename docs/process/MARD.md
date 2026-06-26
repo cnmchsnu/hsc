@@ -45,18 +45,18 @@ it probably requires a MADR.
 
 # Location
 
-```text
+
 docs/adr/
-```
+
 
 Example:
 
-```text
+
 docs/adr/
 ├── 0001-monorepo-architecture.md
 ├── 0002-i18n-strategy.md
 └── 0003-authentication-model.md
-```
+
 
 ---
 
@@ -64,19 +64,19 @@ docs/adr/
 
 Format:
 
-```text
+
 NNNN-short-kebab-case-title.md
-```
+
 
 Examples:
 
-```text
+
 0001-monorepo-architecture.md
 
 0002-shared-i18n-package.md
 
 0003-dual-database-strategy.md
-```
+
 
 Numbers must be sequential.
 
@@ -86,7 +86,7 @@ Never reuse numbers.
 
 # MADR Template
 
-```md
+md
 # NNNN Title
 
 Date: YYYY-MM-DD
@@ -128,7 +128,7 @@ Required future work.
 - Issue
 - PR
 - Documentation
-```
+
 
 ---
 

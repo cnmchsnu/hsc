@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[7301,["/_next/static/chunks/2sm-3ae8f4_jx.js","/_next/static/chunks/2bpo942dpteta.js","/_next/static/chunks/265wpt7z1okgp.js"],"ViewportBoundary"]
-3:I[7301,["/_next/static/chunks/2sm-3ae8f4_jx.js","/_next/static/chunks/2bpo942dpteta.js","/_next/static/chunks/265wpt7z1okgp.js"],"MetadataBoundary"]
-4:"$Sreact.suspense"
-5:I[7544,["/_next/static/chunks/2sm-3ae8f4_jx.js","/_next/static/chunks/2bpo942dpteta.js","/_next/static/chunks/265wpt7z1okgp.js"],"IconMark"]
-0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"學生會商城 | HSNU Student Association Store"}],["$","meta","1",{"name":"description","content":"師大附中學生會唯一官方授權平台，提供高品質的校園生活週邊商品。"}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.2vob68tjqpejf.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L5","3",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"UhKUsZ-jN0R769GPCPFdb"}
