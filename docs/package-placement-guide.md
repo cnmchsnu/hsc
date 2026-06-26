@@ -17,7 +17,7 @@ Never install a package into an arbitrary workspace.
 
 # Monorepo Structure
 
-```text
+
 apps/
 ├── web
 ├── shop
@@ -31,7 +31,7 @@ packages/
 ├── i18n
 ├── eslint-config
 └── typescript-config
-```
+
 
 ---
 
@@ -71,19 +71,19 @@ Examples:
 
 Install into:
 
-```text
+
 packages/ui
-```
+
 
 Example:
 
-```bash
+bash
 pnpm add lucide-react --filter @repo/ui
-```
 
-```bash
+
+bash
 pnpm add sonner --filter @repo/ui
-```
+
 
 ---
 
@@ -97,15 +97,15 @@ Examples:
 
 Install into:
 
-```text
+
 packages/auth
-```
+
 
 Example:
 
-```bash
+bash
 pnpm add @supabase/supabase-js --filter @repo/auth
-```
+
 
 Do not install authentication packages directly into applications.
 
@@ -122,19 +122,19 @@ Examples:
 
 Install into:
 
-```text
+
 packages/database
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add @supabase/supabase-js --filter @repo/database
-```
 
-```bash
+
+bash
 pnpm add drizzle-orm --filter @repo/database
-```
+
 
 ---
 
@@ -150,23 +150,23 @@ Pure utilities contain:
 
 Install into:
 
-```text
+
 packages/shared
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add zod --filter @repo/shared
-```
 
-```bash
+
+bash
 pnpm add dayjs --filter @repo/shared
-```
 
-```bash
+
+bash
 pnpm add lodash-es --filter @repo/shared
-```
+
 
 Requirements:
 
@@ -185,63 +185,63 @@ Examples:
 
 ### Shop Only
 
-```text
+
 apps/shop
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add stripe --filter shop
-```
 
-```bash
+
+bash
 pnpm add @ecpay/sdk --filter shop
-```
 
-```bash
+
+bash
 pnpm add fuse.js --filter shop
-```
+
 
 ---
 
 ### Console Only
 
-```text
+
 apps/console
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add recharts --filter console
-```
 
-```bash
+
+bash
 pnpm add @tanstack/react-table --filter console
-```
 
-```bash
+
+bash
 pnpm add @dnd-kit/core --filter console
-```
+
 
 ---
 
 ### Web Only
 
-```text
+
 apps/web
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add next-sitemap --filter web
-```
 
-```bash
+
+bash
 pnpm add fumadocs-core --filter web
-```
+
 
 ---
 
@@ -255,19 +255,19 @@ Examples:
 
 Install into:
 
-```text
+
 packages/i18n
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add i18next --filter @repo/i18n
-```
 
-```bash
+
+bash
 pnpm add react-i18next --filter @repo/i18n
-```
+
 
 ---
 
@@ -275,19 +275,19 @@ pnpm add react-i18next --filter @repo/i18n
 
 Install into:
 
-```text
+
 packages/notification
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add resend --filter @repo/notification
-```
 
-```bash
+
+bash
 pnpm add react-email --filter @repo/notification
-```
+
 
 ---
 
@@ -295,19 +295,19 @@ pnpm add react-email --filter @repo/notification
 
 Install into:
 
-```text
+
 packages/analytics
-```
+
 
 Examples:
 
-```bash
+bash
 pnpm add posthog-js --filter @repo/analytics
-```
 
-```bash
+
+bash
 pnpm add @vercel/analytics --filter @repo/analytics
-```
+
 
 ---
 
@@ -315,17 +315,17 @@ pnpm add @vercel/analytics --filter @repo/analytics
 
 Install into:
 
-```text
+
 packages/payment
-```
+
 
 ONLY when payment logic is shared between multiple applications.
 
 Examples:
 
-```bash
+bash
 pnpm add stripe --filter @repo/payment
-```
+
 
 ---
 

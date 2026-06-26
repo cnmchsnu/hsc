@@ -41,21 +41,21 @@ Pure formatting changes are exempt unless they affect behavior.
 
 Default structure:
 
-```text
+
 devlogs/
 └── YYYY/
     └── MM/
         └── YYYY-MM-DD.md
-```
+
 
 Example:
 
-```text
+
 devlogs/
 └── 2026/
     └── 06/
         └── 2026-06-25.md
-```
+
 
 ---
 
@@ -63,7 +63,7 @@ devlogs/
 
 Every entry MUST follow this structure.
 
-```md
+md
 ## [TYPE] Short Title
 
 Date: YYYY-MM-DD HH:mm UTC
@@ -103,7 +103,7 @@ Steps required to revert.
 - PR:
 - Commit:
 - ADR:
-```
+
 
 ---
 
@@ -128,23 +128,23 @@ Only the following values are allowed:
 
 The following are NOT acceptable:
 
-```text
+
 updated code
 fixed issue
 improved system
 optimized logic
-```
+
 
 The following ARE acceptable:
 
-```text
+
 Added refresh-token support to API client interceptor.
 
 Migrated product search from client filtering to
 server-side pagination.
 
 Replaced local state management with shared store.
-```
+
 
 ---
 

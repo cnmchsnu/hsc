@@ -376,4 +376,407 @@ unless explicitly requested.
 
 UI should be integration-ready but backend-independent.
 
-    
+---
+
+# CSS Asset Analysis
+
+Before implementing any page, agents MUST inspect all styling assets associated with the design.
+
+This includes:
+
+* Inline styles
+* External CSS files
+* Embedded `<style>` blocks
+* CSS Variables
+* Fonts
+* Icon libraries
+* Images
+* SVG assets
+* Animations
+
+Agents must identify:
+
+* Which styles are required
+* Which styles are reusable
+* Which styles belong to a specific page
+* Which styles belong to global layout
+
+Do not ignore external CSS.
+
+---
+
+# CSS Rendering Recovery
+
+Many exported HTML files rely on generated CSS that cannot be copied directly.
+
+Agents must reconstruct the visual result rather than copying raw CSS.
+
+Preferred order:
+
+1. Existing design system
+2. Existing project styles
+3. Tailwind utilities
+4. Small custom CSS modules
+5. Global CSS (only when necessary)
+
+Avoid copying thousands of lines of generated CSS.
+
+Instead:
+
+* Recreate spacing
+* Typography
+* Grid
+* Flex layout
+* Borders
+* Shadows
+* Colors
+
+using project styling conventions.
+
+The rendered result should visually match the screenshot, not necessarily the original CSS implementation.
+
+---
+
+# Global Asset Migration
+
+When HTML references shared assets, agents must migrate them appropriately.
+
+Examples:
+
+Fonts
+→ app/fonts.ts
+→ next/font
+
+Global variables
+→ globals.css
+
+Shared animations
+→ styles/
+
+Icons
+→ lucide-react (preferred)
+
+Images
+→ public/
+
+Never leave broken asset references.
+
+---
+
+# Layout Extraction Rules
+
+Before creating pages, determine whether multiple pages share:
+
+* Header
+* Sidebar
+* Navigation
+* Footer
+* Toolbar
+* Breadcrumb
+* Search bar
+
+Shared structures must be extracted into reusable layouts.
+
+Preferred locations:
+
+app/(group)/layout.tsx
+
+or
+
+src/components/layout/
+
+Avoid duplicating identical navigation across pages.
+
+---
+
+# Route Discovery
+
+Before implementation, agents must analyze every provided design page and determine:
+
+* Page purpose
+* URL
+* Parent route
+* Child routes
+* Navigation relationships
+
+Do not implement pages independently.
+
+Treat all provided designs as a connected application.
+
+---
+
+# Route Mapping
+
+Before writing code, produce an internal route map.
+
+Example:
+
+Dashboard
+
+/dashboard
+
+Members
+
+/members
+
+Member Detail
+
+/members/[id]
+
+Events
+
+/events
+
+Event Detail
+
+/events/[id]
+
+Orders
+
+/orders
+
+Settings
+
+/settings
+
+Navigation components should use this route map.
+
+Never leave placeholder HTML links.
+
+---
+
+# Navigation Conversion
+
+Replace every HTML navigation reference.
+
+Examples:
+
+dashboard.html
+
+↓
+
+/dashboard
+
+member.html?id=1
+
+↓
+
+/members/1
+
+events.html
+
+↓
+
+/events
+
+Never keep:
+
+* html links
+* local file paths
+* relative HTML references
+
+Use Next.js routing only.
+
+---
+
+# Next.js Routing Rules
+
+Follow App Router conventions.
+
+Prefer:
+
+app/
+
+Route groups when appropriate:
+
+app/(dashboard)/
+
+Nested layouts:
+
+layout.tsx
+
+Dynamic routes:
+
+[id]
+
+Loading UI:
+
+loading.tsx
+
+Error UI:
+
+error.tsx
+
+Not Found:
+
+not-found.tsx
+
+Avoid recreating routing manually.
+
+---
+
+# Route Preservation Rule
+
+When updating an existing page:
+
+Never change its URL unless explicitly instructed.
+
+Allowed:
+
+Replace UI
+
+Replace layout
+
+Replace components
+
+Not allowed:
+
+Move page to another route
+
+Rename URLs
+
+Break existing navigation
+
+---
+
+# Page Relationship Awareness
+
+Agents must understand relationships between pages.
+
+Example:
+
+Member List
+
+↓
+
+Member Detail
+
+↓
+
+Edit Member
+
+↓
+
+Delete Dialog
+
+rather than treating each page as isolated.
+
+Cross-page navigation should function immediately after conversion.
+
+---
+
+# Interactive Mock Navigation
+
+During UI conversion, navigation should remain functional even without backend logic.
+
+Buttons such as:
+
+View
+
+Back
+
+Next
+
+Previous
+
+Open Detail
+
+Edit
+
+Cancel
+
+Dashboard
+
+must navigate between available mock pages whenever possible.
+
+Avoid dead buttons unless explicitly marked as disabled in the design.
+
+---
+
+# Rendering Validation
+
+Before completing UI conversion, verify:
+
+✓ Page renders without CSS errors
+
+✓ No missing fonts
+
+✓ No missing icons
+
+✓ No broken images
+
+✓ Responsive layout matches screenshot
+
+✓ Shared layout extracted
+
+✓ Navigation works
+
+✓ Routes resolve correctly
+
+✓ No HTML links remain
+
+✓ No missing assets
+
+---
+
+## Mockup Conversion Workflow
+
+
+Step 1
+Inspect all provided design files.
+
+↓
+
+Step 2
+Analyze screenshots.
+
+↓
+
+Step 3
+Analyze HTML structure.
+
+↓
+
+Step 4
+Analyze CSS assets.
+
+↓
+
+Step 5
+Identify shared layouts.
+
+↓
+
+Step 6
+Generate route mapping.
+
+↓
+
+Step 7
+Extract reusable components.
+
+↓
+
+Step 8
+Convert pages.
+
+↓
+
+Step 9
+Connect navigation.
+
+↓
+
+Step 10
+Validate rendering.
+
+↓
+
+Step 11
+Validate responsive behavior.
+
+↓
+
+Step 12
+Complete delivery checklist.
+

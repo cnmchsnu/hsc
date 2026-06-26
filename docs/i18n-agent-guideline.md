@@ -16,23 +16,16 @@ Any text visible to end users must come from the translation system.
 
 ### Forbidden
 
-```tsx
-<Button>Submit</Button>
-
-<div>Login</div>
+tsx::<div>Login</div>
 
 <Label>Email Address</Label>
-```
+
 
 ### Required
 
-```tsx
-<Button>{t("common.submit")}</Button>
-
-<div>{t("auth.login.title")}</div>
-
-<Label>{t("auth.login.email")}</Label>
-```
+tsx::tsx::
+tsx::
+tsx::
 
 ---
 
@@ -56,38 +49,26 @@ At this stage, incomplete translations are allowed.
 
 Temporary hardcoded text may exist.
 
-```tsx
-<Card>
-  Student Profile
-</Card>
-```
+tsx::<Card>
+tsx::</Card>
 
-```tsx
-<Button>
-  Save
-</Button>
-```
+tsx::tsx::<Button>
+tsx::tsx::
 
 ## Recommended
+tsx::Agents should still generate translation keys whenever practical.
 
-Agents should still generate translation keys whenever practical.
-
-```tsx
-<Card>
-  {t("member.profile.title")}
+tsx::tsx::  {t("member.profile.title")}
 </Card>
-```
-
+tsx::
 Even if translation files are not yet created.
 
 ---
-
-## Required Before Leaving Preview Stage
+tsx::## Required Before Leaving Preview Stage
 
 Before business logic implementation begins:
 
-* All user-visible text must be extracted.
-* Translation keys must exist.
+tsx::* Translation keys must exist.
 * Hardcoded UI text must be removed.
 
 ---
@@ -107,51 +88,43 @@ At this stage:
 
 ### Forbidden
 
-```tsx
-toast.success("Saved successfully")
+tsx::toast.success("Saved successfully")
 
 alert("Permission denied")
 
-<Button>Delete</Button>
-```
+tsx::
 
 ### Required
 
-```tsx
-toast.success(t("common.saved"))
-
+tsx::tsx::
 alert(t("common.permissionDenied"))
 
 <Button>{t("common.delete")}</Button>
-```
-
----
-
+tsx::
+tsx::
 # Stage 3: Ongoing Feature Development
 
 Whenever a new feature introduces user-visible text:
-
-The agent must:
+tsx::The agent must:
 
 1. Create translation key
 2. Add translation entries
 3. Use translation key immediately
 
-Never defer translation extraction.
-
+tsx::
 ---
 
 # Translation Key Structure
 
 Keys must follow:
 
-```txt
+txt
 domain.feature.element
-```
+
 
 Examples:
 
-```txt
+txt
 auth.login.title
 auth.login.submit
 
@@ -162,7 +135,7 @@ ticket.purchase.confirm
 ticket.purchase.cancel
 
 finance.invoice.status
-```
+
 
 ---
 
@@ -170,7 +143,7 @@ finance.invoice.status
 
 Translations should be organized by domain.
 
-```txt
+txt
 locales/
 ├── zh-TW/
 │   ├── common.json
@@ -182,7 +155,7 @@ locales/
 
 ├── en/
 └── ja/
-```
+
 
 ---
 
@@ -192,7 +165,7 @@ Reusable UI text belongs in common.
 
 Examples:
 
-```txt
+txt
 common.submit
 common.cancel
 common.save
@@ -201,7 +174,7 @@ common.confirm
 common.back
 common.next
 common.search
-```
+
 
 Avoid duplication across domains.
 
@@ -217,54 +190,50 @@ Never store localized display text when a stable code can be stored.
 
 Database:
 
-```sql
+sql
 status_code
 -----------
 PENDING
 PAID
 CANCELLED
-```
+
 
 Translation:
 
-```json
+json
 {
   "PENDING": "Pending",
   "PAID": "Paid",
   "CANCELLED": "Cancelled"
 }
-```
+
 
 Usage:
 
-```tsx
-t(`payment.status.${status}`)
-```
+tsx::t(`payment.status.${status}`)
+
 
 ---
 
 ## CMS Content
-
-User-generated content is not translated through i18n files.
+tsx::User-generated content is not translated through i18n files.
 
 Examples:
 
 * Event title
 * Event description
 * News article
-* Announcement content
-
+tsx::
 These should be stored as multilingual content fields.
 
 Example:
 
-```sql
+sql
 title_zh
-title_en
-
+tsx::
 content_zh
 content_en
-```
+
 
 or a dedicated translations table.
 
@@ -276,98 +245,83 @@ Shared UI components must not depend on translation libraries.
 
 ## Forbidden
 
-```tsx
-export function SubmitButton() {
+tsx::export function SubmitButton() {
   return <Button>{t("common.submit")}</Button>;
 }
-```
+
 
 ## Required
 
-```tsx
-export function SubmitButton({
+tsx::export function SubmitButton({
   children,
 }: Props) {
   return <Button>{children}</Button>;
 }
-```
+
 
 Translation belongs to application layers.
-
-```tsx
-<SubmitButton>
+tsx::<SubmitButton>
   {t("common.submit")}
 </SubmitButton>
-```
+
 
 ---
 
 # Error Messages
+tsx::## Forbidden
 
-All user-facing errors must be translated.
-
-## Forbidden
-
-```ts
+ts
 throw new Error("Permission denied")
-```
 
-```ts
+
+ts
 toast.error("Network error")
-```
-
-## Required
+tsx::tsx::## Required
 
 Use error codes.
 
-```ts
+ts
 throw new Error("PERMISSION_DENIED")
-```
+
 
 Frontend:
 
-```tsx
-toast.error(
+tsx::toast.error(
   t(`errors.${error.code}`)
 )
-```
+
 
 ---
 
 # Validation Messages
 
 Validation text must be translated.
+tsx::## Forbidden
 
-## Forbidden
-
-```ts
+ts
 .min(3, "Name is too short")
-```
+
 
 ## Required
 
-```ts
+ts
 .min(3, {
   message: "validation.nameTooShort"
-})
-```
+tsx::
 
 Display layer:
 
-```tsx
-t(error.message)
-```
+tsx::t(error.message)
+
 
 ---
 
 # Stage 4: CI Enforcement
-
-Purpose:
+tsx::Purpose:
 
 Ensure i18n compliance is automatically enforced across all production code.
 
-At this stage, ESLint becomes the source of truth.
-
+tsx::
 Agents must not bypass, disable, or suppress i18n-related rules.
 
 ---
@@ -376,11 +330,10 @@ Agents must not bypass, disable, or suppress i18n-related rules.
 
 The following ESLint configuration is considered authoritative:
 
-```txt
+txt
 @repo/eslint-config/i18n
-```
 
-If a file violates i18n rules, the implementation is considered incomplete regardless of functional correctness.
+tsx::If a file violates i18n rules, the implementation is considered incomplete regardless of functional correctness.
 
 ---
 
@@ -388,15 +341,14 @@ If a file violates i18n rules, the implementation is considered incomplete regar
 
 The following command must pass:
 
-```bash
+bash
 pnpm lint
-```
 
-or
 
-```bash
+tsx::
+bash
 turbo lint
-```
+
 
 depending on repository configuration.
 
@@ -419,17 +371,17 @@ Before completing any task involving UI changes, agents must verify:
 
 Agents must never introduce:
 
-```ts
+ts
 // eslint-disable
-```
 
-```ts
+
+ts
 // eslint-disable-next-line
-```
 
-```ts
+
+ts
 /* eslint-disable */
-```
+
 
 for the purpose of bypassing i18n enforcement.
 
@@ -447,89 +399,77 @@ Prevent JSX content from containing user-visible text.
 
 ### Forbidden
 
-```tsx
+tsx
 <Button>Submit</Button>
-```
 
-```tsx
+
+tsx
 <h1>Student Profile</h1>
-```
+
 
 ### Required
 
-```tsx
+tsx
 <Button>
   {t("common.submit")}
-</Button>
-```
+tsx::
 
-```tsx
+tsx
 <h1>
-  {t("member.profile.title")}
-</h1>
-```
+tsx::</h1>
+
 
 ---
 
 ## i18n/no-user-visible-string
-
-Purpose:
+tsx::Purpose:
 
 Prevent hardcoded Chinese text inside source code.
+tsx::### Forbidden
 
-### Forbidden
+tsx::const title = "登入";
 
-```ts
-const title = "登入";
-```
-
-```ts
+tsx::ts
 const message = "儲存成功";
-```
+
 
 ### Required
 
-```ts
-const title =
+tsx::const title =
   t("auth.login.title");
-```
 
-```ts
+tsx::ts
 const message =
-  t("common.saved");
-```
+tsx::
 
----
-
+tsx::
 ## i18n/no-hardcoded-toast
 
 Purpose:
 
 Prevent untranslated toast notifications.
+tsx::### Forbidden
 
-### Forbidden
-
-```ts
+ts
 toast.success("Saved");
-```
 
-```ts
-toast.error("Network error");
-```
+
+tsx::toast.error("Network error");
+
 
 ### Required
 
-```ts
+ts
 toast.success(
   t("common.saved")
 );
-```
 
-```ts
+
+ts
 toast.error(
   t("errors.network")
 );
-```
+
 
 ---
 
@@ -541,27 +481,27 @@ Prevent untranslated dialogs.
 
 ### Forbidden
 
-```ts
+ts
 alert("Permission denied");
-```
 
-```ts
+
+ts
 confirm("Delete item?");
-```
+
 
 ### Required
 
-```ts
+ts
 alert(
   t("errors.permissionDenied")
 );
-```
 
-```ts
+
+ts
 confirm(
   t("common.confirmDelete")
 );
-```
+
 
 ---
 
@@ -573,83 +513,72 @@ Prevent untranslated labels and placeholders.
 
 ### Forbidden
 
-```tsx
+tsx
 <Input
   placeholder="Search"
 />
-```
 
-```tsx
+
+tsx
 <TextField
   label="Email"
 />
-```
+
 
 ### Required
 
-```tsx
+tsx
 <Input
   placeholder={
-    t("common.search")
-  }
+tsx::  }
 />
-```
 
-```tsx
+
+tsx
 <TextField
-  label={
-    t("auth.login.email")
+tsx::    t("auth.login.email")
   }
 />
-```
+
 
 ---
 
 ## i18n/enforce-key-format
-
-Purpose:
+tsx::Purpose:
 
 Ensure translation keys remain predictable.
+tsx::Required format:
 
-Required format:
-
-```txt
+txt
 domain.feature.element
-```
-
+tsx::
 ### Valid
-
-```ts
+tsx::ts
 t("auth.login.title")
-```
 
-```ts
+
+ts
 t("member.profile.edit")
-```
 
-```ts
-t("finance.invoice.status")
-```
 
-### Invalid
+tsx::t("finance.invoice.status")
 
-```ts
+
+tsx::
+ts
 t("login")
-```
 
-```ts
+tsx::ts
 t("submit")
-```
-
-```ts
+tsx::
+ts
 t("auth_login")
-```
 
-```ts
+
+ts
 t("member-profile")
-```
 
----
+tsx::---
 
 # Mockup Exception
 
@@ -657,19 +586,18 @@ During Stage 1 (Mockup → TSX Preview), temporary hardcoded text is allowed.
 
 However, files in this state must remain outside production lint enforcement.
 
-Recommended options:
-
-```txt
+tsx::
+txt
 src/mockups/**
-```
 
-```txt
+
+txt
 src/prototypes/**
-```
 
-```txt
+
+txt
 src/playground/**
-```
+
 
 These directories may be excluded from i18n linting.
 
@@ -689,7 +617,7 @@ If any condition fails:
 
 Status = NOT READY
 
-```
+
 
 ---
 
@@ -716,7 +644,7 @@ When introducing new text:
 
    - Yes → implementation complete.
    - No → implementation incomplete.
-```
+
 
 ---
 

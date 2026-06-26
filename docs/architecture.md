@@ -1,6 +1,6 @@
 # Repository Structure (Monorepo)
 
-```text
+
 repo/
 ├── apps/
 │   ├── shop/                  # Customer-facing storefront
@@ -43,7 +43,7 @@ repo/
 ├── package.json
 ├── tsconfig.base.json
 └── README.md
-```
+
 
 ---
 
@@ -51,12 +51,12 @@ repo/
 
 ## 1. apps = orchestration layer only
 
-```text
+
 apps/shop     → UI only (no business logic)
 apps/console  → UI + admin orchestration
 apps/api      → HTTP layer only
 apps/worker   → async execution layer
-```
+
 
 NO business rules inside apps
 
@@ -64,13 +64,13 @@ NO business rules inside apps
 
 ## 2. packages/domain = single source of truth
 
-```text
+
 All business logic lives here:
 - Order rules
 - Campaign rules
 - Inventory rules
 - Batch rules
-```
+
 
 This is your “brain”
 
@@ -93,9 +93,9 @@ This is your “brain”
 
 ## 4. apps/api = thin API layer
 
-```text
+
 Request → validate → call domain → return result
-```
+
 
 No logic duplication.
 
@@ -142,7 +142,7 @@ This structure already supports:
 
 In MVP:
 
-```text
+
 ACTIVE PACKAGES:
 - domain (core logic subset)
 - order
@@ -151,13 +151,13 @@ ACTIVE PACKAGES:
 - batch (manual mode)
 - payment (manual cash)
 - cart (simple D mode only)
-```
+
 
 Everything else is:
 
-```text
+
 future-ready but dormant
-```
+
 
 ---
 

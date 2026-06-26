@@ -344,11 +344,11 @@ Evolve into a generalized commerce + operations platform.
 
 # Key Architectural Principle Across All Phases
 
-```
+
 MVP enforces constraints in application layer
 Future flexibility is preserved in domain model design
 Automation is added as an overlay, not a rewrite
-```
+
 
 ---
 
