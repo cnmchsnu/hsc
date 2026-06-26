@@ -2,5 +2,15 @@
     "name": "@repo/eslint-config",
     "version": "0.0.0",
     "private": true,
-    "type": "module"
+    "type": "module",
+    "exports": {
+        "./base": "./src/base.js",
+        "./react": "./src/react.js",
+        "./next": "./src/next.js",
+        "./i18n": "./src/i18n.js"
+    },
+    "devDependencies": {
+        "eslint": "^8.57.0",
+        "eslint-plugin-i18next": "^6.1.4"
+    }
 }

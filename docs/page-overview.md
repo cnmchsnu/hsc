@@ -206,7 +206,7 @@ Route:
 /
 
 Status:
-[ ]
+[x]
 
 Description:
 Public landing page.
@@ -273,7 +273,7 @@ Route:
 /profile
 
 Status:
-[ ]
+[x]
 
 Description:
 Personal profile.
@@ -530,7 +530,7 @@ Route:
 /products
 
 Status:
-[ ]
+[x]
 
 Description:
 Store products.
@@ -543,7 +543,7 @@ Route:
 /products/[id]
 
 Status:
-[ ]
+[x]
 
 Description:
 Product page.
@@ -556,7 +556,7 @@ Route:
 /cart
 
 Status:
-[ ]
+[x]
 
 Description:
 Shopping cart.
@@ -569,7 +569,7 @@ Route:
 /checkout
 
 Status:
-[ ]
+[x]
 
 Description:
 Order checkout.
@@ -740,3 +740,70 @@ Status:
 
 Date:
 2026-06-25
+
+---
+
+Design:
+shop_basic/Home
+Converted To:
+Route: /
+Status:
+[x]
+Date:
+2026-06-26
+
+---
+
+Design:
+shop_basic/productList
+Converted To:
+Route: /products
+Status:
+[x]
+Date:
+2026-06-26
+
+---
+
+Design:
+shop_basic/productDetail
+Converted To:
+Route: /products/[id]
+Status:
+[x]
+Date:
+2026-06-26
+
+---
+
+Design:
+shop_basic/cart
+Converted To:
+Route: /cart
+Status:
+[x]
+Date:
+2026-06-26
+
+---
+
+Design:
+shop_basic/checkout
+Converted To:
+Route: /checkout
+Status:
+[x]
+Date:
+2026-06-26
+
+---
+
+Design:
+shop_basic/profile
+Converted To:
+Route: /profile
+Status:
+[x]
+Date:
+2026-06-26
+

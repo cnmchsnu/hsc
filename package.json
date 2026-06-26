@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "private": true,
+  "packageManager": "pnpm@11.7.0",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -23,6 +24,7 @@
   "type": "module",
   "devDependencies": {
     "eslint": "^9.39.4",
+    "eslint-plugin-i18next": "^6.1.4",
     "prettier": "^3.8.4",
     "turbo": "^2.9.18",
     "typescript": "^5.9.3"

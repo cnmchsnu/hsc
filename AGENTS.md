@@ -14,13 +14,11 @@ This project is a Student Union Digitalization Platform.
 
 The objective is to centralize and digitize:
 
-* Organization management
 * Member management
 * Event management
 * Ticketing
 * Merchandise sales
 * Administrative workflows
-* Internal communication tools
 
 The project is currently in MVP stage.
 
@@ -75,6 +73,8 @@ Defines:
 
 ---
 
+# UI/UX Conversion
+
 UI/UX Conversion
 → docs/ui-conversion-rules.md
 
@@ -115,7 +115,35 @@ Defines:
 
 ---
 
-## Requirements (Future)
+## Package Installation
+
+Before installing any dependency, read:
+
+- docs/package-placement-guide.md
+
+---
+
+# Internationalization (i18n)
+
+This repository enforces full internationalization.
+
+Before creating or modifying any user-facing text, agents MUST read:
+
+docs/i18n-agent-guideline.md
+
+Key requirements:
+
+- No hardcoded user-facing text in production code
+- All new labels/buttons/messages require translation keys
+- Shared UI packages must not depend on i18n libraries
+- Translation keys must follow domain.feature.element format
+- Mockup-stage hardcoded text is allowed only before business logic integration
+
+When unsure, follow the i18n guideline document.
+
+---
+
+## Requirements
 
 requirements/
 
@@ -131,7 +159,125 @@ When available, requirements documents become the source of truth for business b
 
 ---
 
-## Database Documentation (Future)
+# Product Requirements (PRD) Usage Rules
+
+The project maintains multiple PRD versions under:
+
+requirements/PRD/
+
+Current structure:
+
+- MVP (active)
+- Production v1 (inactive)
+
+---
+
+# Active PRD Rule
+
+Only ONE PRD version is active at a time.
+
+Current active version:
+
+→ MVP
+
+Agents must strictly follow MVP PRD only.
+
+---
+
+# PRD Activation Command
+
+Active PRD is controlled via:
+
+AGENTS.md
+
+Only one active PRD version is allowed at runtime.
+
+---
+
+# Forbidden Behavior
+
+Agents must NOT:
+
+- Use Production v1 requirements for implementation decisions
+- Mix MVP and Production v1 logic
+- Pre-implement future features defined in Production v1
+- Assume Production v1 behavior is required unless explicitly activated
+
+---
+
+# Version Switching Rule
+
+PRD version changes are MANUAL ONLY.
+
+A version switch happens only when:
+
+- AGENTS.md is updated explicitly by maintainer
+- OR a direct instruction is given in the current session
+
+Until then:
+
+→ Production v1 must be treated as inactive design documentation only
+
+---
+
+# Implementation Priority
+
+When implementing features:
+
+1. requirements/PRD/MVP (highest priority)
+2. AGENTS.md rules
+3. DESIGN.md
+4. architecture.md
+5. roadmap.md
+6. codebase conventions
+
+---
+
+# Feature Scope Control
+
+If a feature exists in Production v1 but not in MVP:
+
+Agents must:
+
+- Treat it as OUT OF SCOPE
+- Do NOT design around it
+- Do NOT scaffold it
+- Do NOT prepare migration paths unless explicitly requested
+
+---
+
+# Safe Extension Rule
+
+If implementation requires future-proofing:
+
+Allowed:
+
+- simple abstractions that do not affect current behavior
+- non-breaking interfaces
+
+Not allowed:
+
+- implementing Production v1 logic early
+- dual-mode (MVP + v1) behavior
+- hidden feature flags unless specified
+
+---
+
+# PRD Interpretation Rule
+
+MVP PRD is treated as:
+
+→ The only source of truth for system behavior
+
+Production v1 is treated as:
+
+→ Reference-only documentation for future planning
+
+Never infer behavior across versions.
+
+---
+
+## Database Documentation 
 
 docs/database.md
 
@@ -143,7 +289,7 @@ Defines:
 * RLS policies
 * Relationships
 
-## Architecture Decision Records (Future)
+## Architecture Decision Records
 
 docs/decisions/
 
@@ -427,6 +573,71 @@ Roadmap changes
 → update roadmap.md
 
 Code and documentation must remain synchronized.
+
+---
+
+## Development Documentation Requirements
+
+Agents must comply with the project's documentation governance process.
+
+Before completing any significant change, agents shall determine whether the change requires:
+
+* A DevLog entry
+* A MADR record
+* Both
+
+Reference documents:
+
+* `docs/process/DEVLOG.md`
+* `docs/process/MADR.md`
+
+### Required Workflow
+
+1. Evaluate the scope of the change.
+2. Create or update a DevLog if required.
+3. Create or update a MADR if an architectural decision is involved.
+4. Cross-reference related records.
+5. Complete implementation.
+
+### Blocking Rule
+
+Agents MUST NOT mark a task as completed when:
+
+* A required DevLog is missing.
+* A required MADR is missing.
+* References between records are incomplete.
+
+### Documentation Before Code
+
+For architectural changes:
+
+1. Create or update the MADR.
+2. Obtain decision acceptance if applicable.
+3. Perform implementation.
+4. Record implementation in DevLog.
+
+### Documentation Quality
+
+Documentation must be:
+
+* Specific
+* Verifiable
+* Traceable
+* Actionable
+
+Documentation must not contain vague statements such as:
+
+* Improved system
+* Updated logic
+* Refactored code
+* Fixed issue
+
+All documentation must explain:
+
+* What changed
+* Why it changed
+* What is affected
+* What tradeoffs were accepted
 
 ---
 

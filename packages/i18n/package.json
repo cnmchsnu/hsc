@@ -1,0 +1,8 @@
+{
+    "name": "@repo/i18n",
+    "private": true,
+    "dependencies": {
+        "i18next": "^26.3.2",
+        "react-i18next": "^17.0.8"
+    }
+}
