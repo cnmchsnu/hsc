@@ -27,6 +27,7 @@ export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
       // 2. 初始化 Google 一鍵登入
       window.google.accounts.id.initialize({
         client_id: clientId,
+        use_fedcm: true,
         callback: async (response) => {
           try {
             // 3. 收到 Google 的 id_token 後，送去給 Supabase 驗證
