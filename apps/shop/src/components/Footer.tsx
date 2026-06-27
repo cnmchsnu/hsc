@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="w-full py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-stack-lg mb-stack-lg">
           <div className="col-span-1 md:col-span-1">
-            <Link href="/" className="text-headline-md font-headline-md font-bold text-primary block mb-4">
+            <Link href="/" className="text-headline-sm font-headline-sm font-bold text-primary block mb-4">
               學生會商城
             </Link>
             <p className="text-on-surface-variant text-body-md mb-6">

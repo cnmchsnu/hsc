@@ -411,169 +411,179 @@ Navigation must follow this structure.
 
 ---
 
-# Navigation Conversion
+# File Structure
 
-Replace all HTML links.
+Recommended output:
+
+src/
+├─ app/
+├─ components/
+├─ features/
+├─ mock/
 
 Examples:
 
-```
-dashboard.html
+src/app/members/page.tsx
 
-↓
+src/features/members/components/member-table.tsx
 
-/dashboard
-```
-
-```
-member.html?id=1
-
-↓
-
-/members/1
-```
-
-Never keep:
-
-* html links
-* relative html paths
-* local file references
-
-Use Next.js routing only.
+src/mock/memberMock.ts
 
 ---
 
-# Next.js Routing Rules
+# Delivery Checklist
 
-Use App Router.
+Before marking conversion complete:
 
-Preferred:
+✓ Route created
 
-```
-app/
-```
+✓ Layout matches screenshot
 
-Route groups
+✓ Responsive behavior works
 
-```
-app/(dashboard)
-```
+✓ Mock data added
 
-Nested layouts
+✓ No backend dependency
 
-```
-layout.tsx
-```
+✓ No API dependency
 
-Dynamic routes
+✓ No database dependency
 
-```
-[id]
-```
+✓ Components extracted where appropriate
 
-Loading UI
+✓ Route names follow naming rules
 
-```
-loading.tsx
-```
-
-Error UI
-
-```
-error.tsx
-```
-
-Not Found
-
-```
-not-found.tsx
-```
+✓ Development preview is functional
 
 ---
 
-# Route Preservation Rule
+# Future Integration Rule
 
-When replacing existing pages:
+UI conversion is Phase 1.
 
-Allowed:
+Backend integration is Phase 2.
 
-* Replace UI
-* Replace layout
-* Replace components
+Do not implement:
 
-Not allowed:
+* Supabase queries
+* API calls
+* Authentication checks
+* Permission checks
 
-* Change URLs
-* Rename routes
-* Break navigation
+unless explicitly requested.
 
-unless explicitly instructed.
+UI should be integration-ready but backend-independent.
 
 ---
 
-# Interactive Mock Navigation
+# CSS Asset Analysis
 
-Navigation should function without backend logic.
+Before implementing any page, agents MUST inspect all styling assets associated with the design.
 
-Buttons including:
+This includes:
 
-* View
-* Edit
-* Back
-* Next
-* Previous
-* Dashboard
-* Open Detail
-* Cancel
+* Inline styles
+* External CSS files
+* Embedded `<style>` blocks
+* CSS Variables
+* Fonts
+* Icon libraries
+* Images
+* SVG assets
+* Animations
 
-should navigate between available mock pages whenever possible.
+Agents must identify:
 
-Avoid dead buttons.
+* Which styles are required
+* Which styles are reusable
+* Which styles belong to a specific page
+* Which styles belong to global layout
+
+Do not ignore external CSS.
+
+---
+
+# CSS Rendering Recovery
+
+Many exported HTML files rely on generated CSS that cannot be copied directly.
+
+Agents must reconstruct the visual result rather than copying raw CSS.
+
+Preferred order:
+
+1. Existing design system
+2. Existing project styles
+3. Tailwind utilities
+4. Small custom CSS modules
+5. Global CSS (only when necessary)
+
+Avoid copying thousands of lines of generated CSS.
+
+Instead:
+
+* Recreate spacing
+* Typography
+* Grid
+* Flex layout
+* Borders
+* Shadows
+* Colors
+
+using project styling conventions.
+
+The rendered result should visually match the screenshot, not necessarily the original CSS implementation.
+
+---
+
+# Global Asset Migration
+
+When HTML references shared assets, agents must migrate them appropriately.
+
+Examples:
+
+Fonts
+→ app/fonts.ts
+→ next/font
+
+Global variables
+→ globals.css
+
+Shared animations
+→ styles/
+
+Icons
+→ lucide-react (preferred)
+
+Images
+→ public/
+
+Never leave broken asset references.
 
 ---
 
 # Layout Extraction Rules
 
-Extract shared layouts whenever multiple pages reuse:
+Before creating pages, determine whether multiple pages share:
 
 * Header
 * Sidebar
-* Footer
 * Navigation
+* Footer
 * Toolbar
 * Breadcrumb
 * Search bar
 
+Shared structures must be extracted into reusable layouts.
+
 Preferred locations:
 
-```
 app/(group)/layout.tsx
-```
 
 or
 
-```
 src/components/layout/
-```
 
-Avoid duplicated layouts.
-
----
-
-# Shared Component Extraction
-
-Extract reusable components.
-
-Examples:
-
-* Tables
-* Cards
-* Statistics
-* Navigation
-* Dialogs
-* Forms
-
-Avoid duplicate implementations.
+Avoid duplicating identical navigation across pages.
 
 ---
 
