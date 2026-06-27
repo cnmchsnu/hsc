@@ -219,7 +219,7 @@ Route:
 /login
 
 Status:
-[ ]
+[x]
 
 Description:
 User authentication.
@@ -806,4 +806,16 @@ Status:
 [x]
 Date:
 2026-06-26
+
+---
+
+Design:
+@mockups/shop_login
+Converted To:
+Route: /login
+Status:
+[x]
+Date:
+2026-06-27
+
 
