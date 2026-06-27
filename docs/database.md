@@ -24,72 +24,228 @@ I’ll express this in **relational schema (PostgreSQL style)** with clear bound
 
 ---
 
-# 2. USER SYSTEM
+# 2. AUTH SYSTEM
 
-## users
+The `auth` schema is managed entirely by Supabase.
 
-sql id="users"
-id                UUID PRIMARY KEY
-email             TEXT UNIQUE NOT NULL
-name              TEXT
-role              TEXT NOT NULL -- customer | staff | admin
-created_at        TIMESTAMP
-updated_at        TIMESTAMP
+Application tables must reference `auth.users(id)` as the canonical user identity.
 
+Application code must never modify tables inside the `auth` schema directly unless using Supabase Admin APIs.
 
 ---
 
-## user_profiles (internal/external classification)
+## auth.users (Supabase Managed)
 
-sql id="user_profiles"
-user_id           UUID PRIMARY KEY REFERENCES users(id)
+> System table (Managed by Supabase)
 
-auto_classification   TEXT  -- internal | external
-manual_override       TEXT NULL -- internal | external
+Primary identity table.
 
-final_classification   TEXT GENERATED
+Referenced by:
 
+- identity.user_profiles
+- commerce.carts
+- commerce.orders
+- commerce.payments.confirmed_by
+- fulfillment.batch_items
+- system.notifications
+- identity.user_roles
+
+Primary Key
+
+```text
+id UUID
+```
+
+Common fields (managed by Supabase)
+
+```text
+email
+email_confirmed_at
+phone
+last_sign_in_at
+raw_user_meta_data
+raw_app_meta_data
+created_at
+updated_at
+```
+
+Authentication providers
+
+- Google OAuth
+- Email
+- Magic Link
+- Password
+- Others supported by Supabase
+
+Do not:
+
+- Add application columns
+- Store business data
+- Store roles
+- Store profile information
+
+Those belong in the `identity` schema.
 
 ---
 
-## user_sessions (optional MVP-light)
+# 3. IDENTITY SYSTEM
 
-sql id="sessions"
-id               UUID PRIMARY KEY
-user_id          UUID REFERENCES users(id)
-provider         TEXT
-created_at       TIMESTAMP
-expires_at       TIMESTAMP
+The `identity` schema stores application-specific user information and authorization data.
 
+Authentication is handled by `auth.users`.
+
+Every application user should have exactly one profile linked to `auth.users(id)`.
 
 ---
 
-# 3. CAMPAIGN SYSTEM
+## identity.user_profiles
 
-## campaigns
+Application user profile.
 
-sql id="campaigns"
-id              UUID PRIMARY KEY
-name            TEXT
-status          TEXT -- draft | active | closed | archived
+Stores business-related user information.
 
-start_time      TIMESTAMP
-end_time        TIMESTAMP
+```sql
+user_id                 UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
 
-created_at      TIMESTAMP
-updated_at      TIMESTAMP
+display_name            TEXT
+student_id              TEXT UNIQUE NULL
 
+auto_classification     TEXT NOT NULL
+manual_override         TEXT NULL
+
+final_classification    TEXT GENERATED ALWAYS AS (
+    COALESCE(manual_override, auto_classification)
+) STORED
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Rules
+
+- One profile per authenticated user.
+- User classification is derived from automatic detection unless manually overridden.
+- Never duplicate authentication fields (email, password, provider, etc.).
 
 ---
 
-## campaign_products
+## identity.roles
 
-sql id="campaign_products"
-campaign_id     UUID REFERENCES campaigns(id)
-product_id      UUID REFERENCES products(id)
+Defines system roles.
 
-PRIMARY KEY (campaign_id, product_id)
+```sql
+id                      UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
+name                    TEXT NOT NULL UNIQUE
+
+type                    TEXT NOT NULL
+
+description             TEXT
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Example
+
+```
+customer
+staff
+admin
+```
+
+---
+
+## identity.permissions
+
+Defines every available permission.
+
+```sql
+id                      UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+key                     TEXT NOT NULL UNIQUE
+
+description             TEXT
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Example
+
+```
+order.read
+
+order.update
+
+campaign.manage
+
+inventory.adjust
+```
+
+---
+
+## identity.role_permissions
+
+Many-to-many mapping between roles and permissions.
+
+```sql
+role_id                 UUID NOT NULL REFERENCES identity.roles(id) ON DELETE CASCADE
+
+permission_id           UUID NOT NULL REFERENCES identity.permissions(id) ON DELETE CASCADE
+
+PRIMARY KEY (role_id, permission_id)
+```
+
+---
+
+## identity.user_roles
+
+Assigns roles to users.
+
+```sql
+user_id                 UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
+
+role_id                 UUID NOT NULL REFERENCES identity.roles(id) ON DELETE CASCADE
+
+assigned_by             UUID NULL REFERENCES auth.users(id)
+
+assigned_at             TIMESTAMPTZ NOT NULL DEFAULT now()
+
+PRIMARY KEY (user_id, role_id)
+```
+
+Rules
+
+- A user may have multiple roles.
+- Authorization should always be permission-based.
+- Never store role names directly inside user profiles.
+
+---
+
+## identity.user_preferences *(MVP Optional)*
+
+Stores user-specific preferences.
+
+```sql
+user_id                 UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
+
+language                TEXT DEFAULT 'zh-TW'
+
+theme                   TEXT DEFAULT 'system'
+
+timezone                TEXT DEFAULT 'Asia/Taipei'
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Future usage
+
+- Theme
+- Locale
+- Timezone
+- Notification preferences
 
 ---
 
