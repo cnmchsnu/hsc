@@ -1,274 +1,78 @@
+````md
 # UI Conversion Rules
 
 ## Purpose
 
 This document defines the workflow for converting UI/UX design deliverables into implementation-ready Next.js pages.
 
-The goal is:
+The goals are:
 
-* Convert provided HTML designs into project pages
-* Preserve layout and visual appearance
-* Enable immediate development preview
-* Allow stakeholder review before backend integration
-* Separate UI implementation from business logic
+- Convert provided HTML designs into production-ready Next.js pages
+- Preserve the approved visual design
+- Enable immediate development preview
+- Allow stakeholder review before backend integration
+- Produce reusable, maintainable UI
+- Separate UI implementation from business logic
 
-Backend functionality is NOT required during this phase.
+---
+
+# Scope
+
+UI conversion is responsible for:
+
+- Layout
+- Visual hierarchy
+- Responsive behavior
+- Interaction states
+- Component composition
+- Mock data
+- Navigation
+- Route creation
+
+UI conversion must NOT implement:
+
+- Database access
+- Authentication
+- Authorization
+- APIs
+- Business logic
+- Permission systems
+- External services
+
+Use mock data only.
+
+Backend integration is a separate phase unless explicitly requested.
 
 ---
 
 # Input Format
 
-UI designs will typically be provided as:
+UI designs are typically provided as:
 
+```text
 project-name/
 ├─ page-name/
-│ ├─ design.html
-│ └─ screenshot.png
+│  ├─ design.html
+│  └─ screenshot.png
+````
 
 or
 
+```text
 project-name/
 ├─ page-name/
-│ ├─ variant-a.html
-│ ├─ variant-b.html
-│ └─ screenshot.png
+│  ├─ variant-a.html
+│  ├─ variant-b.html
+│  └─ screenshot.png
+```
 
 The screenshot is the visual source of truth.
 
-The HTML is considered a layout reference.
+The HTML is a layout reference.
 
-If HTML and screenshot differ:
+If the HTML differs from the screenshot:
 
-Follow screenshot.
-
----
-
-# Primary Objective
-
-Convert design assets into:
-
-* Next.js pages
-* Reusable UI components
-* Mock data driven interfaces
-
-without implementing:
-
-* Database access
-* Authentication
-* APIs
-* Business logic
-* Permission systems
-
-Focus only on:
-
-* Layout
-* Visual hierarchy
-* User interaction states
-* Responsive behavior
-
----
-
-# Development Preview Requirement
-
-Every converted page must be immediately viewable.
-
-Never leave:
-
-* Empty tables
-* Empty cards
-* Empty dashboards
-* Empty charts
-
-Create realistic mock data.
-
-Examples:
-
-Good
-
-* 12 members
-* 3 events
-* 5 ticket orders
-
-Bad
-
-* []
-* null
-* "Coming Soon"
-
-Client must be able to understand the design through preview data.
-
----
-
-# Mock Data Rules
-
-Use local mock data only.
-
-Preferred locations:
-
-src/mock/
-src/features/*/mock/
-
-Examples:
-
-memberMock.ts
-eventMock.ts
-ticketMock.ts
-
-Never connect to:
-
-* Supabase
-* APIs
-* External services
-
-during UI conversion stage.
-
----
-
-# Page Creation Rules
-
-Each page must be converted into a dedicated route.
-
-Example:
-
-Design:
-
-member-list.html
-
-Implementation:
-
-src/app/members/page.tsx
-
----
-
-# Route Naming Rules
-
-Do not blindly use HTML filenames.
-
-Many design files contain excessively long names.
-
-Examples:
-
-Bad
-
-student-union-member-management-dashboard-v2-final-final.html
-
-Good
-
-members/page.tsx
-
----
-
-# Route Naming Principles
-
-Use business meaning.
-
-Preferred examples:
-
-members
-member-profile
-
-events
-event-detail
-
-tickets
-ticket-orders
-
-store
-products
-
-checkout
-
-dashboard
-
-settings
-
-organizations
-
-Avoid:
-
-* version numbers
-* dates
-* final
-* draft
-* design
-* layout
-
-inside route names.
-
----
-
-# Multiple Page Conversion
-
-When multiple pages are provided:
-
-Create multiple routes.
-
-Example:
-
-Design Input
-
-dashboard.html
-members.html
-events.html
-
-Output
-
-src/app/dashboard/page.tsx
-src/app/members/page.tsx
-src/app/events/page.tsx
-
-Do not merge unrelated pages.
-
----
-
-# Layout Recreation Tasks
-
-Sometimes the task is not creating a new page.
-
-The task may be:
-
-"Recreate layout using new design"
-
-In that case:
-
-* Keep existing route
-* Replace page structure
-* Preserve route URL
-* Preserve existing architecture
-
-Do not create duplicate routes.
-
----
-
-# Shared Component Extraction
-
-When repeated UI patterns appear:
-
-Extract reusable components.
-
-Examples:
-
-Tables
-
-Data Cards
-
-Statistics Cards
-
-Navigation
-
-Dialogs
-
-Forms
-
-Place inside:
-
-src/components/
-
-or
-
-src/features/*/components/
-
-Avoid duplicate implementations.
+Always follow the screenshot.
 
 ---
 
@@ -280,36 +84,330 @@ Priority:
 2. HTML
 3. Existing implementation
 
-Screenshot represents approved design.
+Do not modify the approved design to simplify implementation.
 
-If visual mismatch exists:
-
-Follow screenshot.
+Visual fidelity takes precedence over implementation preference.
 
 ---
 
-# Responsive Requirement
+# CSS Asset Analysis
 
-All converted pages must support:
+Before implementation, inspect all design assets.
 
-Desktop
-Tablet
-Mobile
+This includes:
 
-Mobile-first implementation preferred.
+* Inline styles
+* External CSS
+* Embedded `<style>` blocks
+* CSS Variables
+* Fonts
+* Icons
+* Images
+* SVG assets
+* Animations
+
+Determine:
+
+* Required styles
+* Shared styles
+* Page-specific styles
+* Global styles
+
+Never ignore external assets.
 
 ---
 
-# Styling Rules
+# CSS Rendering Recovery
 
-Preferred order:
+Many exported HTML files contain generated CSS.
+
+Do not copy generated CSS directly.
+
+Preferred styling order:
 
 1. Existing design system
-2. Existing project components
-3. shadcn/ui
-4. Custom implementation
+2. Existing project styles
+3. Tailwind utilities
+4. Small CSS modules
+5. Global CSS
 
-Do not introduce additional UI libraries unless required.
+Reconstruct:
+
+* Layout
+* Typography
+* Grid
+* Flex
+* Borders
+* Shadows
+* Colors
+* Spacing
+
+The rendered result must match the screenshot rather than the original implementation.
+
+---
+
+# Global Asset Migration
+
+Move shared assets into the project structure.
+
+Examples:
+
+Fonts
+
+→ app/fonts.ts
+
+→ next/font
+
+Global variables
+
+→ globals.css
+
+Shared animations
+
+→ styles/
+
+Icons
+
+→ lucide-react
+
+Images
+
+→ public/
+
+Never leave broken asset references.
+
+---
+
+# Mockup Conversion Workflow
+
+Step 1
+
+Inspect all provided design files.
+
+↓
+
+Step 2
+
+Analyze screenshots.
+
+↓
+
+Step 3
+
+Analyze HTML structure.
+
+↓
+
+Step 4
+
+Analyze CSS assets.
+
+↓
+
+Step 5
+
+Generate route mapping.
+
+↓
+
+Step 6
+
+Identify shared layouts.
+
+↓
+
+Step 7
+
+Identify reusable components.
+
+↓
+
+Step 8
+
+Convert pages.
+
+↓
+
+Step 9
+
+Connect navigation.
+
+↓
+
+Step 10
+
+Validate rendering.
+
+↓
+
+Step 11
+
+Validate responsive behavior.
+
+↓
+
+Step 12
+
+Complete delivery checklist.
+
+---
+
+# Page Creation Rules
+
+Each page must become a dedicated App Router route.
+
+Example:
+
+Design
+
+```
+member-list.html
+```
+
+Implementation
+
+```
+app/members/page.tsx
+```
+
+---
+
+# Route Naming Rules
+
+Do not use exported HTML filenames.
+
+Use business meaning.
+
+Preferred:
+
+```
+dashboard
+
+members
+
+member-profile
+
+events
+
+event-detail
+
+orders
+
+checkout
+
+settings
+
+organizations
+```
+
+Avoid:
+
+* version numbers
+* dates
+* draft
+* final
+* layout
+* design
+
+---
+
+# Multiple Page Conversion
+
+When multiple pages are provided:
+
+Create multiple routes.
+
+Example:
+
+```
+dashboard.html
+
+members.html
+
+events.html
+```
+
+↓
+
+```
+app/dashboard/page.tsx
+
+app/members/page.tsx
+
+app/events/page.tsx
+```
+
+Do not merge unrelated pages.
+
+---
+
+# Layout Recreation Rules
+
+When recreating an existing page:
+
+Keep:
+
+* Route URL
+* Route hierarchy
+* Existing architecture
+
+Replace:
+
+* Layout
+* Components
+* Visual implementation
+
+Do not create duplicate routes.
+
+---
+
+# Route Discovery
+
+Before implementation determine:
+
+* Page purpose
+* URL
+* Parent routes
+* Child routes
+* Navigation relationships
+
+Treat all designs as a connected application.
+
+---
+
+# Route Mapping
+
+Create an internal route map before implementation.
+
+Example:
+
+```
+Dashboard
+
+/dashboard
+
+Members
+
+/members
+
+Member Detail
+
+/members/[id]
+
+Events
+
+/events
+
+Orders
+
+/orders
+
+Settings
+
+/settings
+```
+
+Navigation must follow this structure.
 
 ---
 
@@ -489,294 +587,380 @@ Avoid duplicating identical navigation across pages.
 
 ---
 
-# Route Discovery
+# Shared UI Component Rule
 
-Before implementation, agents must analyze every provided design page and determine:
+Reusable UI components belong in:
 
-* Page purpose
-* URL
-* Parent route
-* Child routes
-* Navigation relationships
+```
+packages/ui
+```
 
-Do not implement pages independently.
+This package is the single source of truth.
 
-Treat all provided designs as a connected application.
+Applications must consume shared components.
 
----
-
-# Route Mapping
-
-Before writing code, produce an internal route map.
-
-Example:
-
-Dashboard
-
-/dashboard
-
-Members
-
-/members
-
-Member Detail
-
-/members/[id]
-
-Events
-
-/events
-
-Event Detail
-
-/events/[id]
-
-Orders
-
-/orders
-
-Settings
-
-/settings
-
-Navigation components should use this route map.
-
-Never leave placeholder HTML links.
-
----
-
-# Navigation Conversion
-
-Replace every HTML navigation reference.
+Never recreate common UI inside applications.
 
 Examples:
 
-dashboard.html
-
-↓
-
-/dashboard
-
-member.html?id=1
-
-↓
-
-/members/1
-
-events.html
-
-↓
-
-/events
-
-Never keep:
-
-* html links
-* local file paths
-* relative HTML references
-
-Use Next.js routing only.
+* Button
+* Card
+* Dialog
+* Input
+* Badge
+* Avatar
+* Table
+* Tabs
+* Sheet
+* Drawer
+* Select
+* Checkbox
+* Tooltip
+* Toast
+* Pagination
+* Spinner
 
 ---
 
-# Next.js Routing Rules
+# Shared Component Acquisition Priority
 
-Follow App Router conventions.
+Always follow:
 
-Prefer:
+```
+Existing packages/ui
 
-app/
+↓
 
-Route groups when appropriate:
+Official shadcn/ui
 
-app/(dashboard)/
+↓
 
-Nested layouts:
+Custom shared component
+```
 
-layout.tsx
-
-Dynamic routes:
-
-[id]
-
-Loading UI:
-
-loading.tsx
-
-Error UI:
-
-error.tsx
-
-Not Found:
-
-not-found.tsx
-
-Avoid recreating routing manually.
+Never skip a higher priority option.
 
 ---
 
-# Route Preservation Rule
+# Component Discovery Rule
 
-When updating an existing page:
+Before creating a component:
 
-Never change its URL unless explicitly instructed.
+Search:
 
-Allowed:
+1. packages/ui
+2. Existing feature components
+3. shadcn/ui
+4. Create new shared component
 
-Replace UI
-
-Replace layout
-
-Replace components
-
-Not allowed:
-
-Move page to another route
-
-Rename URLs
-
-Break existing navigation
+Never create duplicates.
 
 ---
 
-# Page Relationship Awareness
+# shadcn/ui Installation Rule
 
-Agents must understand relationships between pages.
+If the component exists in shadcn/ui:
+
+Install it.
+
+Preferred command:
+
+```bash
+pnpm dlx shadcn@latest add <component>
+```
+
+Examples:
+
+```bash
+pnpm dlx shadcn@latest add dialog
+
+pnpm dlx shadcn@latest add sheet
+
+pnpm dlx shadcn@latest add command
+
+pnpm dlx shadcn@latest add table
+
+pnpm dlx shadcn@latest add calendar
+```
+
+---
+
+# Installation Target Rule
+
+Install reusable components into:
+
+```
+packages/ui
+```
+
+Do not install identical components separately inside applications.
+
+---
+
+# Generated Code Review Rule
+
+Code generated by:
+
+```bash
+pnpm dlx shadcn@latest add
+```
+
+must not be considered production-ready.
+
+Review:
+
+* Imports
+* Exports
+* Dependencies
+* Styling
+* Accessibility
+* Design tokens
+* Package structure
+
+Integrate generated code into the shared UI package.
+
+---
+
+# Component Modification Rule
+
+When modifying a shared component:
+
+1. Update packages/ui.
+2. Preserve compatibility.
+3. Reuse the updated component.
+
+Never duplicate components inside applications.
+
+---
+
+# Component Promotion Rule
+
+If a component will be reused across applications:
+
+Move it into:
+
+```
+packages/ui
+```
+
+Feature-specific components should remain inside feature modules.
+
+---
+
+# Import Rule
+
+Always import shared components through package exports.
+
+Preferred:
+
+```tsx
+import { Button } from "@repo/ui/button";
+import { Dialog } from "@repo/ui/dialog";
+import { Card } from "@repo/ui/card";
+```
+
+Never import shared components through relative paths.
+
+---
+
+# Styling Ownership
+
+Visual styling belongs to:
+
+```
+packages/ui
+```
+
+Applications should only define:
+
+* Layout
+* Positioning
+* Composition
+* Responsive behavior
+
+Applications must not redefine shared component appearance.
+
+---
+
+# Variant Extension Rule
+
+When new styles are required:
+
+Extend existing components.
 
 Example:
 
-Member List
+```tsx
+<Button variant="hero" />
+```
 
-↓
-
-Member Detail
-
-↓
-
-Edit Member
-
-↓
-
-Delete Dialog
-
-rather than treating each page as isolated.
-
-Cross-page navigation should function immediately after conversion.
+Avoid inline styling.
 
 ---
 
-# Interactive Mock Navigation
+# shadcn Extension Rule
 
-During UI conversion, navigation should remain functional even without backend logic.
+Prefer extending official components.
 
-Buttons such as:
+Allowed:
 
-View
+* New variants
+* Additional props
+* Additional slots
+* Project styling
+* Accessibility improvements
 
-Back
-
-Next
-
-Previous
-
-Open Detail
-
-Edit
-
-Cancel
-
-Dashboard
-
-must navigate between available mock pages whenever possible.
-
-Avoid dead buttons unless explicitly marked as disabled in the design.
+Avoid rewriting components completely.
 
 ---
 
-# Rendering Validation
+# Component Boundary
 
-Before completing UI conversion, verify:
+packages/ui contains presentation logic only.
 
-✓ Page renders without CSS errors
+Never include:
 
-✓ No missing fonts
-
-✓ No missing icons
-
-✓ No broken images
-
-✓ Responsive layout matches screenshot
-
-✓ Shared layout extracted
-
-✓ Navigation works
-
-✓ Routes resolve correctly
-
-✓ No HTML links remain
-
-✓ No missing assets
+* APIs
+* Authentication
+* Database access
+* Business logic
+* Feature workflows
 
 ---
 
-## Mockup Conversion Workflow
+# Styling Rules
 
+Preferred styling order:
 
-Step 1
-Inspect all provided design files.
+1. Existing design system
+2. Existing shared components
+3. Existing project styles
+4. Tailwind utilities
+5. Small custom styles
 
-↓
+Do not introduce unnecessary UI libraries.
 
-Step 2
-Analyze screenshots.
+---
 
-↓
+# Design Token Rule
 
-Step 3
-Analyze HTML structure.
+Always use project design tokens.
 
-↓
+Prefer:
 
-Step 4
-Analyze CSS assets.
+* CSS Variables
+* Tailwind theme tokens
+* Shared constants
 
-↓
+Avoid hardcoded values.
 
-Step 5
-Identify shared layouts.
+---
 
-↓
+# Existing Code Reuse Rule
 
-Step 6
-Generate route mapping.
+Before implementing new UI:
 
-↓
+Inspect existing:
 
-Step 7
-Extract reusable components.
+* Layouts
+* Components
+* Hooks
+* Utilities
+* Providers
 
-↓
+Reuse existing implementations whenever possible.
 
-Step 8
-Convert pages.
+---
 
-↓
+# Development Preview Requirement
 
-Step 9
-Connect navigation.
+Every converted page must be immediately usable.
 
-↓
+Never leave:
 
-Step 10
-Validate rendering.
+* Empty tables
+* Empty cards
+* Empty dashboards
+* Empty charts
 
-↓
+Use realistic mock data.
 
-Step 11
-Validate responsive behavior.
+---
 
-↓
+# Mock Data Rules
 
-Step 12
-Complete delivery checklist.
+Use local mock data only.
 
+Preferred locations:
+
+```
+src/mock/
+
+src/features/*/mock/
+```
+
+Never connect:
+
+* APIs
+* Supabase
+* External services
+
+---
+
+# Responsive Requirement
+
+Support:
+
+* Desktop
+* Tablet
+* Mobile
+
+Mobile-first implementation is preferred.
+
+---
+
+# Final Validation Checklist
+
+## Routing
+
+* Route created
+* Route mapping completed
+* Navigation functional
+
+## Layout
+
+* Screenshot matches
+* Responsive layout verified
+* Shared layout extracted
+
+## Components
+
+* Shared components reused
+* packages/ui updated when necessary
+* Imports use @repo/ui/*
+* No duplicate components
+
+## Styling
+
+* No CSS errors
+* No missing fonts
+* No missing icons
+* No missing assets
+* Design tokens respected
+
+## Preview
+
+* Mock data added
+* No API dependency
+* No authentication
+* No database dependency
+* Development preview functional
+
+## Architecture
+
+* No relative imports into packages/ui
+* No duplicate implementations
+* Shared UI remains the single source of truth
+
+```
+```
