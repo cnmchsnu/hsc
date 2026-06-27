@@ -14,7 +14,6 @@
         "react-dom": "^19"
     },
     "exports": {
-        ".": "./src/index.ts",
         "./styles/*": "./src/styles/*",
         "./components/*": "./src/components/*",
         "./lib/*": "./src/lib/*"
