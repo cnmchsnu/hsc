@@ -97,20 +97,6 @@ Before implementing UI:
 - Reuse existing patterns
 - Follow DESIGN.md
 
-# Shared Component First Principle
-
-During UI conversion, agents must always attempt to solve UI requirements by extending the shared component library before introducing application-specific implementations.
-
-Page code should primarily compose existing shared components rather than defining new visual primitives.
-
-The visual language of the project must evolve through `packages/ui`, not through individual applications.# Shared Component First Principle
-
-During UI conversion, agents must always attempt to solve UI requirements by extending the shared component library before introducing application-specific implementations.
-
-Page code should primarily compose existing shared components rather than defining new visual primitives.
-
-The visual language of the project must evolve through `packages/ui`, not through individual applications.
-
 ---
 
 ## Design System
