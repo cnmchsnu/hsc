@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@repo/ui/button";
 
 interface Countdown {
   hours: string;
@@ -139,9 +140,9 @@ export default function Home() {
               >
                 立即選購 <span className="material-symbols-outlined">arrow_forward</span>
               </Link>
-              <button className="px-6 py-3 md:px-8 md:py-4 border-2 border-on-primary text-on-primary font-bold rounded-xl hover:bg-white/10 transition-all">
+              <Button className="px-6 py-3 md:px-8 md:py-4 border-2 border-on-primary text-on-primary font-bold rounded-xl hover:bg-white/10 transition-all">
                 品牌故事
-              </button>
+              </Button>
             </div>
           </div>
           <div className="hidden lg:block h-[500px] relative rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">

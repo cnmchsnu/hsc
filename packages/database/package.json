@@ -2,6 +2,7 @@
     "name": "@repo/database",
     "private": true,
     "dependencies": {
-        "@supabase/supabase-js": "^2.108.2"
+        "@supabase/supabase-js": "^2.108.2",
+        "next": "16.2.9"
     }
 }
