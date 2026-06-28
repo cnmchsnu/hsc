@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from './browser'
+import { createBrowserClient } from '../client'
 
 interface UseOneTapOptions {
   clientId: string // Google Cloud Console 的 Client ID
@@ -11,7 +11,7 @@ interface UseOneTapOptions {
 
 export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = createBrowserClient()
 
   useEffect(() => {
     // 1. 載入 Google Identity Services 腳本
@@ -27,7 +27,6 @@ export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
       // 2. 初始化 Google 一鍵登入
       window.google.accounts.id.initialize({
         client_id: clientId,
-        use_fedcm: true,
         callback: async (response) => {
           try {
             // 3. 收到 Google 的 id_token 後，送去給 Supabase 驗證

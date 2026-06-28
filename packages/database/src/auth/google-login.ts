@@ -1,7 +1,7 @@
-import { createClient } from './browser'
+import { createBrowserClient } from '../client/browser'
 
 export const signInWithGoogle = async (redirectTo?: string) => {
-  const supabase = createClient()
+  const supabase = createBrowserClient()
   
   // 動態取得當前的 origin，如果是 Server 端則由外部傳入
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -23,11 +23,11 @@ export const signInWithGoogle = async (redirectTo?: string) => {
 }
 
 export const signOut = async () => {
-  const supabase = createClient()
+  const supabase = createBrowserClient()
   
   // 呼叫 Supabase 登出，這會同時：
   // 1. 通知 Supabase Auth 伺服器該存取權杖 (Access Token) 已失效
-  // 2. 清除瀏覽器 LocalStorage/Cookie 中的會話狀態
+  // 2. 清除瀏覽器 LocalStorage/Cookie 中的會話状态
   const { error } = await supabase.auth.signOut()
   
   if (error) {
@@ -38,7 +38,7 @@ export const signOut = async () => {
 }
 
 export const getUser = async () => {
-  const supabase = createClient()
+  const supabase = createBrowserClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   
   if (error || !user) return null

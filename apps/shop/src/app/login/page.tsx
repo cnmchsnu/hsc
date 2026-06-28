@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@repo/ui/button";
-import { useOneTap, signInWithGoogle } from "@repo/auth"; // Import the Google sign-in function
+import { useOneTap, signInWithGoogle } from "@repo/database/auth"; // Import the Google sign-in function
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
