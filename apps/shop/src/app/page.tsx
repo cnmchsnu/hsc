@@ -1,7 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getCurrentUser } from "@repo/auth/server";
 
 interface Countdown {
   hours: string;
@@ -9,7 +8,13 @@ interface Countdown {
   seconds: string;
 }
 
-export default function Home() {
+export default async function Home() {
+
+    const currentUser = await getCurrentUser();
+
+    console.log(currentUser);
+
+
   const [countdown, setCountdown] = useState<Countdown>({
     hours: "00",
     minutes: "00",
