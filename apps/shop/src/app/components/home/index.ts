@@ -1,0 +1,5 @@
+export { HeroSection } from "./hero-section"
+export { FeaturedProducts } from "./featured-products"
+export { PromoProducts } from "./promo-producs"
+export { PromoCountdown } from "./promo-countdown"
+export {BentoCTA} from "./member-cta"
