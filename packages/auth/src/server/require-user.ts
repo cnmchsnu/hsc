@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { CurrentUser } from "../types";
 
 import { getCurrentUser } from "./get-current-user";

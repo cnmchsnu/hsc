@@ -6,25 +6,25 @@ import type {
 
 export function buildSyncUpdate(
     profile: UserProfile,
-    provider: SyncProfileInput,
-): UpdateProfileInput {
+    input: SyncProfileInput,
+): Partial<UpdateProfileInput> {
 
-    const update: UpdateProfileInput = {};
+    const update: Partial<UpdateProfileInput> = {};
 
     if (
         profile.syncDisplayName &&
-        provider.providerDisplayName
+        input.DisplayName !== undefined &&
+        input.DisplayName !== profile.displayName
     ) {
-        update.displayName =
-            provider.providerDisplayName;
+        update.displayName = input.DisplayName;
     }
 
     if (
         profile.syncAvatar &&
-        provider.providerAvatarUrl
+        input.AvatarUrl !== undefined &&
+        input.AvatarUrl !== profile.avatarUrl
     ) {
-        update.avatarUrl =
-            provider.providerAvatarUrl;
+        update.avatarUrl = input.AvatarUrl;
     }
 
     return update;

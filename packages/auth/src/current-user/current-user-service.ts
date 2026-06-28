@@ -1,11 +1,9 @@
 import type { AuthUser } from '@supabase/supabase-js'
-import type { ProfileRepository } from "@repo/database/identity";
+import type { ProfileService } from "../profile";
 
 import type { CurrentUser } from "../types";
 
-import { toCurrentUser } from "./mapper";
-
-import { UserProfileNotFoundError } from "./errors";
+import { toCurrentUser, toSyncProfileInput } from "./mapper";
 
 
 
@@ -17,7 +15,7 @@ export interface CurrentUserService {
 
 
 export function createCurrentUserService(
-    profileRepository: ProfileRepository,
+    profileService: ProfileService,
 ): CurrentUserService {
 
     return {
@@ -25,15 +23,15 @@ export function createCurrentUserService(
         async get(authUser) {
 
             const profile =
-                await profileRepository.findByUserId(
-                    authUser.id,
-                );
+                await profileService.ensure(
+                    {
+                        userId: authUser.id,
 
-            if (!profile) {
-                throw new UserProfileNotFoundError(
-                    authUser.id,
+                        autoClassification: "guest",
+
+                        sync: toSyncProfileInput(authUser),
+                    }
                 );
-            }
 
             return toCurrentUser(
                 authUser,

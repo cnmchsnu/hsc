@@ -25,7 +25,15 @@ export interface UpdateProfileInput {
 }
 
 export interface SyncProfileInput {
-    providerDisplayName?: string | null;
+    DisplayName?: string | null;
 
-    providerAvatarUrl?: string | null;
+    AvatarUrl?: string | null;
+}
+
+export interface EnsureProfileInput {
+    userId: string;
+
+    sync: SyncProfileInput;
+
+    autoClassification: string;
 }

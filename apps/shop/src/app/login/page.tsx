@@ -5,12 +5,15 @@ import Link from "next/link";
 import { Button } from "@repo/ui/button";
 import { useOneTap, signInWithGoogle } from "@repo/database/auth"; // Import the Google sign-in function
 
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+
 
   useEffect(() => {
     document.title = "會員登入 - 學生會商城";

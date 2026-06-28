@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createAuthContainer } from "../container";
 
 export async function getCurrentUser() {

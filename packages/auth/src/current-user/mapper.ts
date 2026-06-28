@@ -1,7 +1,9 @@
 import type { AuthUser } from '@supabase/supabase-js'
+import type { User } from "@supabase/supabase-js";
 
 import type {
     CurrentUser,
+    SyncProfileInput,
     UserProfile,
 } from "../types";
 
@@ -28,5 +30,19 @@ export function toCurrentUser(
         classification: 
             profile.finalClassification,
 
+    };
+}
+
+export function toSyncProfileInput(
+    user: User,
+): SyncProfileInput {
+    return {
+        DisplayName:
+            user.user_metadata.full_name ??
+            null,
+
+        AvatarUrl:
+            user.user_metadata.avatar_url ??
+            null,
     };
 }

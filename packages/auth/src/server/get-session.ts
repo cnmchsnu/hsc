@@ -1,6 +1,6 @@
 import type { Session } from "@supabase/supabase-js";
 
-import { createServerClient } from "@repo/database/client";
+import { createServerClient } from "@repo/database/client/server";
 
 export async function getSession(): Promise<Session | null> {
     const supabase = await createServerClient();

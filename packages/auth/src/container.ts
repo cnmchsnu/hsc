@@ -1,28 +1,30 @@
 // packages/auth/src/container.ts
+import "server-only";
 
-import { cookies } from "next/headers";
-
-import { createServerClient } from "@repo/database/client";
+import { createServerClient } from "@repo/database/client/server";
 import { SupabaseProfileRepository } from "@repo/database/identity";
 
 import { createCurrentUserService } from "./current-user";
+import { createProfileService } from "./profile";
 
 export async function createAuthContainer() {
-    const cookieStore = await cookies();
 
-    const client = createServerClient(cookieStore);
+    const client = await createServerClient();
 
     const profileRepository =
         new SupabaseProfileRepository(client);
 
+    const profileService =
+        createProfileService(profileRepository);
+
     const currentUserService =
-        createCurrentUserService(profileRepository);
+        createCurrentUserService(profileService);
 
     return {
         client,
 
-        profileRepository,
-
         currentUserService,
+
+        profileService,
     };
 }

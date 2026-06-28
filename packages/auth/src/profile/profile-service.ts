@@ -1,8 +1,10 @@
 import type { ProfileRepository } from "@repo/database/identity";
+import { UserProfileNotFoundError } from "../current-user";
 import type {
     CreateProfileInput,
     SyncProfileInput,
     UpdateProfileInput,
+    EnsureProfileInput,
     UserProfile,
 } from "../types";
 
@@ -10,22 +12,17 @@ import { buildSyncUpdate } from "./profile-sync";
 
 export interface ProfileService {
 
-    getByUserId(
+    get(
         userId: string,
     ): Promise<UserProfile | null>;
-
-    create(
-        input: CreateProfileInput,
-    ): Promise<UserProfile>;
 
     update(
         userId: string,
         input: UpdateProfileInput,
     ): Promise<UserProfile>;
 
-    sync(
-        userId: string,
-        input: SyncProfileInput,
+    ensure(
+        input: EnsureProfileInput,
     ): Promise<UserProfile>;
 }
 
@@ -33,37 +30,73 @@ export function createProfileService(
     repository: ProfileRepository,
 ): ProfileService {
 
+    async function  getOrCreateProfile(
+        input: EnsureProfileInput,
+    ): Promise<UserProfile> {
+
+        const existing =
+            await repository.findByUserId(input.userId);
+
+        if (existing) {
+            return existing;
+        }
+
+        return repository.create({
+            userId: input.userId,
+
+            displayName: input.sync.DisplayName,
+
+            avatarUrl: input.sync.AvatarUrl,
+
+            autoClassification: input.autoClassification,
+
+        });
+    }
+
+    async function sync(
+        profile: UserProfile,
+        syncProfileInput: SyncProfileInput
+    ): Promise<UserProfile> {
+
+
+            const update =
+                buildSyncUpdate(profile, syncProfileInput);
+
+            if (Object.keys(update).length === 0) {
+                return profile;
+            }
+
+            return repository.update(
+                profile.userId,
+                update,
+            );
+    }
+
     return {
 
-        async getByUserId(userId) {
+        async get(userId): Promise<UserProfile | null> {
             return repository.findByUserId(userId);
         },
 
-        async create(input) {
-            return repository.create(input);
-        },
-
-        async update(userId, input) {
+        async update(userId, input): Promise<UserProfile> {
             return repository.update(userId, input);
         },
 
-        async sync(userId, provider) {
+
+        
+
+        async ensure(input): Promise<UserProfile> {
 
             const profile =
-                await repository.findByUserId(userId);
+                await  getOrCreateProfile(input);
 
-            if (!profile) {
-                throw new Error("Profile not found");
-            }
 
-            const update =
-                buildSyncUpdate(profile, provider);
-
-            return repository.update(
-                userId,
-                update,
+            return sync(
+                profile,
+                input.sync,
             );
         },
+
     };
 }
 
