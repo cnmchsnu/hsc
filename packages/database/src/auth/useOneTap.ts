@@ -74,7 +74,7 @@ export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
               window.google?.accounts?.id?.cancel()
 
               // 4. 登入成功，重新整理或導向首頁
-              router.refresh()
+              window.location.href = '/'
             } catch (err) {
               console.error('One Tap 登入失敗:', err)
             }
