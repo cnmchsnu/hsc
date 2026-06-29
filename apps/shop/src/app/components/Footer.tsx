@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Footer() {
+export function Footer() {
   return (
     <footer className="bg-surface-container-highest border-t border-outline-variant mt-auto">
       <div className="w-full py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
