@@ -6,7 +6,7 @@ export const signInWithGoogle = async (redirectTo?: string) => {
   // 動態取得當前的 origin，如果是 Server 端則由外部傳入
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const callbackUrl = `${origin}/auth/callback`
-  try{ 
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -18,19 +18,8 @@ export const signInWithGoogle = async (redirectTo?: string) => {
     },
   })
 
-  if (error) {
-    console.error("OAuth Error", error);
-    console.error(JSON.stringify(error, null, 2));
-    throw error;
-  }
-
+  if (error) throw error
   return data
-
-  }catch (error) {
-    console.error(error);
-    throw error;
-  }
-  
 }
 
 export const signOut = async () => {
