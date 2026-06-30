@@ -11,6 +11,13 @@ export async function getCurrentUser() {
         error,
     } = await client.auth.getUser();
 
+    if (
+    error &&
+    error.name === "AuthSessionMissingError"
+    ) {
+        return null;
+    }
+
     if (error) {
         throw error;
     }

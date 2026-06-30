@@ -11,6 +11,7 @@
     },
     "exports": {
         ".": "./src/index.ts",
+        "./middleware": "./src/client/middleware.ts",
         "./client/browser": "./src/client/browser.ts",
         "./client/server": "./src/client/server.ts",
         "./identity": "./src/identity/index.ts",
