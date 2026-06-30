@@ -1,3 +1,6 @@
+import { Ability } from "../ability";
+import { Authorization } from "./authorization";
+
 export interface CurrentUser {
 
     id: string;
@@ -10,9 +13,9 @@ export interface CurrentUser {
 
     classification: string;
 
-    roles: ReadonlySet<string>;
+    authorization: Authorization
 
-    permissions: ReadonlySet<string>;
+    readonly ability: Ability;
     
 }
 
