@@ -1,5 +1,3 @@
-import { getCurrentUser } from "@repo/auth/server";
-
 import {
   HeroSection,
   BentoCTA,
@@ -15,10 +13,6 @@ interface Countdown {
 }
 
 export default async function Home() {
-
-    const currentUser = await getCurrentUser();
-
-    console.log(currentUser);
 
 
   return (

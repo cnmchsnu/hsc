@@ -1,3 +1,4 @@
+import { promises } from "dns";
 import type { Authorization } from "../types";
 import type { SupabaseAuthorizationRepository } from "@repo/database/authorization";
 
@@ -15,9 +16,7 @@ export function createAuthorizationService(
 
     return {
 
-        async get(
-            userId
-        ) {
+        async get(userId) {
 
             return repository.getAuthorization(
                 userId,

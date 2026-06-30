@@ -2,7 +2,7 @@ export class PermissionDeniedError
     extends Error {
 
     constructor(
-        permission: string,
+        permissions: string,
     ) {
 
         super(

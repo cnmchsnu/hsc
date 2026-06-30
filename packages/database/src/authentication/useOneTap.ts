@@ -4,6 +4,12 @@ import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '../client/browser'
 
+declare global {
+  interface Window {
+    google?: any
+  }
+}
+
 
 async function generateNonce() {
   const encdoer = new TextEncoder()
@@ -59,7 +65,7 @@ export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
           use_fedcm_for_button: true,
           use_fedcm_for_prompt: true,
           nonce: currentNonce,
-          callback: async (response) => {
+          callback: async (response: any) => {
             try {
               // 3. 收到 Google 的 id_token 後，送去給 Supabase 驗證
               const { data, error } = await supabase.auth.signInWithIdToken({
@@ -86,7 +92,7 @@ export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
         // 標記為已初始化
         (window as any).__google_one_tap_initialized = true
         // 4. 觸發 One Tap 彈出視窗
-        window.google.accounts.id.prompt((notification) => {
+        window.google.accounts.id.prompt((notification: any) => {
           if (notification.isNotDisplayed()) {
             console.log('One Tap 未顯示原因:', notification.getNotDisplayedReason())
           }

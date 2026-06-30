@@ -130,3 +130,7 @@ select jsonb_build_object(
 );
 
 $$;
+
+grant execute
+on function identity.get_authorization(uuid)
+to authenticated;

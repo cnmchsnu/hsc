@@ -14,10 +14,13 @@ export class SupabaseAuthorizationRepository
         userId: string,
     ): Promise<Authorization> {
 
+        const identityClient =
+            this.client.schema("identity");
+
         const  {
             data,
             error,
-        } = await this.client
+        } = await identityClient
                 .rpc(
                     "get_authorization",
                     {
@@ -36,7 +39,7 @@ export class SupabaseAuthorizationRepository
             ),
 
             permissions: new Set(
-                data.permission ?? [],
+                data.permissions ?? [],
             ),
         };
 

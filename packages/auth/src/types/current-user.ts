@@ -12,7 +12,7 @@ export interface CurrentUser {
 
     roles: ReadonlySet<string>;
 
-    permission: ReadonlySet<string>;
+    permissions: ReadonlySet<string>;
     
 }
 
