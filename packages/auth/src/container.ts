@@ -19,15 +19,15 @@ export async function createAuthContainer() {
     const profileService =
         createProfileService(profileRepository);
 
-    const currentUserService =
-        createCurrentUserService(profileService);
-
     const authorizationRepository = new SupabaseAuthorizationRepository(client,);
 
     const authorizationService =
         createAuthorizationService(
             authorizationRepository,
-    );
+        );
+        
+    const currentUserService =
+        createCurrentUserService(profileService,authorizationService);
 
     return {
         client,

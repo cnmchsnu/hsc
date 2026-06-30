@@ -31,11 +31,13 @@ export class SupabaseProfileRepository
         userId: string,
     ): Promise<UserProfile | null> {
 
+        const identityClient =
+            this.client.schema("identity");
+
         const {
             data,
             error,
-        } = await this.client
-            .schema("identity")
+        } = await identityClient
             .from("user_profiles")
             .select("*")
             .eq("user_id", userId)

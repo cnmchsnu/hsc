@@ -33,7 +33,7 @@ export function toCurrentUser(
         classification: 
             profile.finalClassification,
 
-        permission:
+        permissions:
             authorization.permissions,
         
         roles:
