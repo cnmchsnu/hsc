@@ -19,9 +19,6 @@ export default function LoginPage() {
     document.title = "會員登入 - 學生會商城";
   }, []);
 
-  useEffect(() => {
-  console.log("檢查變數:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-  }, []);
 
   useOneTap({
     clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!, 
