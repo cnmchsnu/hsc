@@ -9,5 +9,10 @@ export interface CurrentUser {
     avatarUrl: string | null;
 
     classification: string;
+
+    roles: ReadonlySet<string>;
+
+    permission: ReadonlySet<string>;
+    
 }
 

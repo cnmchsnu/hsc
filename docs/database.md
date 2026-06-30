@@ -917,7 +917,164 @@ Rules
 
 ---
 
-# 17. TPM FINAL NOTE
+CREATE SCHEMA IF NOT EXISTS audit;
+
+CREATE TABLE audit.order_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    order_id UUID NOT NULL
+        REFERENCES commerce.orders(id)
+        ON DELETE CASCADE,
+
+    event TEXT NOT NULL,
+
+    performed_by UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_order_events_order
+ON audit.order_events(order_id);
+
+CREATE INDEX idx_order_events_created
+ON audit.order_events(created_at DESC);
+
+CREATE TABLE audit.payment_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    payment_id UUID NOT NULL
+        REFERENCES commerce.payments(id)
+        ON DELETE CASCADE,
+
+    event TEXT NOT NULL,
+
+    performed_by UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_payment_events_payment
+ON audit.payment_events(payment_id);
+
+CREATE INDEX idx_payment_events_created
+ON audit.payment_events(created_at DESC);
+
+CREATE TABLE audit.system_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    type TEXT NOT NULL,
+
+    source TEXT NOT NULL,
+
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_system_events_type
+ON audit.system_events(type);
+
+CREATE INDEX idx_system_events_created
+ON audit.system_events(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    resource_type TEXT NOT NULL,
+
+    resource_id UUID,
+
+    action TEXT NOT NULL,
+
+    before_data JSONB,
+
+    after_data JSONB,
+
+    ip_address INET,
+
+    user_agent TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_audit_logs_user
+ON audit.audit_logs(user_id);
+
+CREATE INDEX idx_audit_logs_resource
+ON audit.audit_logs(resource_type, resource_id);
+
+CREATE INDEX idx_audit_logs_created
+ON audit.audit_logs(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.login_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    provider TEXT NOT NULL,
+
+    success BOOLEAN NOT NULL,
+
+    ip_address INET,
+
+    user_agent TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_login_logs_user
+ON audit.login_logs(user_id);
+
+CREATE INDEX idx_login_logs_created
+ON audit.login_logs(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.api_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    request_id UUID NOT NULL DEFAULT gen_random_uuid(),
+
+    method TEXT NOT NULL,
+
+    path TEXT NOT NULL,
+
+    status_code INTEGER NOT NULL,
+
+    duration_ms INTEGER CHECK (duration_ms >= 0),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_api_logs_user
+ON audit.api_logs(user_id);
+
+CREATE INDEX idx_api_logs_path
+ON audit.api_logs(path);
+
+CREATE INDEX idx_api_logs_created
+ON audit.api_logs(created_at DESC);
+
+# 7. TPM FINAL NOTE
 
 This schema is intentionally designed as:
 

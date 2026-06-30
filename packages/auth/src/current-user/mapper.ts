@@ -2,6 +2,7 @@ import type { AuthUser } from '@supabase/supabase-js'
 import type { User } from "@supabase/supabase-js";
 
 import type {
+    Authorization,
     CurrentUser,
     SyncProfileInput,
     UserProfile,
@@ -10,7 +11,9 @@ import type {
 export function toCurrentUser(
     authUser: AuthUser,
     profile: UserProfile,
+    authorization: Authorization
 ): CurrentUser {
+
     return {
         
         id: authUser.id,
@@ -29,6 +32,13 @@ export function toCurrentUser(
 
         classification: 
             profile.finalClassification,
+
+        permission:
+            authorization.permissions,
+        
+        roles:
+            authorization.roles,
+            
 
     };
 }
