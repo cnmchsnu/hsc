@@ -1,7 +1,5 @@
 import type { ProfileRepository } from "@repo/database/identity";
-import { UserProfileNotFoundError } from "../current-user";
 import type {
-    CreateProfileInput,
     SyncProfileInput,
     UpdateProfileInput,
     EnsureProfileInput,

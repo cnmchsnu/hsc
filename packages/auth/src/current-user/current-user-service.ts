@@ -1,5 +1,6 @@
 import type { AuthUser } from '@supabase/supabase-js'
 import type { ProfileService } from "../profile";
+import type { AuthorizationService } from "../authorization"
 
 import type { CurrentUser } from "../types";
 
@@ -16,6 +17,7 @@ export interface CurrentUserService {
 
 export function createCurrentUserService(
     profileService: ProfileService,
+    authorizationService: AuthorizationService,
 ): CurrentUserService {
 
     return {
@@ -33,9 +35,15 @@ export function createCurrentUserService(
                     }
                 );
 
+            const authorization = 
+                await authorizationService.get(
+                    authUser.id,
+                );
+        
             return toCurrentUser(
                 authUser,
                 profile,
+                authorization,
             );
         },
     };
