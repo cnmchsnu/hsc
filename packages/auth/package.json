@@ -2,6 +2,22 @@
     "name": "@repo/auth",
     "private": true,
     "dependencies": {
-        "@supabase/supabase-js": "^2.108.2"
+        "@supabase/ssr": "^0.12.0",
+        "@supabase/supabase-js": "^2.108.2",
+        "@types/google.accounts": "^0.0.18",
+        "@types/react-dom": "^19.2.3",
+        "next": "16.2.9",
+        "server-only": "^0.0.1"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^19.2.17"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./server": "./src/server/index.ts",
+        "./types": {
+            "types": "./src/types/index.ts"
+        }
     }
 }

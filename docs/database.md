@@ -24,140 +24,664 @@ I’ll express this in **relational schema (PostgreSQL style)** with clear bound
 
 ---
 
-# 2. USER SYSTEM
+# 2. AUTH SYSTEM
 
-## users
+The `auth` schema is managed entirely by Supabase.
 
-sql id="users"
-id                UUID PRIMARY KEY
-email             TEXT UNIQUE NOT NULL
-name              TEXT
-role              TEXT NOT NULL -- customer | staff | admin
-created_at        TIMESTAMP
-updated_at        TIMESTAMP
+Application tables must reference `auth.users(id)` as the canonical user identity.
 
+Application code must never modify tables inside the `auth` schema directly unless using Supabase Admin APIs.
 
 ---
 
-## user_profiles (internal/external classification)
+## auth.users (Supabase Managed)
 
-sql id="user_profiles"
-user_id           UUID PRIMARY KEY REFERENCES users(id)
+> System table (Managed by Supabase)
 
-auto_classification   TEXT  -- internal | external
-manual_override       TEXT NULL -- internal | external
+Primary identity table.
 
-final_classification   TEXT GENERATED
+Referenced by:
 
+- identity.user_profiles
+- commerce.carts
+- commerce.orders
+- commerce.payments.confirmed_by
+- fulfillment.batch_items
+- system.notifications
+- identity.user_roles
+
+Primary Key
+
+```text
+id UUID
+```
+
+Common fields (managed by Supabase)
+
+```text
+email
+email_confirmed_at
+phone
+last_sign_in_at
+raw_user_meta_data
+raw_app_meta_data
+created_at
+updated_at
+```
+
+Authentication providers
+
+- Google OAuth
+- Email
+- Magic Link
+- Password
+- Others supported by Supabase
+
+Do not:
+
+- Add application columns
+- Store business data
+- Store roles
+- Store profile information
+
+Those belong in the `identity` schema.
 
 ---
 
-## user_sessions (optional MVP-light)
+# 3. IDENTITY SYSTEM
 
-sql id="sessions"
-id               UUID PRIMARY KEY
-user_id          UUID REFERENCES users(id)
-provider         TEXT
-created_at       TIMESTAMP
-expires_at       TIMESTAMP
+The `identity` schema stores application-specific user information and authorization data.
 
+Authentication is handled by `auth.users`.
+
+Every application user should have exactly one profile linked to `auth.users(id)`.
 
 ---
 
-# 3. CAMPAIGN SYSTEM
+## identity.user_profiles
 
-## campaigns
+Application user profile.
 
-sql id="campaigns"
-id              UUID PRIMARY KEY
-name            TEXT
-status          TEXT -- draft | active | closed | archived
+Stores business-related user information.
 
-start_time      TIMESTAMP
-end_time        TIMESTAMP
+```sql
+user_id                 UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
 
-created_at      TIMESTAMP
-updated_at      TIMESTAMP
+display_name            TEXT
 
+avatar_url              TEXT
+
+student_id              TEXT UNIQUE NULL
+
+auto_classification     TEXT NOT NULL
+manual_override         TEXT NULL
+
+final_classification    TEXT GENERATED ALWAYS AS (
+    COALESCE(manual_override, auto_classification)
+) STORED
+
+sync_display_name       BOOLEAN NOT NULL DEFAULT TRUE
+sync_avatar             BOOLEAN NOT NULL DEFAULT TRUE
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Rules
+
+Rules
+
+- One profile per authenticated user.
+- User classification is derived from automatic detection unless manually overridden.
+- Never duplicate authentication fields (email, password, provider, etc.).
+- Email is always read from auth.users.
+- Provider metadata (Google name, avatar, etc.) is always read from auth.users.raw_user_meta_data when synchronization is enabled.
+- display_name represents the application's display name.
+- avatar_url represents the application's active avatar.
+- When sync_display_name is TRUE, display_name should be synchronized from the authentication provider during login.
+- When sync_avatar is TRUE, avatar_url should be synchronized from the authentication provider during login.
 
 ---
 
-## campaign_products
+## identity.roles
 
-sql id="campaign_products"
-campaign_id     UUID REFERENCES campaigns(id)
-product_id      UUID REFERENCES products(id)
+Defines system roles.
+
+```sql
+id                      UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+name                    TEXT NOT NULL UNIQUE
+
+type                    TEXT NOT NULL
+
+description             TEXT
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Example
+
+```
+customer
+staff
+admin
+```
+
+---
+
+## identity.permissions
+
+Defines every available permission.
+
+```sql
+id                      UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+key                     TEXT NOT NULL UNIQUE
+
+description             TEXT
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Example
+
+```
+order.read
+
+order.update
+
+campaign.manage
+
+inventory.adjust
+```
+
+---
+
+## identity.role_permissions
+
+Many-to-many mapping between roles and permissions.
+
+```sql
+role_id                 UUID NOT NULL REFERENCES identity.roles(id) ON DELETE CASCADE
+
+permission_id           UUID NOT NULL REFERENCES identity.permissions(id) ON DELETE CASCADE
+
+PRIMARY KEY (role_id, permission_id)
+```
+
+---
+
+## identity.user_roles
+
+Assigns roles to users.
+
+```sql
+user_id                 UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
+
+role_id                 UUID NOT NULL REFERENCES identity.roles(id) ON DELETE CASCADE
+
+assigned_by             UUID NULL REFERENCES auth.users(id)
+
+assigned_at             TIMESTAMPTZ NOT NULL DEFAULT now()
+
+PRIMARY KEY (user_id, role_id)
+```
+
+Rules
+
+- A user may have multiple roles.
+- Authorization should always be permission-based.
+- Never store role names directly inside user profiles.
+
+---
+
+## identity.user_preferences *(MVP Optional)*
+
+Stores user-specific preferences.
+
+```sql
+user_id                 UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
+
+language                TEXT DEFAULT 'zh-TW'
+
+theme                   TEXT DEFAULT 'system'
+
+timezone                TEXT DEFAULT 'Asia/Taipei'
+
+created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Future usage
+
+- Theme
+- Locale
+- Timezone
+- Notification preferences
+
+---
+
+# 4. COMMERCE SYSTEM
+
+The `commerce` schema contains all commerce-related business entities.
+
+This includes:
+
+- Campaigns
+- Products
+- Shopping Carts
+- Orders
+- Payments
+
+All fulfillment, inventory, notification and authorization logic belongs to other schemas.
+
+---
+
+## commerce.campaigns
+
+Represents an operational campaign.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+name                TEXT NOT NULL
+
+description         TEXT
+
+status              TEXT NOT NULL
+
+start_time          TIMESTAMPTZ
+
+end_time            TIMESTAMPTZ
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Status
+
+```
+draft
+active
+closed
+archived
+```
+
+---
+
+## commerce.campaign_products
+
+Many-to-many relationship between campaigns and products.
+
+```sql
+campaign_id         UUID NOT NULL REFERENCES commerce.campaigns(id) ON DELETE CASCADE
+
+product_id          UUID NOT NULL REFERENCES commerce.products(id) ON DELETE CASCADE
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 
 PRIMARY KEY (campaign_id, product_id)
-
-
----
-
-# 4. PRODUCT SYSTEM
-
-## products
-
-sql id="products"
-id              UUID PRIMARY KEY
-name            TEXT
-description     TEXT
-
-price           INTEGER
-currency        TEXT DEFAULT 'TWD'
-
-stock_total     INTEGER
-stock_sold      INTEGER DEFAULT 0
-
-status          TEXT -- active | inactive
-
-created_at      TIMESTAMP
-updated_at      TIMESTAMP
-
+```
 
 ---
 
-## product_snapshots (important for order immutability)
+## commerce.campaign_images *(MVP Optional)*
 
-sql id="product_snapshots"
-id              UUID PRIMARY KEY
-product_id      UUID
-name            TEXT
-price           INTEGER
-metadata        JSONB
-created_at      TIMESTAMP
+Stores campaign banner images.
 
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
----
+campaign_id         UUID NOT NULL REFERENCES commerce.campaigns(id) ON DELETE CASCADE
 
-# 5. CART SYSTEM (D model + C fallback ready)
+storage_path        TEXT NOT NULL
 
-## carts
+display_order       INTEGER NOT NULL DEFAULT 0
 
-sql id="carts"
-id              UUID PRIMARY KEY
-user_id         UUID REFERENCES users(id)
-
-mode            TEXT -- strict (MVP D) | flex (future C)
-
-campaign_id     UUID NULL -- enforced in MVP
-
-created_at      TIMESTAMP
-updated_at      TIMESTAMP
-
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
 
 ---
 
-## cart_items
+## commerce.products
 
-sql id="cart_items"
-id              UUID PRIMARY KEY
-cart_id         UUID REFERENCES carts(id)
+Product master.
 
-product_id      UUID
-campaign_id     UUID
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
-quantity        INTEGER
-created_at      TIMESTAMP
+name                TEXT NOT NULL
+
+description         TEXT
+
+price               INTEGER NOT NULL
+
+currency            TEXT NOT NULL DEFAULT 'TWD'
+
+stock_total         INTEGER NOT NULL DEFAULT 0
+
+stock_sold          INTEGER NOT NULL DEFAULT 0
+
+status              TEXT NOT NULL
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Status
+
+```
+active
+
+inactive
+```
+
+---
+
+## commerce.product_images *(MVP Optional)*
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+product_id          UUID NOT NULL REFERENCES commerce.products(id) ON DELETE CASCADE
+
+storage_path        TEXT NOT NULL
+
+display_order       INTEGER NOT NULL DEFAULT 0
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+---
+
+## commerce.product_snapshots
+
+Immutable product snapshot.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+product_id          UUID REFERENCES commerce.products(id)
+
+name                TEXT NOT NULL
+
+price               INTEGER NOT NULL
+
+metadata            JSONB NOT NULL DEFAULT '{}'::jsonb
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+---
+
+## commerce.carts
+
+Shopping cart.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+user_id             UUID NOT NULL REFERENCES auth.users(id)
+
+mode                TEXT NOT NULL DEFAULT 'strict'
+
+campaign_id         UUID REFERENCES commerce.campaigns(id)
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Mode
+
+```
+strict
+flex
+```
+
+---
+
+## commerce.cart_items
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+cart_id             UUID NOT NULL REFERENCES commerce.carts(id) ON DELETE CASCADE
+
+product_id          UUID NOT NULL REFERENCES commerce.products(id)
+
+campaign_id         UUID NOT NULL REFERENCES commerce.campaigns(id)
+
+quantity            INTEGER NOT NULL
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+---
+
+## commerce.orders
+
+Order header.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+user_id             UUID NOT NULL REFERENCES auth.users(id)
+
+campaign_id         UUID NOT NULL REFERENCES commerce.campaigns(id)
+
+status              TEXT NOT NULL
+
+total_amount        INTEGER NOT NULL
+
+currency            TEXT NOT NULL DEFAULT 'TWD'
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Status
+
+```
+created
+
+paid
+
+fulfilled
+
+cancelled
+```
+
+---
+
+## commerce.order_items
+
+Order snapshot items.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+order_id            UUID NOT NULL REFERENCES commerce.orders(id) ON DELETE CASCADE
+
+product_id          UUID NOT NULL REFERENCES commerce.products(id)
+
+product_snapshot_id UUID NOT NULL REFERENCES commerce.product_snapshots(id)
+
+quantity            INTEGER NOT NULL
+
+unit_price          INTEGER NOT NULL
+
+subtotal            INTEGER NOT NULL
+```
+
+---
+
+## commerce.order_metadata
+
+Stores additional order form data.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+order_id            UUID NOT NULL REFERENCES commerce.orders(id) ON DELETE CASCADE
+
+data                JSONB NOT NULL DEFAULT '{}'::jsonb
+```
+
+---
+
+## commerce.payments
+
+Payment record.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+order_id            UUID NOT NULL REFERENCES commerce.orders(id)
+
+amount              INTEGER NOT NULL
+
+method              TEXT NOT NULL
+
+status              TEXT NOT NULL
+
+confirmed_by        UUID REFERENCES auth.users(id)
+
+confirmed_at        TIMESTAMPTZ
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Method
+
+```
+cash
+```
+
+Status
+
+```
+pending
+
+paid
+
+failed
+
+refunded
+```
+
+# 5. FULFILLMENT SYSTEM
+
+The `fulfillment` schema manages inventory movements and order fulfillment.
+
+Commerce is responsible for creating transactions.
+
+Fulfillment is responsible for executing them.
+
+---
+
+## fulfillment.inventory_transactions
+
+Immutable inventory transaction log.
+
+Inventory is derived from transaction history and product stock values.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+product_id          UUID NOT NULL REFERENCES commerce.products(id)
+
+type                TEXT NOT NULL
+
+quantity            INTEGER NOT NULL
+
+reference_type      TEXT NOT NULL
+
+reference_id        UUID NOT NULL
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Type
+
+```
+reserve
+release
+deduct
+adjust
+```
+
+Reference Type
+
+```
+order
+batch
+admin
+```
+
+Rules
+
+- Never update inventory history.
+- Always append new transactions.
+
+---
+
+## fulfillment.batches
+
+Represents a fulfillment batch.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+campaign_id         UUID NOT NULL REFERENCES commerce.campaigns(id)
+
+name                TEXT NOT NULL
+
+status              TEXT NOT NULL
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Status
+
+```
+draft
+
+packing
+
+shipped
+
+completed
+```
+
+---
+
+## fulfillment.batch_items
+
+Maps orders into batches.
+
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+batch_id            UUID NOT NULL REFERENCES fulfillment.batches(id) ON DELETE CASCADE
+
+order_id            UUID NOT NULL REFERENCES commerce.orders(id)
+
+user_id             UUID NOT NULL REFERENCES auth.users(id)
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+Rules
+
+- One order belongs to one batch.
+- Batch assignment can change until shipment.
 
 
 ---
@@ -214,268 +738,343 @@ created_at      TIMESTAMP
 
 ---
 
-# 7. PAYMENT SYSTEM (event-driven)
+# 6. SYSTEM
 
-## payments
+The `system` schema contains shared platform services.
 
-sql id="payments"
-id              UUID PRIMARY KEY
-order_id        UUID REFERENCES orders(id)
+These tables are not owned by any single business domain.
 
-amount          INTEGER
-method          TEXT -- cash (MVP)
-
-status          TEXT -- pending | paid | failed | refunded
-
-confirmed_by    UUID NULL
-confirmed_at    TIMESTAMP
-
-created_at      TIMESTAMP
-
+They provide cross-domain functionality used throughout the application.
 
 ---
 
-## payment_events
+## system.notifications
 
-sql id="payment_events"
-id              UUID PRIMARY KEY
-payment_id      UUID REFERENCES payments(id)
+Stores in-app notifications.
 
-type            TEXT
-payload         JSONB
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
-created_at      TIMESTAMP
+user_id             UUID NOT NULL REFERENCES auth.users(id)
 
+type                TEXT NOT NULL
 
----
+title               TEXT NOT NULL
 
-# 8. INVENTORY SYSTEM (MVP B-model)
+message             TEXT NOT NULL
 
-## inventory_transactions
+status              TEXT NOT NULL
 
-sql id="inventory_transactions"
-id              UUID PRIMARY KEY
-product_id      UUID REFERENCES products(id)
+payload             JSONB NOT NULL DEFAULT '{}'::jsonb
 
-type            TEXT -- reserve | release | deduct | adjust
+read_at             TIMESTAMPTZ NULL
 
-quantity        INTEGER
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
 
-reference_type  TEXT -- order | admin | batch
-reference_id    UUID
+Status
 
-created_at      TIMESTAMP
+```
+unread
 
+read
+```
 
----
+Rules
 
-## (Derived state, NOT stored)
-
-
-available = stock_total - stock_sold
-
+- Notifications are immutable after creation except status.
+- Payload stores additional contextual information.
 
 ---
 
-# 9. BATCH SYSTEM (Fulfillment)
+## system.files *(MVP Optional)*
 
-## batches
+Centralized file registry.
 
-sql id="batches"
-id              UUID PRIMARY KEY
-campaign_id     UUID REFERENCES campaigns(id)
+Every uploaded file should have exactly one record.
 
-name            TEXT
-status          TEXT -- draft | packing | shipped | completed
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
-rule_id         UUID NULL
+bucket              TEXT NOT NULL
 
-created_at      TIMESTAMP
-updated_at      TIMESTAMP
+path                TEXT NOT NULL
 
+filename            TEXT NOT NULL
 
----
+mime_type           TEXT NOT NULL
 
-## batch_items
+size                BIGINT NOT NULL
 
-sql id="batch_items"
-id              UUID PRIMARY KEY
-batch_id        UUID REFERENCES batches(id)
+uploaded_by         UUID REFERENCES auth.users(id)
 
-order_id        UUID REFERENCES orders(id)
-user_id         UUID REFERENCES users(id)
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
 
+Rules
 
----
-
-# 10. POLICY ENGINE (future-ready)
-
-## policies
-
-sql id="policies"
-id              UUID PRIMARY KEY
-name            TEXT
-
-target_type     TEXT -- product | order | campaign | form
-action          TEXT -- allow | deny | transform
-
-condition       JSONB
-effect          JSONB
-
-priority        INTEGER
-enabled         BOOLEAN
-
-created_at      TIMESTAMP
-
+- File metadata only.
+- Binary data is stored in Supabase Storage.
 
 ---
 
-# 11. NOTIFICATION SYSTEM (in-app only MVP)
+## system.settings *(MVP Optional)*
 
-## notifications
+Stores platform-wide configuration.
 
-sql id="notifications"
-id              UUID PRIMARY KEY
-user_id         UUID REFERENCES users(id)
+Configuration values should be editable through the administration console.
 
-type            TEXT
-title           TEXT
-message         TEXT
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
-status          TEXT -- unread | read
+key                 TEXT NOT NULL UNIQUE
 
-payload         JSONB
+value               JSONB NOT NULL
 
-created_at      TIMESTAMP
+description         TEXT
 
+updated_by          UUID REFERENCES auth.users(id)
 
----
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
 
-# 12. FORM SYSTEM (MVP minimal + future-ready)
+Rules
 
-## order_metadata
+- Keys must be globally unique.
+- Values are stored as JSONB to support different data types.
+- System settings should not contain user-specific information.
 
-sql id="order_metadata"
-id              UUID PRIMARY KEY
-order_id        UUID REFERENCES orders(id)
+Examples
 
-data            JSONB
+```
+shop.name
 
+shop.currency
 
----
+shop.maintenance
 
-# 13. RBAC SYSTEM
+order.max_quantity
 
-## roles
+batch.naming_pattern
 
-sql id="roles"
-id              UUID PRIMARY KEY
-name            TEXT
-type            TEXT -- profile | functional | system
-
+notification.enabled
+```
 
 ---
 
-## permissions
+## system.policies *(MVP Optional)*
 
-sql id="permissions"
-id              UUID PRIMARY KEY
-key             TEXT UNIQUE
-description     TEXT
+Stores configurable policy rules.
 
+```sql
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
----
+name                TEXT NOT NULL
 
-## role_permissions
+target_type         TEXT NOT NULL
 
-sql id="role_permissions"
-role_id         UUID REFERENCES roles(id)
-permission_id   UUID REFERENCES permissions(id)
+action              TEXT NOT NULL
 
-PRIMARY KEY (role_id, permission_id)
+condition           JSONB NOT NULL
 
+effect              JSONB NOT NULL
 
----
+priority            INTEGER NOT NULL DEFAULT 0
 
-## user_roles
+enabled             BOOLEAN NOT NULL DEFAULT true
 
-sql id="user_roles"
-user_id         UUID REFERENCES users(id)
-role_id         UUID REFERENCES roles(id)
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 
-PRIMARY KEY (user_id, role_id)
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
 
+Target Types
 
----
+```
+product
 
-# 14. EVENT SYSTEM (foundation)
+campaign
 
-## system_events
+order
 
-sql id="events"
-id              UUID PRIMARY KEY
+form
+```
 
-type            TEXT
-entity_type     TEXT
-entity_id       UUID
+Action
 
-payload         JSONB
+```
+allow
 
-created_at      TIMESTAMP
+deny
 
+transform
+```
 
----
+Rules
 
-# 15. KEY RELATIONSHIP MAP
-
-
-User
-  → Cart
-  → Order
-      → Payment
-      → Order Items
-      → Inventory Transactions
-      → Batch Items
-      → Notifications
-
-Campaign
-  → Products
-  → Orders
-  → Batches
-
-Policy Engine
-  → evaluates all layers
-
-Events
-  → glue between systems
-
+- Policies are evaluated by the Policy Engine.
+- Policies never directly modify business tables.
 
 ---
 
-# 16. MVP SIMPLIFICATION (IMPORTANT)
+CREATE SCHEMA IF NOT EXISTS audit;
 
-In MVP you ONLY actively use:
+CREATE TABLE audit.order_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-* users
-* campaigns
-* products
-* carts
-* orders
-* order_items
-* payments
-* batches
-* inventory_transactions
-* notifications (basic)
+    order_id UUID NOT NULL
+        REFERENCES commerce.orders(id)
+        ON DELETE CASCADE,
 
-Everything else is:
+    event TEXT NOT NULL,
 
+    performed_by UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
 
-schema exists but not operational
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
 
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
----
+CREATE INDEX idx_order_events_order
+ON audit.order_events(order_id);
 
-# 17. TPM FINAL NOTE
+CREATE INDEX idx_order_events_created
+ON audit.order_events(created_at DESC);
+
+CREATE TABLE audit.payment_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    payment_id UUID NOT NULL
+        REFERENCES commerce.payments(id)
+        ON DELETE CASCADE,
+
+    event TEXT NOT NULL,
+
+    performed_by UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_payment_events_payment
+ON audit.payment_events(payment_id);
+
+CREATE INDEX idx_payment_events_created
+ON audit.payment_events(created_at DESC);
+
+CREATE TABLE audit.system_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    type TEXT NOT NULL,
+
+    source TEXT NOT NULL,
+
+    payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_system_events_type
+ON audit.system_events(type);
+
+CREATE INDEX idx_system_events_created
+ON audit.system_events(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.audit_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    resource_type TEXT NOT NULL,
+
+    resource_id UUID,
+
+    action TEXT NOT NULL,
+
+    before_data JSONB,
+
+    after_data JSONB,
+
+    ip_address INET,
+
+    user_agent TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_audit_logs_user
+ON audit.audit_logs(user_id);
+
+CREATE INDEX idx_audit_logs_resource
+ON audit.audit_logs(resource_type, resource_id);
+
+CREATE INDEX idx_audit_logs_created
+ON audit.audit_logs(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.login_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    provider TEXT NOT NULL,
+
+    success BOOLEAN NOT NULL,
+
+    ip_address INET,
+
+    user_agent TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_login_logs_user
+ON audit.login_logs(user_id);
+
+CREATE INDEX idx_login_logs_created
+ON audit.login_logs(created_at DESC);
+
+-- MVP Optional
+CREATE TABLE audit.api_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    request_id UUID NOT NULL DEFAULT gen_random_uuid(),
+
+    method TEXT NOT NULL,
+
+    path TEXT NOT NULL,
+
+    status_code INTEGER NOT NULL,
+
+    duration_ms INTEGER CHECK (duration_ms >= 0),
+
+    user_id UUID
+        REFERENCES auth.users(id)
+        ON DELETE SET NULL,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_api_logs_user
+ON audit.api_logs(user_id);
+
+CREATE INDEX idx_api_logs_path
+ON audit.api_logs(path);
+
+CREATE INDEX idx_api_logs_created
+ON audit.api_logs(created_at DESC);
+
+# 7. TPM FINAL NOTE
 
 This schema is intentionally designed as:
 
