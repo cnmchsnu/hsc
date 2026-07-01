@@ -27,6 +27,8 @@ export interface UpdateProfileInput {
 export interface SyncProfileInput {
     DisplayName?: string | null;
 
+    StudentId?: string | null;
+
     AvatarUrl?: string | null;
 }
 

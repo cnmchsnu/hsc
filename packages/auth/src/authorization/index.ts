@@ -1,1 +1,1 @@
-export { AuthorizationService, createAuthorizationService } from "./authorization-service"
+export { type AuthorizationService, createAuthorizationService } from "./authorization-service"

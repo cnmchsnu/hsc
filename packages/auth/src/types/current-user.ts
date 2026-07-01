@@ -11,11 +11,13 @@ export interface CurrentUser {
 
     avatarUrl: string | null;
 
+    studentId: string | null;
+
     classification: string;
 
     authorization: Authorization
 
-    readonly ability: Ability;
+    // readonly ability: Ability;
     
 }
 

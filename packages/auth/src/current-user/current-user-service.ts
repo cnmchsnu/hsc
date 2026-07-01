@@ -29,9 +29,9 @@ export function createCurrentUserService(
                     {
                         userId: authUser.id,
 
-                        autoClassification: "guest",
+                        autoClassification: authUser.email?.includes("@gs.hs.ntnu.edu.tw") ? "internal" : "guest",
 
-                        sync: toSyncProfileInput(authUser),
+                        sync: toSyncProfileInput(authUser, (authUser.email?.includes("@gs.hs.ntnu.edu.tw") ? true :false)),
                     }
                 );
 
