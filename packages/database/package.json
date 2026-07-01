@@ -16,7 +16,8 @@
         "./client/server": "./src/client/server.ts",
         "./identity": "./src/identity/index.ts",
         "./auth": "./src/authentication/index.ts",
-        "./authorization": "./src/authorization/index.ts"
+        "./authorization": "./src/authorization/index.ts",
+        "./product": "./src/product/index.ts"
     },
     "devDependencies": {
         "@types/google.accounts": "^0.0.18"

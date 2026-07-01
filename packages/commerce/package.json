@@ -1,0 +1,14 @@
+{
+    "name": "@repo/commerce",
+    "private": true,
+    "dependencies": {
+        "@repo/database": "workspace:*"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./types": {
+            "types": "./src/types/index.ts"
+        },
+        "./product": "./src/product/index.ts"
+    }
+}

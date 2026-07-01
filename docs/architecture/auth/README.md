@@ -46,12 +46,31 @@ The module is designed for long-term maintenance and is intended to support futu
 | 06-current-user.md | CurrentUser aggregation |
 | 07-authorization.md | RBAC implementation |
 | 08-policy-and-guards.md | Authorization policies |
-| 09-server-api.md | Server APIs |
-| 10-client-api.md | Client APIs |
-| 11-extension-guide.md | Development guide |
-| 12-roadmap.md | Future evolution |
+| 09-public-api.md | Public APIs |
+| 10-package-reference.md | Package references |
+| 11-future-roadmap.md | Future evolution |
+| 12-development-guide.md | Development guide |
 
 ---
+
+# Document path
+
+docs/
+└── architecture/
+    └── auth/
+        ├── README.md => you're here
+        ├── 01-overview.md
+        ├── 02-directory-structure.md
+        ├── 03-authentication.md 
+        ├── 04-session-lifecycle.md
+        ├── 05-identity.md
+        ├── 06-current-user.md
+        ├── 07-authorization.md
+        ├── 08-policy-and-guards.md
+        ├── 09-public-api.md
+        ├── 10-package-reference.md
+        ├── 11-futre-roadmap.md
+        └── 12-development-guidelines.md
 
 # Core Principles
 

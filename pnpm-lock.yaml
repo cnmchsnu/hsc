@@ -152,6 +152,9 @@ importers:
 
   packages/auth:
     dependencies:
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../database
       '@supabase/ssr':
         specifier: ^0.12.0
         version: 0.12.0(@supabase/supabase-js@2.108.2)
@@ -177,6 +180,12 @@ importers:
       '@types/react':
         specifier: ^19.2.17
         version: 19.2.17
+
+  packages/commerce:
+    dependencies:
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../database
 
   packages/database:
     dependencies:

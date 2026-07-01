@@ -6,7 +6,7 @@ export class PermissionDeniedError
     ) {
 
         super(
-            `Permission denied: ${permission}`,
+            `Permission denied: ${permissions}`,
         );
 
         this.name =
