@@ -8,6 +8,8 @@ import type {
     UserProfile,
 } from "../types";
 
+import { can } from '../ability';
+
 export function toCurrentUser(
     authUser: AuthUser,
     profile: UserProfile,
@@ -25,6 +27,9 @@ export function toCurrentUser(
             authUser.user_metadata.full_name?.toString() ??
             authUser.email?.split("@")[0],
 
+        studentId:
+            profile.studentId ?? null,
+
         avatarUrl: 
             profile.avatarUrl ??
             authUser.user_metadata.avatar_url?.toString() ??
@@ -33,11 +38,8 @@ export function toCurrentUser(
         classification: 
             profile.finalClassification,
 
-        permissions:
-            authorization.permissions,
-        
-        roles:
-            authorization.roles,
+        authorization: 
+            authorization,
             
 
     };
@@ -45,10 +47,15 @@ export function toCurrentUser(
 
 export function toSyncProfileInput(
     user: User,
+    isInternal: boolean,
 ): SyncProfileInput {
     return {
         DisplayName:
             user.user_metadata.full_name ??
+            null,
+
+        StudentId:
+            (isInternal ? user.email?.replace("@gs.hs.ntnu.edu.tw", "") : null ) ?? //setting Update
             null,
 
         AvatarUrl:

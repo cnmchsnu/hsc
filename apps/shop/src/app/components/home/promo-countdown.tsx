@@ -1,5 +1,7 @@
 'use client';
+
 import { useEffect, useState } from "react";
+import { useOneTap } from "@repo/database/auth";
 
 interface Countdown {
   hours: string;
@@ -8,6 +10,9 @@ interface Countdown {
 }
 
 export function PromoCountdown() {
+    useOneTap({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!, 
+    })
 
     const [countdown, setCountdown] = useState<Countdown>({
         hours: "00",

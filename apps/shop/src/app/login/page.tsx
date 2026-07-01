@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/button";
 import { useOneTap, signInWithGoogle } from "@repo/database/auth"; // Import the Google sign-in function
 
 
-export default function LoginPage() {
+export default async function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +44,7 @@ const handleGoogleLogin = async () => {
     } finally {
       setIsLoading(false)
     }
-  }
+}
 
 
 
