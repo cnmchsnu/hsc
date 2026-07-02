@@ -18,4 +18,8 @@ export interface ProductCategoryRepository {
         
     ): Promise<string | null>;
 
+    listPrimaryCategories(
+        productIds: readonly string[],
+    ): Promise<ReadonlyMap<string, string>>;
+
 }

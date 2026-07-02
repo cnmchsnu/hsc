@@ -13,7 +13,7 @@ export interface CategoryRepository {
     list(): Promise<Category[]>;
 
     findManyByIds(
-        ids: string[],
+        ids: readonly string[],
     ): Promise<Category[]>;
 
     

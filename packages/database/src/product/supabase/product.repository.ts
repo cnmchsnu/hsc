@@ -9,7 +9,7 @@ import type {
 import type {
     ProductRepository,
 } from "../interfaces/";
-import { toProduct, toImage } from "../mappers/";
+import { toProduct } from "../mappers/";
 
 
 export class SupabaseProductRepository
@@ -42,6 +42,24 @@ export class SupabaseProductRepository
                     options.status,
                 );
 
+        }
+
+        if (options.categoryIds?.length) {
+
+            query =
+                query.in(
+                    "category_id",
+                    options.categoryIds,
+                );
+        }
+
+        if (options.productIds?.length) {
+
+            query =
+                query.in(
+                    "id",
+                    options.productIds,
+                );
         }
 
         if (options.keyword) {
@@ -196,23 +214,6 @@ export class SupabaseProductRepository
 
         };
 
-    }
-
-    async getImage(
-        id: string,
-    ) {
-        const { data, error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .select("*")
-            .eq("id", id)
-            .maybeSingle();
-        
-        if (error) {
-            throw error;
-        }
-
-        return data.map(toImage);
     }
 
 }

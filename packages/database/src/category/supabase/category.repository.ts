@@ -28,7 +28,7 @@ export class SupabaseCategoryRepository
                 .single();
 
             if (error) {
-                throw new Error(`Error fetching category: ${error.message}`);
+                throw error;
             }
 
             if (!data) {
@@ -49,7 +49,7 @@ export class SupabaseCategoryRepository
                 .single();
 
             if (error) {
-                throw new Error(`Error fetching category: ${error.message}`);
+                throw error;
             }
 
             if (!data) {
@@ -66,23 +66,33 @@ export class SupabaseCategoryRepository
                 .select("*");  
 
             if (error) {
-                throw new Error(`Error fetching categories: ${error.message}`);
+                throw error;
             }
 
             return data.map(toCategory);
         }
 
         async findManyByIds(
-            ids: string[],
+            ids: readonly string[],
         ): Promise<Category[]> {
-            const { data, error } = await this.client
+
+            if (ids.length === 0) {
+                return [];
+            }
+
+            const {
+                data, error
+            } = await this.client
                 .schema("commerce")
                 .from("categories")
                 .select("*")
-                .in("id", ids);
+                .in(
+                    "id", 
+                    [...ids]
+                );
 
             if (error) {
-                throw new Error(`Error fetching categories: ${error.message}`);
+                throw error;
             }
 
             return data.map(toCategory);

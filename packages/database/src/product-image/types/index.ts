@@ -1,0 +1,1 @@
+export { ProductImageRow } from "./product-image-row";

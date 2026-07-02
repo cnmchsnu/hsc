@@ -1,15 +1,4 @@
-import type { ProductStatus , ProductCategory } from "@repo/commerce/product";
-
-export interface ProductImageRow {
-
-    id: string;
-
-    storage_path: string;
-
-    display_order: number;
-}
-
-
+import type { ProductStatus } from "@repo/commerce/product";
 
 export interface ProductRow {
 
@@ -23,12 +12,8 @@ export interface ProductRow {
 
     status: ProductStatus;
 
-    categories: ProductCategory | null;
-
     price: number;
 
     compare_at_price: number | null;
-
-    product_images: ProductImageRow[];
 
 }

@@ -59,4 +59,51 @@ export class SupabaseProductCategoryRepository
 
             return data?.category_id || null;
         }
+
+        async listPrimaryCategories(
+            productIds: readonly string[],
+        ): Promise<ReadonlyMap<string, string>> {
+
+            if (productIds.length === 0) {
+                return new Map();
+            }
+
+            const {
+                data,
+                error,
+            } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select(`
+                    product_id,
+                    category_id
+                `)
+                .in(
+                    "product_id",
+                    [...productIds],
+                )
+                .eq(
+                    "display_order",
+                    0,
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            const result =
+                new Map<string, string>();
+
+            for (const row of data) {
+
+                result.set(
+                    row.product_id,
+                    row.category_id,
+                );
+
+            }
+
+            return result;
+
+        }
 }

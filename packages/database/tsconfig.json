@@ -6,6 +6,7 @@
       "@repo/auth": ["../auth/src/index.ts"],
       "@repo/commerce/product": ["../commerce/src/product/index.ts"],
       "@repo/commerce/category": ["../commerce/src/category/index.ts"],
+      "@repo/commerce/product-image": ["../commerce/src/product-image/index.ts"],
     },
   }
 }

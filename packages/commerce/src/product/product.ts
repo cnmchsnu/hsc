@@ -3,17 +3,6 @@ export type ProductStatus =
     | "active"
     | "archived";
 
-export interface ProductImage {
-
-    id: string;
-
-    url: string;
-
-    alt: string | null;
-
-    sortOrder: number;
-}
-
 
 export interface ProductCategory {
 
@@ -37,13 +26,9 @@ export interface Product {
 
     status: ProductStatus;
 
-    categories: ProductCategory[] | null;
-
     price: number;
 
     compareAtPrice: number | null;
-
-    images: ProductImage[];
 }
 
 export interface ProductList {
@@ -76,6 +61,8 @@ export interface ProductListOptions {
     keyword?: string;
 
     categoryIds?: string[];
+
+    productIds?: string[];
 
     status?: ProductStatus[];
 

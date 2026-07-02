@@ -1,7 +1,6 @@
 import { createBrowserClient as createSSRBrowserClient } from '@supabase/ssr'
 
 export const createBrowserClient = () => {
-  console.log('====== BROWSER CLIENT ENV TEST ======')
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
