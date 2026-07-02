@@ -352,11 +352,17 @@ Product master.
 ```sql
 id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
 
+category_id         UUID REFERENCES commerce.categories(id) ON DELETE SET NULL
+
+slug                TEXT NOT NULL UNIQUE
+
 name                TEXT NOT NULL
 
 description         TEXT
 
 price               INTEGER NOT NULL
+
+compare_at_price    INTEGER
 
 currency            TEXT NOT NULL DEFAULT 'TWD'
 
@@ -375,6 +381,8 @@ Status
 
 ```
 active
+
+draft
 
 inactive
 ```
@@ -413,6 +421,59 @@ price               INTEGER NOT NULL
 metadata            JSONB NOT NULL DEFAULT '{}'::jsonb
 
 created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+```
+
+---
+
+## commerce.categories
+
+Product category.
+```sql
+
+id                  UUID PRIMARY KEY DEFAULT gen_random_uuid()
+
+parent_id           UUID REFERENCES commerce.categories(id) ON DELETE SET NULL
+
+name                TEXT NOT NULL
+
+slug                TEXT NOT NULL UNIQUE
+
+description         TEXT
+
+display_order       INTEGER NOT NULL DEFAULT 0
+
+status              TEXT NOT NULL DEFAULT 'active'
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+```
+
+Status
+
+```
+active
+
+inactive
+```
+
+---
+
+## commerce.product_categories
+
+Product ↔ Category mapping.
+
+```sql
+product_id          UUID NOT NULL REFERENCES commerce.products(id) ON DELETE CASCADE
+
+category_id         UUID NOT NULL REFERENCES commerce.categories(id) ON DELETE CASCADE
+
+display_order       INTEGER NOT NULL DEFAULT 0
+
+created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+
+PRIMARY KEY (product_id, category_id)
 ```
 
 ---

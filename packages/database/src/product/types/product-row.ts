@@ -1,4 +1,4 @@
-import type { ProductStatus } from "@repo/commerce/types";
+import type { ProductStatus , ProductCategory} from "@repo/commerce/product";
 
 export interface ProductImageRow {
 
@@ -23,7 +23,7 @@ export interface ProductRow {
 
     status: ProductStatus;
 
-    category_id: string | null;
+    categories: ProductCategory | null;
 
     price: number;
 

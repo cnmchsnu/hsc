@@ -1,12 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
-    Product,
-} from "@repo/commerce/types";
+    ProductList,
+    ProductListOptions,
+} from "@repo/commerce/product";
+
 
 import type {
     ProductRepository,
 } from "../interfaces/";
+import { toProduct } from "../mappers";
+
 
 export class SupabaseProductRepository
     implements ProductRepository {
@@ -15,11 +19,115 @@ export class SupabaseProductRepository
         private readonly client: SupabaseClient,
     ) {}
 
+    private createListQuery(
+        options: ProductListOptions,
+    ) {
+
+        let query =
+            this.client
+                .schema("commerce")
+                .from("products")
+                .select(
+                    "*",
+                    {
+                        count: "exact",
+                    },
+                );
+
+        if (options.status?.length) {
+
+            query =
+                query.in(
+                    "status",
+                    options.status,
+                );
+
+        }
+
+        if (options.keyword) {
+
+            query =
+                query.ilike(
+                    "name",
+                    `%${options.keyword}%`,
+                );
+
+        }
+
+        switch (options.sort) {
+
+            case "price-asc":
+
+                query =
+                    query.order(
+                        "price",
+                        {
+                            ascending: true,
+                        },
+                    );
+
+                break;
+
+            case "price-desc":
+
+                query =
+                    query.order(
+                        "price",
+                        {
+                            ascending: false,
+                        },
+                    );
+
+                break;
+
+            case "oldest":
+
+                query =
+                    query.order(
+                        "created_at",
+                        {
+                            ascending: true,
+                        },
+                    );
+
+                break;
+
+            default:
+
+                query =
+                    query.order(
+                        "created_at",
+                        {
+                            ascending: false,
+                        },
+                    );
+
+        }
+
+        const from =
+            (options.page - 1)
+            * options.pageSize;
+
+        query =
+            query.range(
+                from,
+                from + options.pageSize - 1,
+            );
+
+        return query;
+
+    }
+
+
     async findById(
         id: string,
     ) {
-        const { data, error } = await this.client
-            .from("commerce")
+
+        const commerceClient =
+            this.client.schema("commerce");
+        
+        const { data, error } = await commerceClient
+            .from("products")
             .select(`
                 *, 
                 product_images(*)
@@ -38,73 +146,57 @@ export class SupabaseProductRepository
         return data;
     }
 
-    // async findBySlug(
-    //     slug: string,
-    // ){
-    //     const { data, error } = await this.client
-    //         .from("commerce")
-    //         .select(`
-    //             *, 
-    //             product_images(*)
-    //         `)
-    //         .eq("slug", slug)
-    //         .maybeSingle();
-    // }
+    async findBySlug(
+        slug: string,
+    ){
+        const { data, error } = await this.client
+            .from("commerce")
+            .select(`
+                *, 
+                product_images(*)
+            `)
+            .eq("slug", slug)
+            .maybeSingle();
+        if (error) {
+            throw new Error(error.message);
+        }
+        return data;
+    }
 
-    // async list(): Promise<Product[]> {
-    //     const { data, error } = await this.client
-    //         .from("commerce")
-    //         .select(`
-    //             *, 
-    //             product_images(*)
-    //         `);
+    async list(
+        options: ProductListOptions,
+    ): Promise<ProductList> {
 
-    //     if (error) {
-    //         throw new Error(error.message);
-    //     }
+        const query =
+            this.createListQuery(options);
 
-    //     return data;
-    // }
+        const {
+            data,
+            error,
+            count,
+        } = await query;
 
-    // async search(
-    //     keyword: string,
-    // ): Promise<Product[]> {
-    //     const { data, error } = await this.client
-    //         .from("commerce")
-    //         .select(`
-    //             *, 
-    //             product_images(*)
-    //         `)
-    //         .ilike("name", `%${keyword}%`);
+        if (error) {
+            throw error;
+        }
 
-    //     if (error) {
-    //         throw new Error(error.message);
-    //     }
+        return {
 
-    //     return data;
-    // }
+            items:
+                data.map(toProduct),
 
-    // async create(
-    //     product: Product,
-    // ): Promise<void> {
-    //     const { error } = await this.client
-    //         .from("commerce")
-    //         .insert(product);
+            total:
+                count ?? 0,
 
-    //     if (error) {
-    //         throw new Error(error.message);
-    //     }
-    // }
+            page:
+                options.page,
 
-    // async update(
-    //     product: Product,
-    // ): Promise<void> {
-    //     const { error } = await this.client
-    //         .from("commerce")
-    //         .update(product)
-    //         .eq("id", product.id);
-    //     if (error) {
-    //         throw new Error(error.message);
-    //     }
-    // }
+            pageSize:
+                options.pageSize,
+
+        };
+
+    }
+
+
 }

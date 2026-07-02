@@ -1,6 +1,6 @@
 import type {
     UpdateProfileInput,
-} from "@repo/auth/types";
+} from "../../../../auth/src/types";
 
 export function fromUpdateProfileInput(
     input: UpdateProfileInput,

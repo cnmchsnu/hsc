@@ -1,4 +1,4 @@
-import type { UserProfile } from "@repo/auth/types";
+import type { UserProfile } from "../../../../auth/src/types";
 
 import type { UserProfileRow } from "../types";
 

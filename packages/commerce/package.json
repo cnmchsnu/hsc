@@ -2,13 +2,20 @@
     "name": "@repo/commerce",
     "private": true,
     "dependencies": {
-        "@repo/database": "workspace:*"
+        "@repo/database": "workspace:*",
+        "@supabase/postgrest-js": "^2.109.0",
+        "@supabase/supabase-js": "^2.108.2"
     },
     "exports": {
         ".": "./src/index.ts",
         "./types": {
             "types": "./src/types/index.ts"
         },
-        "./product": "./src/product/index.ts"
+        "./product": {
+            "default": "./src/product/index.ts",
+            "types": "./src/product/types.ts",
+            "imports": "./src/product/index.ts"
+        },
+        "./server": "./src/server/index.ts"
     }
 }
