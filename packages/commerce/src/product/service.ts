@@ -1,7 +1,6 @@
-import type { Product, ProductList, ProductListOptions } from './types';
+import type { Product, ProductList, ProductListOptions } from './product';
 import { ProductRepository } from '@repo/database/product';
 import { ProductNotFoundError } from './errors';
-import { list } from 'postcss/lib/postcss';
 
     
 export interface ProductService {

@@ -1,5 +1,5 @@
-import { createCommerceContainer } from '../container';
-import type { Product } from '../product';
+import { createCommerceContainer } from '../../container';
+import type { Product } from '../../product';
 
 export async function getProduct(
     id: string,

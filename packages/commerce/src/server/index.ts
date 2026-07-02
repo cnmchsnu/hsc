@@ -1,1 +1,2 @@
-export { getProduct } from './get-product';
+export * from './product';
+export * from './category';

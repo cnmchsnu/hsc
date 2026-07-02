@@ -1,5 +1,5 @@
 import type { ProductRow } from "@repo/database/product";
-import type { Product } from "./types";
+import type { Product } from "./product";
 
 export function toProduct(
     row: ProductRow,

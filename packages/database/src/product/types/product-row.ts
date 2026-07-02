@@ -1,4 +1,4 @@
-import type { ProductStatus , ProductCategory} from "@repo/commerce/product";
+import type { ProductStatus , ProductCategory } from "@repo/commerce/product";
 
 export interface ProductImageRow {
 

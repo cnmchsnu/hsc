@@ -1,0 +1,1 @@
+export { SupabaseCategoryRepository } from './category.repository';

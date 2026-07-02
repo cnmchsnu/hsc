@@ -19,6 +19,7 @@
         "./auth": "./src/authentication/index.ts",
         "./authorization": "./src/authorization/index.ts",
         "./product": "./src/product/index.ts",
-        "./generated": "./src/generated/index.ts"
+        "./generated": "./src/generated/index.ts",
+        "./category": "./src/category/index.ts"
     }
 }

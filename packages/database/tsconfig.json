@@ -5,6 +5,7 @@
       "@repo/auth/types": ["../auth/src/types/index.ts"],
       "@repo/auth": ["../auth/src/index.ts"],
       "@repo/commerce/product": ["../commerce/src/product/index.ts"],
+      "@repo/commerce/category": ["../commerce/src/category/index.ts"],
     },
   }
 }

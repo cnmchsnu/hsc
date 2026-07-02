@@ -1,5 +1,5 @@
-import { createCommerceContainer } from '../container';
-import type { ProductList, ProductListOptions } from '../product';
+import { createCommerceContainer } from '../../container';
+import type { ProductList, ProductListOptions } from '../../product';
 
 export async function getProducts(
     options: ProductListOptions
