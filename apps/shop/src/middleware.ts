@@ -5,6 +5,8 @@ import { updateSession } from "@repo/database/middleware";
 export async function middleware(
     request: NextRequest,
 ) {
+    console.log("====== MIDDLEWARE ENV TEST ======");
+    console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
     return updateSession(request);
 }
 
