@@ -1,0 +1,1 @@
+export { toProductImage } from "./mapper";

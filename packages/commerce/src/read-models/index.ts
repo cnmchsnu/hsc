@@ -1,1 +1,0 @@
-export { createCommerceService, CommerceService } from './service';

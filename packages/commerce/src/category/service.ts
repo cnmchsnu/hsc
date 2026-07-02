@@ -53,6 +53,10 @@ export interface CategoryService {
         id: string,
     ): Promise<Category | null>;
 
+    getByIds(
+        ids: readonly string[],
+    ): Promise<Category[]>;
+
     getBySlug(
         slug: string,
     ): Promise<Category | null>;
@@ -68,8 +72,10 @@ export interface CategoryService {
     ): Promise<Breadcrumb[]>;
 
     getByIds(
-        ids: string[],
+        ids: readonly string[],
     ): Promise<Category[]>;
+
+    
 
 }
 
@@ -89,6 +95,16 @@ export function createCategoryService(
             }
             
             return category;
+        },
+
+        async getByIds(
+            ids: string[],
+        ) {
+            if (ids.length === 0) {
+                return [];
+            }
+
+            return await repository.findManyByIds(ids);
         },
 
         async getBySlug(slug) {
@@ -175,18 +191,6 @@ export function createCategoryService(
             }
 
             return graph.roots.filter((root) => root.category.status === "active");
-        },
-
-        async getByIds(
-            ids: string[],
-        ) {
-            const categories = await repository.findManyByIds(ids);
-
-            if (!categories) {
-                throw new CategoryNotFoundError("ids");
-            }
-
-            return categories;
         }
 
     };

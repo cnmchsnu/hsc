@@ -1,4 +1,4 @@
-import type { Product, ProductImage, ProductList, ProductListOptions } from "@repo/commerce/product";
+import type { Product, ProductList, ProductListOptions } from "@repo/commerce/product";
 
 export interface ProductRepository {
 
@@ -14,8 +14,5 @@ export interface ProductRepository {
         options: ProductListOptions,
     ): Promise<ProductList>;
 
-    getImage(
-        id: string
-    ): Promise<ProductImage[]>;
 
 }

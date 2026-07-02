@@ -1,5 +1,5 @@
 import { createCommerceContainer } from '../../container';
-import { ProductDetail } from '../../read-models/read-models';
+import { ProductDetail } from '../../product-category';
 
 export async function getProductDetail(
     id: string,

@@ -1,0 +1,1 @@
+export { ProductImageRepository } from './product-image-repo';

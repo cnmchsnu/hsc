@@ -1,5 +1,5 @@
 import { createCommerceContainer } from '../../container';
-import { CategoryPage } from '../../read-models/read-models';
+import { CategoryPage } from '../../product-category';
 
 export async function getCategoryPage(
     slug: string,

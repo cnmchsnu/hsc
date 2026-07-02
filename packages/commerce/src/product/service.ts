@@ -1,4 +1,4 @@
-import type { Product, ProductImage, ProductList, ProductListOptions } from './product';
+import type { Product, ProductList, ProductListOptions } from './product';
 import { ProductRepository } from '@repo/database/product';
 import { ProductNotFoundError } from '../errors';
 
@@ -16,11 +16,6 @@ export interface ProductService {
     list(
         options: ProductListOptions,
     ): Promise<ProductList>;
-
-    getImage(
-        id: string,
-    ): Promise<ProductImage[]>;
-
 }
 
 
@@ -67,20 +62,7 @@ export function createProductService(
 
             return list;
 
-        },
-
-        async getImage(id) {
-
-            const image =
-                await repository.getImage(id);
-            
-            if (!image) {
-                throw new ProductNotFoundError(id);
-            }
-
-            return image;
-        },
-
+        }
     
     };
 

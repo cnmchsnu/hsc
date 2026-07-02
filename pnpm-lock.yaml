@@ -21,6 +21,9 @@ importers:
       '@supabase/ssr':
         specifier: ^0.12.0
         version: 0.12.0(@supabase/supabase-js@2.108.2)
+      '@types/node':
+        specifier: ^20.19.43
+        version: 20.19.43
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
