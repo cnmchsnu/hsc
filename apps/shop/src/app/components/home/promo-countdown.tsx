@@ -11,7 +11,7 @@ interface Countdown {
 
 export function PromoCountdown() {
     useOneTap({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!, 
+      clientId: process.env.GOOGLE_CLIENT_ID!, 
     })
 
     const [countdown, setCountdown] = useState<Countdown>({
