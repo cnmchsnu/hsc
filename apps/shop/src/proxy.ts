@@ -5,9 +5,7 @@ import { updateSession } from "@repo/database/proxy";
 export async function proxy(
     request: NextRequest,
 ) {
-    console.log("====== MIDDLEWARE ENV TEST ======");
-    console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-    return updateSession(request);
+    return updateSession(request, process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
 }
 
 export const config = {
