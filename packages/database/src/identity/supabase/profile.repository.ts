@@ -4,7 +4,7 @@ import type {
     CreateProfileInput,
     UpdateProfileInput,
     UserProfile,
-} from "@repo/auth/types";
+} from "../../../../auth/src/types";
 
 import type {
     ProfileRepository,

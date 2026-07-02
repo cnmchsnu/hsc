@@ -2,7 +2,7 @@ import type {
     CreateProfileInput,
     UpdateProfileInput,
     UserProfile,
-} from "@repo/auth/types";
+} from "../../../../auth/src/types";
     
 export interface ProfileRepository {
     findByUserId(

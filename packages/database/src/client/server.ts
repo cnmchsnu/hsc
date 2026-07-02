@@ -3,11 +3,11 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
 export async function createServerClient() {
+    console.log("====== SERVER CLIENT ENV TEST ======");
     const cookieStore = await cookies();
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
     return createSSRServerClient(
         supabaseUrl!,

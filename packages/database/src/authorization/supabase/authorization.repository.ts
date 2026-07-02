@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { AuthorizationRepository } from "./authorization-repo";
-import { Authorization } from "../../../auth/src/types/authorization";
+import type { AuthorizationRepository } from "../interface";
+import { Authorization } from "../../../../auth/src/types";
 
 export class SupabaseAuthorizationRepository
     implements AuthorizationRepository {

@@ -7,18 +7,20 @@
         "@types/react-dom": "^19.2.3",
         "next": "16.2.9",
         "react": "19.2.4",
+        "@types/google.accounts": "^0.0.18",
         "server-only": "^0.0.1"
     },
     "exports": {
         ".": "./src/index.ts",
-        "./middleware": "./src/client/middleware.ts",
+        "./proxy": "./src/client/proxy.ts",
         "./client/browser": "./src/client/browser.ts",
         "./client/server": "./src/client/server.ts",
         "./identity": "./src/identity/index.ts",
         "./auth": "./src/authentication/index.ts",
-        "./authorization": "./src/authorization/index.ts"
-    },
-    "devDependencies": {
-        "@types/google.accounts": "^0.0.18"
+        "./authorization": "./src/authorization/index.ts",
+        "./product": "./src/product/index.ts",
+        "./generated": "./src/generated/index.ts",
+        "./category": "./src/category/index.ts",
+        "./product-category": "./src/product-category/index.ts"
     }
 }

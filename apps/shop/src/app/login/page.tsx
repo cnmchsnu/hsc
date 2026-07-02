@@ -21,7 +21,7 @@ export default async function LoginPage() {
 
 
   useOneTap({
-    clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!, 
+    clientId: process.env.GOOGLE_CLIENT_ID!, 
   })
 
   const handleSubmit = (e: React.FormEvent) => {

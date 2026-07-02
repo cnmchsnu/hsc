@@ -1,0 +1,1 @@
+export { ProductCategoryRepository } from './product-category-repo';

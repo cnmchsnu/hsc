@@ -1,0 +1,1 @@
+export { SupabaseAuthorizationRepository } from './authorization.repository';

@@ -8,8 +8,6 @@ import type {
     UserProfile,
 } from "../types";
 
-import { can } from '../ability';
-
 export function toCurrentUser(
     authUser: AuthUser,
     profile: UserProfile,

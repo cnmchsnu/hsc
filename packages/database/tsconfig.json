@@ -2,7 +2,10 @@
   "compilerOptions": {
     "paths": {
       // 告訴 TS：當 A 看到這個路徑時，直接去隔壁資料夾讀取 .ts 檔，不要走 node_modules
-      "@repo/auth/types": ["../auth/src/types/index.ts"]
+      "@repo/auth/types": ["../auth/src/types/index.ts"],
+      "@repo/auth": ["../auth/src/index.ts"],
+      "@repo/commerce/product": ["../commerce/src/product/index.ts"],
+      "@repo/commerce/category": ["../commerce/src/category/index.ts"],
     },
   }
 }

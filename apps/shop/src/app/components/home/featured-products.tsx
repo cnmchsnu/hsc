@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function FeaturedProducts() {
 
-     const featuredProducts = [
+    const featuredProducts = [
     {
       id: 1,
       name: "經典校徽 100% 純棉 Tee",

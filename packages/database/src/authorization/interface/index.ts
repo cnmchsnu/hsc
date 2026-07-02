@@ -1,0 +1,1 @@
+export type { AuthorizationRepository } from './authorization-repo';
