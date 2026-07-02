@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 
 export async function createServerClient() {
+    console.log("====== SERVER CLIENT ENV TEST ======");
     const cookieStore = await cookies();
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

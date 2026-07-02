@@ -1,6 +1,7 @@
 import { createBrowserClient as createSSRBrowserClient } from "@supabase/ssr";
 
 export const createClient = () => {
+  console.log("====== BROWSER CLIENT ENV TEST ======");
   // ⭕ 把讀取變數的邏輯移到函式內部
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
