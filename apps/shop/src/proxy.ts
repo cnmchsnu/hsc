@@ -5,7 +5,7 @@ import { updateSession } from "@repo/database/proxy";
 export async function proxy(
     request: NextRequest,
 ) {
-    return updateSession(request, process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+    return updateSession(request);
 }
 
 export const config = {
