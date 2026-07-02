@@ -72,4 +72,20 @@ export class SupabaseCategoryRepository
             return data.map(toCategory);
         }
 
+        async findManyByIds(
+            ids: string[],
+        ): Promise<Category[]> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("categories")
+                .select("*")
+                .in("id", ids);
+
+            if (error) {
+                throw new Error(`Error fetching categories: ${error.message}`);
+            }
+
+            return data.map(toCategory);
+        }
+
     }

@@ -1,4 +1,4 @@
-import type { Authorization } from "../../../auth/src/types";
+import type { Authorization } from "../../../../auth/src/types";
 
 export interface AuthorizationRepository {
 

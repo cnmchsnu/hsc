@@ -9,7 +9,7 @@ import type {
 import type {
     ProductRepository,
 } from "../interfaces/";
-import { toProduct } from "../mappers";
+import { toProduct, toImage } from "../mappers/";
 
 
 export class SupabaseProductRepository
@@ -198,5 +198,21 @@ export class SupabaseProductRepository
 
     }
 
+    async getImage(
+        id: string,
+    ) {
+        const { data, error } = await this.client
+            .schema("commerce")
+            .from("product_images")
+            .select("*")
+            .eq("id", id)
+            .maybeSingle();
+        
+        if (error) {
+            throw error;
+        }
+
+        return data.map(toImage);
+    }
 
 }

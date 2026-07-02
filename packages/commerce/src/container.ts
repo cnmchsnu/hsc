@@ -3,18 +3,23 @@ import { createServerClient } from '@repo/database/client/server';
 
 import { SupabaseProductRepository } from '@repo/database/product';
 import { SupabaseCategoryRepository } from '@repo/database/category';
+import { SupabaseProductCategoryRepository } from '@repo/database/product-category';
 
 import { createProductService, ProductService } from './product/service';
 import { createCategoryService, CategoryService } from './category/service';
+import { createCommerceService, CommerceService } from './read-models/service';
 
 export interface CommerceContainer {
 
     productService: ProductService;
+
     categoryService: CategoryService;
+
+    commerceService: CommerceService;
 
 }
 
-export async function createCommerceContainer() {
+export async function createCommerceContainer(): Promise<CommerceContainer> {
 
     const client = 
         await createServerClient();
@@ -24,6 +29,9 @@ export async function createCommerceContainer() {
 
     const categoryRepository =
         new SupabaseCategoryRepository(client);
+
+    const productCategoryRepository =
+        new SupabaseProductCategoryRepository(client);
 
     const productService =
         createProductService(
@@ -35,15 +43,20 @@ export async function createCommerceContainer() {
             categoryRepository,
         );
 
-    return {
+    const commerceService =
+        createCommerceService({
+            productService,
+            categoryService,
+            productCategoryRepository,
+        });
 
-        client,
+    return {
 
         productService,
 
-        productRepository,
-
         categoryService,
+
+        commerceService,
 
     };
 

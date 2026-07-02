@@ -1,6 +1,6 @@
 import type { Category, CategoryTree, Breadcrumb, CategoryGraph } from "./category";
 import type { CategoryRepository } from "@repo/database/category";
-import { CategoryNotFoundError, CategoryTreeError } from "./errors";
+import { CategoryNotFoundError, CategoryTreeError } from "../errors";
     
 
 
@@ -66,6 +66,10 @@ export interface CategoryService {
     getBreadcrumb(
         slug: string,
     ): Promise<Breadcrumb[]>;
+
+    getByIds(
+        ids: string[],
+    ): Promise<Category[]>;
 
 }
 
@@ -171,6 +175,18 @@ export function createCategoryService(
             }
 
             return graph.roots.filter((root) => root.category.status === "active");
+        },
+
+        async getByIds(
+            ids: string[],
+        ) {
+            const categories = await repository.findManyByIds(ids);
+
+            if (!categories) {
+                throw new CategoryNotFoundError("ids");
+            }
+
+            return categories;
         }
 
     };

@@ -1,1 +1,1 @@
-export { toProduct } from "./mapper";
+export { toProduct, toImage } from "./mapper";

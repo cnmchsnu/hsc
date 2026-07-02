@@ -25,3 +25,17 @@ export function toProduct(data: any) {
         })),
     };
 }
+
+export function toImage(data: any) {
+    return {
+
+        id: data.id,
+
+        url: data.storage_path,
+
+        alt: null,
+
+        sortOrder: data.display_order,
+
+    };
+}
