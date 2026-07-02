@@ -6,14 +6,9 @@ import {
   PromoCountdown
 } from "./components/home"
 
-interface Countdown {
-  hours: string;
-  minutes: string;
-  seconds: string;
-}
-
 export default async function Home() {
 
+  console.log("CHECK ENV:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   return (
     <div className="flex-grow flex flex-col">
