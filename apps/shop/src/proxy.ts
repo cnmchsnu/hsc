@@ -1,8 +1,8 @@
 import { type NextRequest } from "next/server";
 
-import { updateSession } from "@repo/database/middleware";
+import { updateSession } from "@repo/database/proxy";
 
-export async function middleware(
+export async function proxy(
     request: NextRequest,
 ) {
     console.log("====== MIDDLEWARE ENV TEST ======");

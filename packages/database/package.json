@@ -12,7 +12,7 @@
     },
     "exports": {
         ".": "./src/index.ts",
-        "./middleware": "./src/client/middleware.ts",
+        "./proxy": "./src/client/proxy.ts",
         "./client/browser": "./src/client/browser.ts",
         "./client/server": "./src/client/server.ts",
         "./identity": "./src/identity/index.ts",
