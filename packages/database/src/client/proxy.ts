@@ -7,8 +7,6 @@ export async function updateSession(
     supabaseAnonKey: string,
 ): Promise<NextResponse> {
 
-    console.log("====== MIDDLEWARE ENV TEST ======");
-    console.log("URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
     let response = NextResponse.next({
         request,
