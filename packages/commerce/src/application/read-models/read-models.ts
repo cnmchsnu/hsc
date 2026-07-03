@@ -1,6 +1,6 @@
-import type { Product } from '../product';
-import type { ProductImage } from '../product-image';
-import type { Category, Breadcrumb, CategoryTree } from '../category';
+import type { Product } from '../../product';
+import type { ProductImage } from '../../product-image';
+import type { Category, Breadcrumb } from '../../category';
 
 
 export interface ProductSummary {
@@ -34,5 +34,13 @@ export interface CategoryPage {
     breadcrumb: Breadcrumb[];
 
     tree: CategoryTree[];
+
+}
+
+export interface CategoryTree {
+
+    category: Category;
+
+    children: CategoryTree[];
 
 }

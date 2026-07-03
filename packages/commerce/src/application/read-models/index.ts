@@ -1,0 +1,1 @@
+export { CategoryPage, ProductDetail, ProductSummary } from './read-models';
