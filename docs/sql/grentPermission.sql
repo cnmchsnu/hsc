@@ -21,3 +21,6 @@ TO authenticated;
 GRANT ALL
 ON ALL TABLES IN SCHEMA commerce
 TO service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA commerce
+GRANT SELECT ON TABLES TO anon, authenticated;

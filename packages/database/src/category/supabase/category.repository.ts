@@ -98,4 +98,29 @@ export class SupabaseCategoryRepository
             return data.map(toCategory);
         }
 
-    }
+        
+        async findPathToRoot(
+            categoryId: string,
+        ): Promise<Category[]> {
+
+            const {
+                data,
+                error,
+            } = await this.client
+                .schema("commerce")
+                .rpc(
+                    "get_category_path",
+                    {
+                        p_category_id: categoryId,
+                    },
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            return data.map(toCategory);
+        }
+
+
+}

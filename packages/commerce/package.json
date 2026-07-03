@@ -26,6 +26,11 @@
             "types": "./src/product-image/types.ts",
             "imports": "./src/product-image/index.ts"
         },
+        "./product-category": {
+            "default": "./src/product-category/index.ts",
+            "types": "./src/product-category/types.ts",
+            "imports": "./src/product-category/index.ts"
+        },
         "./server": "./src/server/index.ts"
     }
 }

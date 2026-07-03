@@ -1,2 +1,2 @@
-export { createCommerceService, CommerceService } from './service';
-export { CategoryPage, ProductDetail, ProductSummary } from './product-category';
+export { createCommerceService, type CommerceService } from './service';
+export type { CategoryPage, ProductDetail, ProductSummary } from './product-category';

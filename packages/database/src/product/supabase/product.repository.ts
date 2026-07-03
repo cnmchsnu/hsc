@@ -44,15 +44,6 @@ export class SupabaseProductRepository
 
         }
 
-        if (options.categoryIds?.length) {
-
-            query =
-                query.in(
-                    "category_id",
-                    options.categoryIds,
-                );
-        }
-
         if (options.productIds?.length) {
 
             query =

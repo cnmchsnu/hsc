@@ -818,4 +818,15 @@ Status:
 Date:
 2026-06-27
 
+---
+
+Design:
+@mockups/shop_productNotFound
+Converted To:
+Route: /products/[id]/not-found.tsx
+Status:
+[x]
+Date:
+2026-07-03
+
 

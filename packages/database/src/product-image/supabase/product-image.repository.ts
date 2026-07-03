@@ -80,7 +80,7 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return data;
+        return data.map(toProductImage);
     }
 
     async list_by_product_id(
@@ -102,7 +102,7 @@ export class SupabaseProductImageService
             return [];
         }
 
-        return data;
+        return data.map(toProductImage);
     }
 
     async get_thumbnail(
@@ -125,7 +125,7 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return data;
+        return data.map(toProductImage);
     }
 
     async get_primary(
@@ -148,7 +148,7 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return data;
+        return data.map(toProductImage);
     }
 
     async list_by_product_ids(

@@ -22,11 +22,11 @@ export interface ProductImageService {
 
     listByProductIds(
         ids: string[],
-    ): Promise<Map<string, readonly ProductImage[]>>;
+    ): Promise<ReadonlyMap<string, readonly ProductImage[]>>;
 
     listThumbnails(
         productIds: string[],
-    ): Promise<Map<string, ProductImage>>;
+    ): Promise<ReadonlyMap<string, ProductImage>>;
 
     // findByStorageKey(
     //     storageKey: string,

@@ -16,6 +16,10 @@ export interface CategoryRepository {
         ids: readonly string[],
     ): Promise<Category[]>;
 
+    findPathToRoot(
+        categoryId: string,
+    ): Promise<Category[]>;
+
     
 
 }

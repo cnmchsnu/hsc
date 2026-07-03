@@ -1,19 +1,20 @@
 'use client'
 
 import { signOut } from "@repo/database/auth"
-import { useRouter } from 'next/navigation';
 
 export function Actions() {
-    const router = useRouter();
+
+
     const handleSignOut = async () => {
       try {
         await signOut()
-        router.push('/login');
+        window.location.reload();
       } catch (error) {
         console.error('Google login failed:', error)
         alert('登入失敗，請稍後再試')
       }
     }
+
 
     return (
         <section className="bento-card bg-surface rounded-xl p-stack-md flex flex-col gap-2 border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">

@@ -24,22 +24,15 @@ USING (
 alter table commerce.products
 enable row level security;
 
-alter table commerce.products
-force row level security;
-
-
 alter table commerce.product_images
 enable row level security;
-
-alter table commerce.product_images
-force row level security;
-
 
 alter table commerce.categories
 enable row level security;
 
-alter table commerce.categories
-force row level security;
+alter table commerce.product_categories
+enable row level security;
+
 
 create policy "Public can read active products"
 on commerce.products
@@ -66,6 +59,45 @@ for select
 using (
     true
 );
+
+create policy "Public can read product category mappings"
+
+on commerce.product_categories
+
+for select
+
+to anon, authenticated
+
+using (
+
+    exists (
+
+        select 1
+
+        from commerce.products p
+
+        where p.id = product_categories.product_id
+
+          and p.status = 'active'
+
+    )
+
+    and
+
+    exists (
+
+        select 1
+
+        from commerce.categories c
+
+        where c.id = product_categories.category_id
+
+          and c.status = 'active'
+
+    )
+
+);
+
 
 CREATE POLICY "Users can read own cart"
 ON commerce.carts

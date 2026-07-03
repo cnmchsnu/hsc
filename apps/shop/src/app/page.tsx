@@ -7,8 +7,7 @@ import {
 } from "./components/home"
 
 export default async function Home() {
-
-  console.log("CHECK ENV:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+  
 
   return (
     <div className="flex-grow flex flex-col">

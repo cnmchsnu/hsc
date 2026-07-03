@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/button";
 import { useOneTap, signInWithGoogle } from "@repo/database/auth"; // Import the Google sign-in function
 
 
-export default async function LoginPage() {
+export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -156,18 +156,18 @@ const handleGoogleLogin = async () => {
           </form>
 
           {/* Navigation for registration */}
-          <div className="mt-8 text-center">
+          {/* <div className="mt-8 text-center">
             <p className="font-body-md text-on-surface-variant text-sm">
               還沒有帳號嗎？{" "}
               <Link href="#" className="text-primary-container font-bold hover:underline decoration-2 underline-offset-4">
                 立即註冊
               </Link>
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Footer Trust Badges */}
-        <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
+        {/* <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">shield</span>
             <span className="text-xs font-semibold">SSL 安全加密</span>
@@ -176,7 +176,7 @@ const handleGoogleLogin = async () => {
             <span className="material-symbols-outlined text-lg">school</span>
             <span className="text-xs font-semibold">師大附中學生會認證</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </main>
   );
