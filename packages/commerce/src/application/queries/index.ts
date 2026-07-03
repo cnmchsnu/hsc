@@ -1,0 +1,1 @@
+export type { ProductSearchCriteria, ProductSearchResult } from './queries';

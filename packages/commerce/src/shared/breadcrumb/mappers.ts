@@ -1,7 +1,7 @@
 import type { Breadcrumb, Category } from "../../category/category";
 
 
-export function toBreadcrumb(
+export function toBreadcrumbItem(
     category: Category,
 ): Breadcrumb {
 

@@ -1,1 +1,1 @@
-export { toBreadcrumb } from "./mappers";
+export { toBreadcrumbItem } from "./mappers";

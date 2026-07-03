@@ -1,18 +1,11 @@
 import { CategoryService } from '../category';
 import { ProductService, Product } from '../product';
 import { ProductImageService } from '../product-image';
+import type { ProductDetail, ProductSummary, CategoryPage } from './read-models';
+import type { ProductSearchCriteria, ProductSearchResult } from './queries';
+import { ProductCategoryRepository } from '@repo/database/read-models';
 
-
-import type {
-    ProductDetail, ProductSummary, CategoryPage
-} from './product-category';
-
-
-import { ProductCategoryRepository } from '@repo/database/product-category';
-
-import { toBreadCrumbItem } from './mapper';
-
-
+import { toBreadcrumbItem } from '../shared/breadcrumb';
 
 
 export interface CommerceService {
@@ -48,6 +41,10 @@ export interface CommerceService {
     getCategoryPage(
         slug: string,
     ): Promise<CategoryPage | null>;
+
+    searchProducts(
+        criteria: ProductSearchCriteria,
+    ): Promise<ProductSearchResult>;
 
 
 }
@@ -128,7 +125,7 @@ export class DefaultCommerceService
             
             images: images,
             
-            breadcrumb: breadcrumbs.map(toBreadCrumbItem),
+            breadcrumb: breadcrumbs.map(toBreadcrumbItem),
 
         };
 
@@ -311,6 +308,35 @@ export class DefaultCommerceService
         };
 
     }
+
+    async searchProducts(
+        criteria: ProductSearchCriteria,
+    ): Promise<ProductSearchResult> {
+
+        const products = await this.productService.list({
+            page: criteria.page,
+            pageSize: criteria.pageSize,
+            keyword: criteria.keyword,
+            categoryIds: criteria.categoryIds ? [...criteria.categoryIds] : undefined,
+            status: ["active"],
+            sort: criteria.sort,
+        });
+
+        const summaries = await this.getProductSummaries(
+            products.items,
+        );
+
+        return {
+            items: summaries,
+            total: products.total,
+            page: products.page,
+            pageSize: products.pageSize,
+            totalPages: products.total,
+        }
+
+
+    }
+
     
 }
 
