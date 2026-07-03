@@ -1,4 +1,4 @@
-import type { Category } from "@repo/commerce/category";
+import type { Category } from "../../../../commerce/src/category";
 
 export interface CategoryRepository {
 
@@ -14,6 +14,10 @@ export interface CategoryRepository {
 
     findManyByIds(
         ids: readonly string[],
+    ): Promise<Category[]>;
+
+    findPathToRoot(
+        categoryId: string,
     ): Promise<Category[]>;
 
     

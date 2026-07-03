@@ -1,2 +1,2 @@
 export type { Category, CategoryStatus, CategoryTree, Breadcrumb } from "./category";
-export { createCategoryService, CategoryService } from "./service";
+export { createCategoryService, type CategoryService } from "./service";

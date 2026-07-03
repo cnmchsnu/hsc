@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
     ProductList,
     ProductListOptions,
-} from "@repo/commerce/product";
+} from "../../../../commerce/src/product";
 
 
 import type {
@@ -42,15 +42,6 @@ export class SupabaseProductRepository
                     options.status,
                 );
 
-        }
-
-        if (options.categoryIds?.length) {
-
-            query =
-                query.in(
-                    "category_id",
-                    options.categoryIds,
-                );
         }
 
         if (options.productIds?.length) {

@@ -1,1 +1,1 @@
-export { ProductRow, ProductImageRow } from './product-row';
+export type { ProductRow } from './product-row';

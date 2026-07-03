@@ -1,4 +1,4 @@
-import type { ProductImage } from "@repo/commerce/product-image";
+import type { ProductImage } from "../../../../commerce/src/product-image";
 
 export interface ProductImageRepository {
 

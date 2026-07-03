@@ -2,7 +2,7 @@ import type { Category, CategoryTree, Breadcrumb, CategoryGraph } from "./catego
 import type { CategoryRepository } from "@repo/database/category";
 import { CategoryNotFoundError, CategoryTreeError } from "../errors";
     
-
+import { toBreadcrumb } from "../shared/breadcrumb/mappers";
 
 interface CategoryGraphProvider {
 
@@ -73,6 +73,10 @@ export interface CategoryService {
 
     getByIds(
         ids: readonly string[],
+    ): Promise<Category[]>;
+
+    getPathToRoot(
+        categoryId: string,
     ): Promise<Category[]>;
 
     
@@ -148,37 +152,22 @@ export function createCategoryService(
 
         async getBreadcrumb(
             slug: string,
-        ) {
+        ): Promise<Breadcrumb[]> {
+
             const category =
                 await repository.findBySlug(slug);
-            
+
             if (!category) {
                 throw new CategoryNotFoundError(slug);
             }
 
-            const graphProvider = createCategoryGraphProvider(repository);
+            const path =
+                await repository.findPathToRoot(
+                    category.id,
+                );
 
-            const graph = await graphProvider.get();
+            return path.map(toBreadcrumb);
 
-            if (!graph) {
-                throw new CategoryTreeError("Failed to build category tree");
-            }
-
-            const breadcrumb: Breadcrumb[] = [];
-
-            let currentCategory: Category | undefined = category;
-
-            while (currentCategory) {
-                breadcrumb.unshift({
-                    id: currentCategory.id,
-                    slug: currentCategory.slug,
-                    name: currentCategory.name,
-                });
-
-                currentCategory = graph.tree.get(currentCategory.parentId!)?.category;
-            }
-
-            return breadcrumb;
         },
 
         async getNavigation() {
@@ -191,6 +180,18 @@ export function createCategoryService(
             }
 
             return graph.roots.filter((root) => root.category.status === "active");
+        },
+
+        async getPathToRoot(
+            categoryId: string,
+        ): Promise<Category[]> {
+            const path = await repository.findPathToRoot(categoryId);
+
+            if (!path) {
+                throw new CategoryNotFoundError(categoryId);
+            }
+
+            return path;
         }
 
     };

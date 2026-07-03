@@ -1,3 +1,3 @@
-export * from './types/product-row';
+export type { ProductRow } from './types/product-row';
 export { SupabaseProductRepository } from './supabase/product.repository';
-export { ProductRepository } from './interfaces/product-repo';
+export type { ProductRepository } from './interfaces/product-repo';

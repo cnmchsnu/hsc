@@ -1,1 +1,1 @@
-export { CategoryRepository } from "./category-repo";
+export type { CategoryRepository } from "./category-repo";

@@ -1,16 +1,11 @@
 import { CategoryService } from '../category';
 import { ProductService, Product } from '../product';
 import { ProductImageService } from '../product-image';
-
-import type {
-    ProductDetail, ProductSummary, CategoryPage
-} from './read-models';
-
-import type {
-    ProductSearchCriteria, ProductSearchResult
-} from './queries';
-
+import type { ProductDetail, ProductSummary, CategoryPage } from './read-models';
+import type { ProductSearchCriteria, ProductSearchResult } from './queries';
 import { ProductCategoryRepository } from '@repo/database/read-models';
+
+import { toBreadcrumbItem } from '../shared/breadcrumb';
 
 
 export interface CommerceService {
@@ -34,6 +29,10 @@ export interface CommerceService {
     getProductSummariesByCategory(
         categoryId: string,
     ): Promise<ProductSummary[]>;
+
+    // getProductPathtoRoot(
+    //     productId: string,
+    // ): Promise<Category[] | null>;
 
     // getProductSummariesBySlugs(
     //     slugs: readonly string[],
@@ -74,20 +73,32 @@ export class DefaultCommerceService
     ) {}
 
     async getProductDetail(
-        slug: string,
+        id: string,
     ): Promise<ProductDetail | null> {
         
         const product = 
-            await this.productService.getBySlug(slug);
+            await this.productService.getById(id);
         
         if (!product) {
             return null;
         }
 
+        const primaryCategory =
+            await this.productCategoryRepository
+                .getPrimaryCategory(
+                    product.id
+                );
+
         const categoryIds = 
             await this.productCategoryRepository
                 .listCategoryIds(
                     product.id
+                );
+
+        const breadcrumbs = 
+            await this.categoryService
+                .getPathToRoot(
+                    primaryCategory ?? '',
                 );
 
         const categories =
@@ -113,13 +124,15 @@ export class DefaultCommerceService
             categories: categories,
             
             images: images,
+            
+            breadcrumb: breadcrumbs.map(toBreadcrumbItem),
 
         };
 
     }
 
     async getProductSummary(
-    id: string,
+        id: string,
     ): Promise<ProductSummary | null> {
 
         const product =
@@ -170,7 +183,6 @@ export class DefaultCommerceService
                 .getByIds(
                     categoryIds,
                 );
-
         const thumbnails =
             await this.productImageService
                 .listThumbnails(
@@ -187,9 +199,10 @@ export class DefaultCommerceService
                 ),
             );
 
+        
+
         return products.map(
             product => {
-
                 const categoryId =
                     primaryCategories.get(
                         product.id,
@@ -222,16 +235,19 @@ export class DefaultCommerceService
         categoryId: string,
     ): Promise<ProductSummary[]> {
 
-        const products = await this.productService.list({
-            page: 1,
-            pageSize: 100,
-            categoryIds: [categoryId],
-            status: ["active"],
-        });
+        const productIds = await this.productCategoryRepository.listProductIds(
+            categoryId,
+        );
 
-        if (!products) {
+        if (!productIds) {
             return [];
         }
+
+        const products = await this.productService.list({
+            page: 1,
+            pageSize: productIds.length,
+            productIds: [...productIds],
+        });
 
         return this.getProductSummaries(
             products.items,

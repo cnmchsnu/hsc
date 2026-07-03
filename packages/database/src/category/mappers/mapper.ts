@@ -1,4 +1,4 @@
-import type { Category } from "@repo/commerce/category";
+import type { Category } from "../../../../commerce/src/category";
 import type { CategoryRow } from "../types";
 
 export function toCategory(

@@ -1,4 +1,4 @@
-import { ProductImage } from '@repo/commerce/product-image';
+import { ProductImage } from '../../../../commerce/src/product-image';
 import type {
     ProductImageRow,
 } from '../types/';

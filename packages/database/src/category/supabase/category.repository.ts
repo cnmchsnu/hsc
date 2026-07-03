@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
     Category,
-} from "@repo/commerce/category";
+} from "../../../../commerce/src/category";
 
 import { toCategory } from "../mappers";
 
@@ -98,4 +98,29 @@ export class SupabaseCategoryRepository
             return data.map(toCategory);
         }
 
-    }
+        
+        async findPathToRoot(
+            categoryId: string,
+        ): Promise<Category[]> {
+
+            const {
+                data,
+                error,
+            } = await this.client
+                .schema("commerce")
+                .rpc(
+                    "get_category_path",
+                    {
+                        p_category_id: categoryId,
+                    },
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            return data.map(toCategory);
+        }
+
+
+}
