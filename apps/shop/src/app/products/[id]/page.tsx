@@ -5,7 +5,7 @@ import {
   Recommendations,
   Detail,
   HeroSection,
-} from "../../components/product";
+} from "./components";
 
 import { getProductDetail } from "@repo/commerce/server";
 

@@ -26,10 +26,15 @@
             "types": "./src/product-image/types.ts",
             "imports": "./src/product-image/index.ts"
         },
-        "./product-category": {
-            "default": "./src/product-category/index.ts",
-            "types": "./src/product-category/types.ts",
-            "imports": "./src/product-category/index.ts"
+        "./read-models": {
+            "default": "./src/application/read-models/index.ts",
+            "types": "./src/application/read-models/index.ts",
+            "imports": "./src/application/read-models/index.ts"
+        },
+        "./queries": {
+            "default": "./src/application/queries/index.ts",
+            "types": "./src/application/queries/index.ts",
+            "imports": "./src/application/queries/index.ts"
         },
         "./server": "./src/server/index.ts"
     }

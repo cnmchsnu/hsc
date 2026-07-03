@@ -30,10 +30,6 @@ export interface CommerceService {
         categoryId: string,
     ): Promise<ProductSummary[]>;
 
-    // getProductPathtoRoot(
-    //     productId: string,
-    // ): Promise<Category[] | null>;
-
     // getProductSummariesBySlugs(
     //     slugs: readonly string[],
     // ): Promise<ProductSummary[]>;

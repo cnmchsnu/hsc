@@ -3,7 +3,7 @@
 import Link from "next/dist/client/link";
 import { useState } from "react";
 import { SkuSelector } from "./sku-selector";
-import { ProductDetail } from "@repo/commerce/product-category";
+import type { ProductDetail } from "@repo/commerce/read-models";
 
 
 export function HeroSection({productData}: {productData: ProductDetail}) {
@@ -22,7 +22,7 @@ export function HeroSection({productData}: {productData: ProductDetail}) {
             />
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {productData.images.map((img, idx) => (
+            {productData.images.map((img: { url: string }, idx: number) => (
               <button
                 key={idx}
                 className={`aspect-square rounded-lg overflow-hidden border-2 transition-all hover:opacity-80 ${

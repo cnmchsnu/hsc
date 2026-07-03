@@ -2,8 +2,8 @@
 import { getCurrentUser } from "@repo/auth/server";
 import { redirect } from 'next/navigation';
 
-import { PersonnalData } from "../components/profile/personnalData";
-import { Actions } from "../components/profile/actions";
+import { PersonnalData, Actions } from "./components/";
+
 
 interface Order {
   id: string;

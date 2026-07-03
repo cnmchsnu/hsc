@@ -3,12 +3,12 @@ import { createServerClient } from '@repo/database/client/server';
 
 import { SupabaseProductRepository } from '@repo/database/product';
 import { SupabaseCategoryRepository } from '@repo/database/category';
-import { SupabaseProductCategoryRepository } from '@repo/database/product-category';
+import { SupabaseProductCategoryRepository } from '@repo/database/read-models';
 import { SupabaseProductImageService } from '@repo/database/product-image';
 
 import { createProductService, ProductService } from './product/service';
 import { createCategoryService, CategoryService } from './category/service';
-import { createCommerceService, CommerceService } from './product-category/service';
+import { createCommerceService, CommerceService } from './application/service';
 import { createProductImageService, ProductImageService } from './product-image/service';
 
 export interface CommerceContainer {

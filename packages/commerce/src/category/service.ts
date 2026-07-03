@@ -2,7 +2,7 @@ import type { Category, CategoryTree, Breadcrumb, CategoryGraph } from "./catego
 import type { CategoryRepository } from "@repo/database/category";
 import { CategoryNotFoundError, CategoryTreeError } from "../errors";
     
-import { toBreadcrumb } from "../shared/breadcrumb/mappers";
+import { toBreadcrumbItem } from "../shared/breadcrumb/mappers";
 
 interface CategoryGraphProvider {
 
@@ -166,7 +166,7 @@ export function createCategoryService(
                     category.id,
                 );
 
-            return path.map(toBreadcrumb);
+            return path.map(toBreadcrumbItem);
 
         },
 
