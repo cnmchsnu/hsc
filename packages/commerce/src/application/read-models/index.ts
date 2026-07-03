@@ -1,1 +1,1 @@
-export { CategoryPage, ProductDetail, ProductSummary } from './read-models';
+export type { CategoryPage, ProductDetail, ProductSummary } from './read-models';

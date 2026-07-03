@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@radix-ui/react-slider": "^1.4.2",
     "@repo/auth": "workspace:*",
     "@repo/commerce": "workspace:*",
     "@repo/database": "workspace:*",
