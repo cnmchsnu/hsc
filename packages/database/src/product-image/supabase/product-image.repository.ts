@@ -6,7 +6,7 @@ import type {
 
 import type {
     ProductImage,
-} from '@repo/commerce/product-image';
+} from '../../../../commerce/src/product-image';
 
 
 import { toProductImage } from '../mappers/';

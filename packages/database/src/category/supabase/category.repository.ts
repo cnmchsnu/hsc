@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
     Category,
-} from "@repo/commerce/category";
+} from "../../../../commerce/src/category";
 
 import { toCategory } from "../mappers";
 

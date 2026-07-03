@@ -1,1 +1,1 @@
-export { ProductRepository } from './product-repo';
+export type { ProductRepository } from './product-repo';

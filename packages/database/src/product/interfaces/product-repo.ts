@@ -1,4 +1,4 @@
-import type { Product, ProductList, ProductListOptions } from "@repo/commerce/product";
+import type { Product, ProductList, ProductListOptions } from "../../../../commerce/src/product";
 
 export interface ProductRepository {
 

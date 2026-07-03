@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
     ProductList,
     ProductListOptions,
-} from "@repo/commerce/product";
+} from "../../../../commerce/src/product";
 
 
 import type {

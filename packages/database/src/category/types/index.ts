@@ -1,1 +1,1 @@
-export { CategoryRow } from "./category-row";
+export type { CategoryRow } from "./category-row";
