@@ -64,6 +64,10 @@ export interface ProductListOptions {
 
     productIds?: string[];
 
+    minPrice?: number;
+
+    maxPrice?: number;
+
     status?: ProductStatus[];
 
     sort?: ProductSort;

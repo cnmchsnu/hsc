@@ -1,11 +1,35 @@
 import { CategoryService } from '../category';
+
 import { ProductService, Product } from '../product';
+
 import { ProductImageService } from '../product-image';
-import type { ProductDetail, ProductSummary, CategoryPage } from './read-models';
-import type { ProductSearchCriteria, ProductSearchResult } from './queries';
+
+import type {
+    ProductDetail,
+    ProductSummary,
+    CategoryPage
+} from './read-models';
+
+import type {
+    ProductSearchCriteria,
+    ProductSearchResult
+} from './queries';
+
+import type {
+    CategoryNavigation,
+    BreadcrumbItem,
+    CategoryTree
+} from './projections/category';
+
 import { ProductCategoryRepository } from '@repo/database/read-models';
 
-import { toBreadcrumbItem } from '../shared/breadcrumb';
+import { CategoryNotFoundError, CategoryTreeError } from '../errors/errors';
+
+import {
+    buildBreadcrumb,
+    buildCategoryTree,
+    buildCategoryNavigation,
+} from './projections/category';
 
 
 export interface CommerceService {
@@ -42,6 +66,15 @@ export interface CommerceService {
         criteria: ProductSearchCriteria,
     ): Promise<ProductSearchResult>;
 
+    getTree(): Promise<readonly CategoryTree[]>;
+
+    getNavigation(
+        selectedId: string,
+    ): Promise<CategoryNavigation>;
+
+    getBreadcrumb(
+        slug: string,
+    ): Promise<readonly BreadcrumbItem[]>;
 
 }
 
@@ -121,7 +154,7 @@ export class DefaultCommerceService
             
             images: images,
             
-            breadcrumb: breadcrumbs.map(toBreadcrumbItem),
+            breadcrumb: buildBreadcrumb(breadcrumbs),
 
         };
 
@@ -287,15 +320,14 @@ export class DefaultCommerceService
         }
 
         const breadcrumb = 
-            await this.categoryService
+            await this
                 .getBreadcrumb(
                     category.id
                 );
 
         
         const tree = 
-            await this.categoryService
-                .getTree();
+            await this.getTree();
 
         return {
             category,
@@ -332,6 +364,59 @@ export class DefaultCommerceService
 
 
     }
+
+    async getTree() {
+
+        const categories = await this.categoryService.list();
+            
+        const tree = buildCategoryTree(categories);
+
+        if (!tree) {
+               throw new CategoryTreeError("Failed to build category tree");
+        }
+
+        return tree;
+
+    }  
+
+    async getBreadcrumb(
+        slug: string,
+    ): Promise<readonly BreadcrumbItem[]> {
+
+        const category =
+            await this.categoryService.getBySlug(slug);
+
+        if (!category) {
+            throw new CategoryNotFoundError(slug);
+        }
+
+        const path =
+            await this.categoryService.getPathToRoot(
+                category.id,
+            );
+
+        return buildBreadcrumb(path);
+
+    }
+
+    async getNavigation(
+        selectedId: string,
+    ) {
+
+        const categories = await this.categoryService.list();
+
+        const tree = buildCategoryTree(categories);
+
+        if (!tree) {
+            throw new CategoryTreeError("Failed to build category tree");
+        }
+
+        return buildCategoryNavigation(tree, selectedId);
+
+
+    } 
+
+
 
     
 }

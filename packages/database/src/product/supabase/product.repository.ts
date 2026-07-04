@@ -44,6 +44,26 @@ export class SupabaseProductRepository
 
         }
 
+        if (options.minPrice) {
+
+            query = 
+                query.gte(
+                    "price",
+                    options.minPrice,
+                );
+
+        }
+
+        if (options.maxPrice) {
+
+            query = 
+                query.lte(
+                    "price",
+                    options.maxPrice,
+                );
+
+        }
+
         if (options.productIds?.length) {
 
             query =
@@ -62,6 +82,7 @@ export class SupabaseProductRepository
                 );
 
         }
+
 
         switch (options.sort) {
 

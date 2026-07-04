@@ -34,30 +34,4 @@ export interface Category {
 
 }
 
-export interface CategoryTree {
 
-    category: Category;
-
-    children: CategoryTree[];
-
-}
-
-export interface CategoryGraph {
-
-    categories: Map<string, Category>;
-
-    roots: CategoryTree[];
-
-    tree: Map<string, CategoryTree>;
-
-}
-
-export interface Breadcrumb {
-
-    id: string;
-
-    slug: string;
-
-    name: string;
-
-}

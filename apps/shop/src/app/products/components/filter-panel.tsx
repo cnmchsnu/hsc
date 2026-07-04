@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import * as Slider from '@radix-ui/react-slider';
 
-import type { CategoryTree } from "@repo/commerce/category";
+import type { CategoryTree } from "@repo/commerce/read-models";
 
 
 

@@ -1,16 +1,7 @@
 import type { Product } from '../../product';
 import type { ProductImage } from '../../product-image';
-import type { Category, Breadcrumb } from '../../category';
-
-export interface BreadcrumbItem {
-
-    id: string;
-
-    slug: string;
-
-    name: string;
-
-}
+import type { Category } from '../../category';
+import type { CategoryTree, BreadcrumbItem } from '../projections/category';
 
 
 export interface ProductSummary {
@@ -32,7 +23,7 @@ export interface ProductDetail {
     images: ProductImage[];
 
     
-    breadcrumb: BreadcrumbItem[];
+    breadcrumb: readonly BreadcrumbItem[];
 
     // inventory: Inventory;
 
@@ -44,16 +35,32 @@ export interface CategoryPage {
 
     category: Category;
 
-    breadcrumb: Breadcrumb[];
+    breadcrumb: readonly BreadcrumbItem[];
 
-    tree: CategoryTree[];
+    tree: readonly CategoryTree[];
+
+}
+
+
+export interface CategoryTreeNode {
+
+    id: string;
+
+    slug: string;
+
+    name: string;
+
+    children: readonly CategoryTreeNode[];
 
 }
 
-export interface CategoryTree {
+export interface CategoryNavigation {
 
-    category: Category;
+    tree: readonly CategoryTreeNode[];
 
-    children: CategoryTree[];
+    expandedIds: readonly string[];
+
+    selectedId: string | null;
 
 }
+
