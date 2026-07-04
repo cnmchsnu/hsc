@@ -1,5 +1,5 @@
-import { createCommerceContainer } from '../../container';
-import { ProductSearchCriteria, ProductSearchResult } from '../../application/queries';
+import { createCommerceContainer } from '../../../container';
+import { ProductSearchCriteria, ProductSearchResult } from '../../../application/queries';
 
 export async function searchProducts(
     criteria: ProductSearchCriteria,

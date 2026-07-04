@@ -1,10 +1,10 @@
 import type { Category } from "../../category/category";
-import type { Breadcrumb } from "../projections/category";
+import type { BreadcrumbItem } from "../projections";
 
 
 export function toBreadcrumbItem(
     category: Category,
-): Breadcrumb {
+): BreadcrumbItem {
 
     return {
 

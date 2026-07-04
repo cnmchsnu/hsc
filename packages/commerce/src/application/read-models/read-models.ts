@@ -64,3 +64,11 @@ export interface CategoryNavigation {
 
 }
 
+export interface CategorySelectionState {
+
+    selectedCategoryIds: readonly string[];
+
+    expandedCategoryIds: readonly string[];
+
+}
+

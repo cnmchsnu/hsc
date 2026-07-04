@@ -1,2 +1,3 @@
 export * from './read-models';
-export { createCommerceService, CommerceService } from './service';
+export * from './projections';
+export { createCommerceService, type CommerceService } from './service';

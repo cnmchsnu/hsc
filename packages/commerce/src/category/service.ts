@@ -1,8 +1,6 @@
 import type { Category } from "./category";
-import type { Breadcrumb, CategoryTree } from "../application/projections/category";
 import type { CategoryRepository } from "@repo/database/category";
-import { CategoryNotFoundError, CategoryTreeError } from "../errors";
-import { toBreadcrumbItem } from "../application/mappers";
+import { CategoryNotFoundError } from "../errors";
 
 
 export interface CategoryService {

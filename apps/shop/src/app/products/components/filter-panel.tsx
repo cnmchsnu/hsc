@@ -5,18 +5,36 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import * as Slider from '@radix-ui/react-slider';
 
-import type { CategoryTree } from "@repo/commerce/read-models";
+import type { CategoryNavigation, CategoryTree, CategoryTreeNode } from "@repo/commerce/application";
 
 
 
-// export function CategoryNode({node}: {node: CategoryTree;}) {
+// export function CategoryNode({node, selectedCategories}: {node: CategoryTreeNode; selectedCategories: string[];}) {
 //     const [ expanded, setExpanded ] = useState(false);
+
+    
 
 //     return (
 //         <>
-//             <button onClick={() => setExpanded(!expanded,)}>
-//                 {node.name}
-//             </button>
+//             <li key={node.id}>
+//                 <label className="flex items-center gap-3 cursor-pointer group">
+//                     <input
+//                     type="checkbox"
+//                     checked={selectedCategories.includes(node.id)}
+//                     onChange={() => handleCategoryChange(node.id)}
+//                     className="w-5 h-5 rounded border-outline text-on-primary-fixed-variant focus:ring-on-primary-fixed-variant"
+//                     />
+//                     <span
+//                         className={`font-body-md transition-colors ${
+//                         selectedCategories.includes(node.id)
+//                         ? "text-on-primary-fixed-variant font-medium"
+//                         : "text-on-surface-variant group-hover:text-on-primary-fixed-variant"
+//                     }`}
+//                     >
+//                         {node.name} ({node.id})
+//                     </span>
+//                 </label>
+//             </li>
 //             {expanded &&
 //                 node.children.map(
 //                     child => (
@@ -34,7 +52,7 @@ import type { CategoryTree } from "@repo/commerce/read-models";
 
 
 
-export function FilterPanel({categories}: {categories: CategoryTree[]}) {
+export function FilterPanel({categoriesNavigation}: {categoriesNavigation: CategoryNavigation}) {
 
     const router = useRouter();
     const pathname = usePathname();
@@ -87,27 +105,38 @@ export function FilterPanel({categories}: {categories: CategoryTree[]}) {
                     <ul className="space-y-stack-sm">
                     {categories.map(
                         <li key={c.id}>
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                            <input
-                            type="checkbox"
-                            checked={selectedCategories.includes(c.id)}
-                            onChange={() => handleCategoryChange(c.id)}
-                            className="w-5 h-5 rounded border-outline text-on-primary-fixed-variant focus:ring-on-primary-fixed-variant"
-                            />
-                            <span
-                            className={`font-body-md transition-colors ${
-                                selectedCategories.includes(c.id)
-                                ? "text-on-primary-fixed-variant font-medium"
-                                : "text-on-surface-variant group-hover:text-on-primary-fixed-variant"
-                            }`}
-                            >
-                            {c.name} ({c.id})
-                            </span>
-                        </label>
+                            <label className="flex items-center gap-3 cursor-pointer group">
+                                <input
+                                type="checkbox"
+                                checked={selectedCategories.includes(c.id)}
+                                onChange={() => handleCategoryChange(c.id)}
+                                className="w-5 h-5 rounded border-outline text-on-primary-fixed-variant focus:ring-on-primary-fixed-variant"
+                                />
+                                <span
+                                className={`font-body-md transition-colors ${
+                                    selectedCategories.includes(c.id)
+                                    ? "text-on-primary-fixed-variant font-medium"
+                                    : "text-on-surface-variant group-hover:text-on-primary-fixed-variant"
+                                }`}
+                                >
+                                {c.name} ({c.id})
+                                </span>
+                            </label>
                         </li>
                     ))}
                     </ul>
                 </div> */}
+
+                <div>
+                    <h3 className="font-headline-md text-[18px] text-on-surface font-bold mb-4">商品分類</h3>
+                    <ul className="space-y-stack-sm">
+                        {/* {categoriesNavigation.tree.map(
+                            (node) => (
+                                <CategoryNode key={node.id} node={node} />
+                            )
+                        )} */}
+                    </ul>
+                </div>
 
                 {/* Price Filter */}
                 <div className="pt-stack-md border-t border-surface-variant">

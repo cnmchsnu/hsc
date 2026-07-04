@@ -69,7 +69,7 @@ export interface CommerceService {
     getTree(): Promise<readonly CategoryTree[]>;
 
     getNavigation(
-        selectedId: string,
+        selectedSlugs: readonly string[],
     ): Promise<CategoryNavigation>;
 
     getBreadcrumb(
@@ -313,6 +313,7 @@ export class DefaultCommerceService
         slug: string,
     ): Promise<CategoryPage | null> {
 
+
         const category = await this.categoryService.getBySlug(slug);
 
         if (!category) {
@@ -325,9 +326,9 @@ export class DefaultCommerceService
                     category.id
                 );
 
-        
-        const tree = 
+        const tree =
             await this.getTree();
+
 
         return {
             category,
@@ -400,7 +401,7 @@ export class DefaultCommerceService
     }
 
     async getNavigation(
-        selectedId: string,
+        selectedSlugs: readonly string[],
     ) {
 
         const categories = await this.categoryService.list();
@@ -411,7 +412,7 @@ export class DefaultCommerceService
             throw new CategoryTreeError("Failed to build category tree");
         }
 
-        return buildCategoryNavigation(tree, selectedId);
+        return buildCategoryNavigation(tree, selectedSlugs);
 
 
     } 

@@ -64,12 +64,12 @@ export class SupabaseProductRepository
 
         }
 
-        if (options.productIds?.length) {
+        if (options.categoryIds?.length) {
 
             query =
                 query.in(
-                    "id",
-                    options.productIds,
+                    "category_id",
+                    options.categoryIds,
                 );
         }
 

@@ -1,5 +1,5 @@
-import { createCommerceContainer } from '../../container';
-import { BreadcrumbItem } from '../../application/projections/category';
+import { createCommerceContainer } from '../../../container';
+import { BreadcrumbItem } from '../../../application/projections/category';
 
 export async function getBreadcrumb(
     slug: string,

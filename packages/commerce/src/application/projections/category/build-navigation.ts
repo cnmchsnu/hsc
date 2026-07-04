@@ -7,7 +7,7 @@ export interface CategoryNavigation {
 
     expandedIds: readonly string[];
 
-    selectedId: string | null;
+    indeterminateIds: readonly string[];
 
 }
 
@@ -21,55 +21,97 @@ export interface CategoryTreeNode {
 
     children: readonly CategoryTreeNode[];
 
+    depth: number;
+
+    hasChildren: boolean;
+
 }
 
-function findExpandedIds(
+function resolveExpandedCategorySlugs(
     nodes: readonly CategoryTreeNode[],
-    targetId: string,
-    currentPath: string[] = []
-): string[] | null {
-    for (const node of nodes) {
-        // 將當前節點放入路徑中
-        const nextPath = [...currentPath, node.id];
+    selectedSlugs: readonly string[]
+) {
+    const selectedSet = new Set(selectedSlugs);
+    const expandedSet = new Set<string>();
+    const indeterminateSet = new Set<string>();
 
-        // 找到了目標節點，直接回傳整條路徑
-        if (node.id === targetId) {
-            return nextPath;
+    // 回傳值代表該子樹的選取狀態：'none' | 'partial' | 'all'
+    function traverse(node: CategoryTreeNode): 'none' | 'partial' | 'all' {
+        const isSelfSelected = selectedSet.has(node.id);
+
+        if (!node.hasChildren) {
+            // 葉節點：只有「全選」或「沒選」
+            return isSelfSelected ? 'all' : 'none';
         }
 
-        // 如果有子節點，繼續往深處找
-        if (node.children && node.children.length > 0) {
-            const foundPath = findExpandedIds(node.children, targetId, nextPath);
-            if (foundPath) return foundPath; // 在子樹中找到了，直接層層回傳
+        let allChildrenSelected = true;
+        let anyChildSelected = false;
+
+        for (const child of node.children) {
+            const childState = traverse(child);
+
+            if (childState === 'all') {
+                anyChildSelected = true;
+            } else if (childState === 'partial') {
+                anyChildSelected = true;
+                allChildrenSelected = false;
+            } else {
+                allChildrenSelected = false;
+            }
         }
+
+        // 決定當前節點的最終狀態
+        if (allChildrenSelected && (node.children.length > 0 ? anyChildSelected : isSelfSelected)) {
+            // 子節點全選，且至少有一個子節點（或是自己被選），代表全選
+            return 'all';
+        } else if (anyChildSelected || isSelfSelected) {
+            // 部分子節點被選，或者自己被選但子節點沒全選 -> 半選取
+            indeterminateSet.add(node.id);
+            expandedSet.add(node.id); // 半選取的祖先通常也需要自動展開
+            return 'partial';
+        }
+
+        return 'none';
     }
-    return null; // 這條分支沒找到
+
+    for (const node of nodes) {
+        traverse(node);
+    }
+
+    const path = Array.from(expandedSet).filter(id => selectedSet.has(id));
+
+    return { 
+        path: Array.from(expandedSet),
+        indeterminateSlugs: Array.from(indeterminateSet)
+    };
 }
 
 export function buildCategoryNavigation(
 
     tree: readonly CategoryTree[],
 
-    selectedId: string | null,
+    selectedSlugs: readonly string[],
 
 ): CategoryNavigation {
 
     const navigationTree = toCategoryTreeNodes(tree);
 
-    let expandedIds: string[] = [];
+    let expandedSlugs: string[] = [];
 
-    if (selectedId) {
-        const path = findExpandedIds(navigationTree, selectedId);
-        if (path) {
-            expandedIds = path
-                .slice(0, -1); // 去掉最後一個，因為最後一個是選中的節點，不需要展開
-        }
+    if (selectedSlugs.length > 0) {
+        return {
+            tree: navigationTree,
+            expandedIds: [],
+            indeterminateIds: [],
+        };
     }
+
+    const {path, indeterminateSlugs} = resolveExpandedCategorySlugs(navigationTree, selectedSlugs);
 
     return {
         tree: navigationTree,
-        expandedIds,
-        selectedId,
+        expandedIds: path,
+        indeterminateIds: indeterminateSlugs,
     };  
 
 }
