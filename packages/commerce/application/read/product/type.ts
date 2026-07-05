@@ -19,7 +19,7 @@ export interface ProductDetail {
 
     product: Product;
 
-    categories: Category[];
+    categories: readonly Category[];
 
     images: ProductImage[];
 

@@ -1,54 +1,73 @@
-import type { ProductImage } from "../../../commerce/src/product-image";
+import type { ProductImage } from "../../../commerce/domain/product-image";
 
 export interface ProductImageRepository {
 
-    get_by_id(
-        id: string,
+    // Read Single
+
+    getPrimaryById(
+        productId: string,
     ): Promise<ProductImage | null>;
 
-    list_by_product_id(
+    getThumbnailById(
         productId: string,
+    ): Promise<ProductImage | null>;
+
+    getAllById(
+        productId: string,
+    ): Promise<ProductImage[] | null>;
+
+
+    // Read Batch
+
+    getPrimaryByIds(
+        productIds: readonly string[],
+    ): Promise<ProductImage[]>;
+    
+    getThumbnailByIds(
+        productIds: readonly string[],
     ): Promise<ProductImage[]>;
 
-    get_thumbnail(
-        productId: string,
-    ): Promise<ProductImage | null>;
+    // Exists Single
 
-    get_primary(
-        productId: string,
-    ): Promise<ProductImage | null>;
+    existsIds(
+        id: string,
+    ): Promise<boolean>;
 
-    list_by_product_ids(
-        ids: string[],
-    ): Promise<
-        Map<
-            string,
-            ProductImage[]
-        >
-    >;
 
-    list_thumbnails(
-        productIds: string[],
-    ): Promise<
-        ReadonlyMap<
-            string,
-            ProductImage
-        >
-    >;
+    // Exists Batch
 
-    // find_by_storage_key(
-    //     storageKey: string,
-    // );
+    listExistingIds(
+        ids: readonly string[],
+    ): Promise<string[]>;
 
-    // replace_productImages();
 
-    // reorder_images();
+    // Write Single
 
-    // set_primaryImage();
+    create(
+        productImage: ProductImage,
+    ): Promise<void>;
 
-    // set_thumbnail();
+    update(
+        productImage: ProductImage,
+    ): Promise<void>;
 
-    // remove_image();
+    delete(
+        id: string,
+    ): Promise<void>;
+    
 
+    // Write Batch
+
+    createMany(
+        productImages: readonly ProductImage[],
+    ): Promise<void>;
+
+    updateMany(
+        productImages: readonly ProductImage[],
+    ): Promise<void>;
+
+    deleteMany(
+        ids: readonly string[],
+    ): Promise<void>;
 
 }

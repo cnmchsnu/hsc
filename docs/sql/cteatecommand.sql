@@ -125,7 +125,6 @@ CREATE TABLE commerce.campaign_products (
     PRIMARY KEY (campaign_id, product_id)
 );
 
--- MVP Optional
 CREATE TABLE commerce.campaign_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -138,7 +137,6 @@ CREATE TABLE commerce.campaign_images (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- MVP Optional
 CREATE TABLE commerce.product_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -146,9 +144,12 @@ CREATE TABLE commerce.product_images (
 
     storage_path TEXT NOT NULL,
 
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+
     display_order INTEGER NOT NULL DEFAULT 0,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE commerce.product_snapshots (

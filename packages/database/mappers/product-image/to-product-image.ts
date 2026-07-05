@@ -1,4 +1,4 @@
-import { ProductImage } from '../../../commerce/src/product-image';
+import { ProductImage } from '../../../commerce/domain/product-image';
 import type { ProductImageRow } from '../../entities';
 
 export function toProductImage(
@@ -12,6 +12,8 @@ export function toProductImage(
         productId: row.product_id,
 
         url: row.storage_path,
+
+        isPrimary: row.is_primary,
 
         alt: null,
 

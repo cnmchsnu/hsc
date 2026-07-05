@@ -5,7 +5,7 @@ export interface ProductSearchCriteria {
 
     keyword?: string;
 
-    categoryIds?: readonly string[];
+    categorySlugs?: readonly string[];
 
     minPrice?: number;
 

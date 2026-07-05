@@ -1,1 +1,1 @@
-export * from '../../../../database/src/identity/supabase/profile.repository'
+export { SupabaseProfileRepository } from './profile.repository';

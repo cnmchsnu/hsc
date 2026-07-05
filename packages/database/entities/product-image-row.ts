@@ -6,6 +6,8 @@ export interface ProductImageRow {
 
     storage_path: string;
 
+    is_primary: boolean;
+
     display_order: number;
 
     created_at: string;

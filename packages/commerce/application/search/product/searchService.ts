@@ -1,7 +1,9 @@
 
 // servies
 import type { ProductService } from "../../../domain/product";
+import type { ProductCategoryService} from "../../../domain/product-category";
 import type { ProductReadService } from "../../read/product";
+import type { CategoryResolveService } from "../../identifiers";
 
 // types
 import type {
@@ -20,34 +22,51 @@ export interface ProductSearchService {
 }
 
 
-export interface ProductSearchServiceDependencies {
+interface ProductSearchServiceDependencies {
 
     productService: ProductService;
 
+    productCategoryService: ProductCategoryService;
+
     productReadService: ProductReadService;
+    
+    categoryResolveService: CategoryResolveService;
 
 }
 
 
 
 
-export class DefaultProductSearchService
+class DefaultProductSearchService
     implements ProductSearchService {
     
     constructor(
         private readonly productService: ProductService,
+        private readonly productCategoryService: ProductCategoryService,
         private readonly productReadService: ProductReadService,
+        private readonly categoryResolveService: CategoryResolveService,
     ) {}
 
-    async searchProducts(
+    async search(
         criteria: ProductSearchCriteria,
     ): Promise<ProductSearchResult> {
 
-        const products = await this.productService.list({
+        const categoryIds = await this.categoryResolveService
+            .resolveIdsBySlugs(
+                criteria.categorySlugs ?? [],
+            );
+
+        const productIds = await this.productCategoryService
+            .getByCategoryIds(
+                [...categoryIds],
+            );
+
+
+        const products = await this.productService.search({
             page: criteria.page,
             pageSize: criteria.pageSize,
             keyword: criteria.keyword,
-            categoryIds: criteria.categoryIds ? [...criteria.categoryIds] : undefined,
+            productIds: productIds.map(relation => relation.product_id),
             status: ["active"],
             sort: criteria.sort,
         });
@@ -75,7 +94,9 @@ export function createProductSearchService(
 
     return new DefaultProductSearchService(
         dependencies.productService,
+        dependencies.productCategoryService,
         dependencies.productReadService,
+        dependencies.categoryResolveService,
     );
 
 }

@@ -1,0 +1,1 @@
+export { SupabaseProductIdentifier } from "./product-identifier.repository";

@@ -5,31 +5,82 @@ import { ProductNotFoundError } from './error';
     
 export interface ProductService {
 
-    getById(
+    // Read Single
+    findById(
         id: string,
-    ): Promise<Product>;
+    ): Promise<Product | null>;
 
-    getBySlug(
+    findBySlug(
         slug: string,
-    ): Promise<Product>;
+    ): Promise<Product | null>;
 
-    list(
+
+    // Read Batch
+
+    findByIds(
+        ids: readonly string[],
+    ): Promise<Product[]>;
+
+    findBySlugs(
+        slugs: readonly string[],
+    ): Promise<Product[]>;
+
+
+    // Query
+
+    list(): Promise<Product[]>;
+
+    search(
         options: ProductListOptions,
     ): Promise<ProductList>;
 
-    // create(): Promise<Product>;
 
-    // update(
-    //     id: string,
-    // ): Promise<Product>;
+    // Exists Single
 
-    // delete(
-    //     id: string,
-    // ): Promise<void>;
+    exists(
+        id: string,
+    ): Promise<boolean>;
 
-    // exists(
-    //     id: string,
-    // ): Promise<boolean>;
+    
+    // Exists Batch
+
+    listExistingIds(
+        ids: readonly string[],
+    ): Promise<string[]>;
+
+    listExistingSlugs(
+        slugs: readonly string[],
+    ): Promise<readonly string[]>;
+
+
+    // Write Single
+
+    create(
+        product: Product,
+    ): Promise<void>;
+
+    update(
+        product: Product,
+    ): Promise<void>;
+
+    delete(
+        id: string,
+    ): Promise<void>;
+
+
+    // Write Batch
+
+    createMany(
+        products: readonly Product[],
+    ): Promise<void>;
+
+    updateMany(
+        products: readonly Product[],
+    ): Promise<void>;
+
+    deleteMany(
+        ids: readonly string[],
+    ): Promise<void>;
 }
 
 
@@ -39,43 +90,183 @@ export function createProductService(
 
     return {
 
-        async getById(id) {
+        // Read Single
 
-            const product =
+        async findById(
+            id: string,
+        ): Promise<Product | null> {
+            if (!id) {
+                return null;
+            }
+
+            const product = 
                 await repository.findById(id);
 
             if (!product) {
-                throw new ProductNotFoundError(id);
+                throw new ProductNotFoundError(
+                    `Product with id ${id} not found`,
+                );
             }
 
             return product;
         },
 
-        async getBySlug(slug) {
+        async findBySlug(
+            slug: string,
+        ): Promise<Product | null> {
+            if (!slug) {
+                return null;
+            }
 
-            const product =
+            const product = 
                 await repository.findBySlug(slug);
 
             if (!product) {
-                throw new ProductNotFoundError(slug);
+                throw new ProductNotFoundError(
+                    `Product with slug ${slug} not found`,
+                );
             }
 
             return product;
         },
 
-        async list(
-            options: ProductListOptions
-        ) {
+        // Read Batch
 
-            const list =
-                 await repository.list(options);
-
-            if (!list) {
-                throw new ProductNotFoundError(`No products found with the given options: ${JSON.stringify(options)}`);
+        async findByIds(
+            ids: readonly string[],
+        ): Promise<Product[]> {
+            if (!ids || ids.length === 0) {
+                return [];
             }
 
-            return list;
+            const products = 
+                await repository.findByIds(ids);
+            
+            if (!products || products.length === 0) {
+                throw new ProductNotFoundError(
+                    `Products with ids ${ids.join(', ')} not found`,
+                );
+            }
 
+            return products;
+        },
+
+        async findBySlugs(
+            slugs: readonly string[],
+        ): Promise<Product[]> {
+            if (!slugs || slugs.length === 0) {
+                return [];
+            }
+
+            const products = 
+                await repository.findBySlugs(slugs);
+
+            if (!products || products.length === 0) {
+                throw new ProductNotFoundError(
+                    `Products with slugs ${slugs.join(', ')} not found`,
+                );
+            }
+
+            return products;
+        },
+
+        // Query
+
+        async list(): Promise<Product[]> {
+            const products = 
+                await repository.list();
+
+            return products;
+        },
+
+        async search(
+            options: ProductListOptions,
+        ): Promise<ProductList> {
+            const products = 
+                await repository.search(options);
+
+            return products;
+        },
+
+        // Exists Single
+
+        async exists(
+            id: string,
+        ): Promise<boolean> {
+            if (!id) {
+                return false;
+            }
+
+            const exists = 
+                await repository.exists(id);
+
+            return exists;
+        },
+
+        // Exists Batch
+
+        async listExistingIds(
+            ids: readonly string[],
+        ): Promise<string[]> {
+            if (!ids || ids.length === 0) {
+                return [];
+            }
+            const existingIds = 
+                await repository.listExistingIds(ids);
+
+            return existingIds;
+        },
+
+        async listExistingSlugs(
+            slugs: readonly string[],
+        ): Promise<readonly string[]> {
+            if (!slugs || slugs.length === 0) {
+                return [];
+            }
+            const existingSlugs = 
+                await repository.listExistingSlugs(slugs);
+            
+            return existingSlugs;
+        },
+
+        // Write Single
+
+        async create(
+            product: Product,
+        ): Promise<void> {
+            await repository.create(product);
+        },
+
+        async update(
+            product: Product,
+        ): Promise<void> {
+            await repository.update(product);
+        },
+
+        async delete(
+            id: string,
+        ): Promise<void> {
+            await repository.delete(id);
+        },
+
+        // Write Batch
+
+        async createMany(
+            products: readonly Product[],
+        ): Promise<void> {
+            await repository.createMany(products);
+        },
+
+        async updateMany(
+            products: readonly Product[],
+        ): Promise<void> {
+            await repository.updateMany(products);
+        },
+
+        async deleteMany(
+            ids: readonly string[],
+        ): Promise<void> {
+            await repository.deleteMany(ids);
         }
     
     };

@@ -241,6 +241,9 @@ importers:
       '@repo/database':
         specifier: workspace:*
         version: link:../database
+      '@repo/infra':
+        specifier: workspace:*
+        version: link:../infra
       '@supabase/postgrest-js':
         specifier: ^2.109.0
         version: 2.109.0

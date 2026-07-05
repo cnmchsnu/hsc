@@ -1,0 +1,1 @@
+export { createProductSearchService, type ProductSearchService } from './searchService';

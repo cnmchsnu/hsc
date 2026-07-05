@@ -17,6 +17,7 @@
         "./client/supabase": "./client/supabase.ts",
         "./entities": "./entities/index.ts",
         "./mappers": "./mappers/index.ts",
-        "./repositories": "./repositories/index.ts"
+        "./repositories": "./repositories/index.ts",
+        "./identifiers": "./identifiers/index.ts"
     }
 }

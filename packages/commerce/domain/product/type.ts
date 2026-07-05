@@ -60,9 +60,7 @@ export interface ProductListOptions {
 
     keyword?: string;
 
-    categoryIds?: string[];
-
-    productIds?: string[];
+    productIds?: readonly string[];
 
     minPrice?: number;
 

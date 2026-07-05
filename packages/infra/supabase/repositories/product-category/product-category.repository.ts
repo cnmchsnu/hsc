@@ -4,106 +4,273 @@ import type {
     ProductCategoryRepository,
 } from "@repo/database/repositories";
 
+
+import { ProductCategory } from "../../../../commerce/domain/product-category";
+
+import { toProductCategory } from "@repo/database/mappers";
+
 export class SupabaseProductCategoryRepository
     implements ProductCategoryRepository {
         constructor(
             private readonly client: SupabaseClient,
         ) {}
 
-        async listCategoryIds(
+        // Read Single
+        
+        async getByProductId(
             productId: string,
-        ): Promise<string[]> {
+        ): Promise<readonly ProductCategory[]> {
             const { data, error } = await this.client
                 .schema("commerce")
                 .from("product_categories")
-                .select("category_id")
+                .select("*")
                 .eq("product_id", productId);
-
-            if (error) {
-                throw new Error(`Error fetching category IDs for product ${productId}: ${error.message}`);
-            }
-
-            return data.map((row) => row.category_id);
-        }
-
-        async listProductIds(
-            categoryId: string,
-        ): Promise<string[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .select("product_id")
-                .eq("category_id", categoryId);
-
-            if (error) {
-                throw new Error(`Error fetching product IDs for category ${categoryId}: ${error.message}`);
-            }
-
-            return data.map((row) => row.product_id);
-        }
-
-        async getPrimaryCategory(
-            productId: string,
-        ): Promise<string | null> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .select("category_id")
-                .eq("product_id", productId)
-                .eq("display_order", 0)
-                .maybeSingle();
-
-            if (error) {
-                throw new Error(`Error fetching primary category for product ${productId}: ${error.message}`);
-            }
-
-            return data?.category_id || null;
-        }
-
-        async listPrimaryCategories(
-            productIds: readonly string[],
-        ): Promise<ReadonlyMap<string, string>> {
-
-            if (productIds.length === 0) {
-                return new Map();
-            }
-
-            const {
-                data,
-                error,
-            } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .select(`
-                    product_id,
-                    category_id
-                `)
-                .in(
-                    "product_id",
-                    [...productIds],
-                )
-                .eq(
-                    "display_order",
-                    0,
-                );
 
             if (error) {
                 throw error;
             }
 
-            const result =
-                new Map<string, string>();
-
-            for (const row of data) {
-
-                result.set(
-                    row.product_id,
-                    row.category_id,
-                );
-
+            if (!data) {
+                return [];
             }
 
-            return result;
+            return data.map(toProductCategory);
+        }
+
+        async getByCategoryId(
+            categoryId: string,
+        ): Promise<readonly ProductCategory[]> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select("*")
+                .eq("category_id", categoryId);
+
+            if (error) {
+                throw error;
+            }
+            
+            if (!data) {
+                return [];
+            }
+
+            return data.map(toProductCategory);
+        }
+
+        async getPrimaryByProductId(
+            productId: string,
+        ): Promise<ProductCategory | null> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select("*")
+                .eq("product_id", productId)
+                .eq("is_primary", true)
+                .maybeSingle();
+            
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                return null;
+            }
+
+            return toProductCategory(data);
+        }
+
+        // Read Batch
+
+        async getByProductIds(
+            productIds: string[],
+        ): Promise<readonly ProductCategory[]> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select("*")
+                .in("product_id", [...productIds]);
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                return [];
+            }
+
+            return data.map(toProductCategory);
+        }
+
+        async getByCategoryIds(
+            categoryIds: string[],
+        ): Promise<readonly ProductCategory[]> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select("*")
+                .in("category_id", [...categoryIds]);
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                return [];
+            }
+            
+            return data.map(toProductCategory);
+        }
+
+        async getPrimaryByProductIds(
+            productIds: string[],
+        ): Promise<ProductCategory[] | null> {
+            const { data, error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .select("*")
+                .in("product_id", [...productIds])
+                .eq("is_primary", true);
+
+            if (error) {
+                throw error;
+            }
+
+            if (!data) {
+                return null;
+            }
+
+            return data.map(toProductCategory);
+        }
+
+        // Write Single
+
+        async create(
+            relation: ProductCategory,
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .insert(relation);
+
+            if (error) {
+                throw error;
+            }
+
+        }
+
+        async update(
+            relation: ProductCategory,
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .update(relation)
+                .eq("product_id", relation.product_id)
+                .eq("category_id", relation.category_id);
+            if (error) {
+                throw error;
+            }
+
+        }
+
+        async delete(
+            productId: string,
+            categoryId: string,
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .delete()
+                .eq("product_id", productId)
+                .eq("category_id", categoryId);
+
+            if (error) {
+                throw error;
+            }
+
+        }
+
+        // Write Batch
+
+        async createMany(
+            relations: readonly ProductCategory[],
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .insert(relations);
+
+            if (error) {
+                throw error;
+            }
+
+        }
+
+        async updateMany(
+            relations: readonly ProductCategory[],
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .rpc(
+                    "update_product_categories", {
+                        relations,
+                    },
+                );
+
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        async deleteMany(
+            relations: readonly ProductCategory[],
+        ): Promise<void> {  
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .delete()
+                .in(
+                    "product_id",
+                    relations.map((relation) => relation.product_id),
+                )
+                .in(
+                    "category_id",
+                    relations.map((relation) => relation.category_id),
+                );
+            
+            if (error) {
+                throw error;
+            }
+
+        }
+
+        async deleteManyByProductId(
+            productId: string,
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .delete()
+                .eq("product_id", productId);
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        async deleteManyByCategoryId(
+            categoryId: string,
+        ): Promise<void> {
+            const { error } = await this.client
+                .schema("commerce")
+                .from("product_categories")
+                .delete()
+                .eq("category_id", categoryId);
+
+            if (error) {
+                throw error;
+            }
 
         }
 }

@@ -4,47 +4,73 @@ import { ProductImageRepository } from '@repo/database/repositories';
 
 export interface ProductImageService {
 
-    getById(
-        id: string,
+    // Read Single
+
+    getPrimaryById(
+        productId: string,
     ): Promise<ProductImage | null>;
 
-    listByProductId(
+    getThumbnailById(
         productId: string,
+    ): Promise<ProductImage | null>;
+
+    getAllById(
+        productId: string,
+    ): Promise<ProductImage[] | null>;
+
+
+    // Read Batch
+
+    getPrimaryByIds(
+        productIds: readonly string[],
+    ): Promise<ProductImage[]>;
+    
+    getThumbnailByIds(
+        productIds: readonly string[],
     ): Promise<ProductImage[]>;
 
-    getThumbnail(
-        productId: string,
-    ): Promise<ProductImage | null>;
+    // Exists Single
 
-    getPrimary(
-        productId: string,
-    ): Promise<ProductImage | null>;
+    existsIds(
+        id: string,
+    ): Promise<boolean>;
 
-    listByProductIds(
-        ids: string[],
-    ): Promise<ReadonlyMap<string, readonly ProductImage[]>>;
 
-    listThumbnails(
-        productIds: string[],
-    ): Promise<ReadonlyMap<string, ProductImage>>;
+    // Exists Batch
 
-    // create(): Promise<ProductImage>;
+    listExistingIds(
+        ids: readonly string[],
+    ): Promise<string[]>;
 
-    // delete(
-    //     id: string,
-    // ): Promise<void>;
 
-    // update(
-    //     id: string,
-    // ): Promise<ProductImage>;
+    // Write Single
 
-    // reorder(
-    //     neworder: {productId: string, imageId: string, newOrder: number}[],
-    // ): Promise<void>;
+    create(
+        productImage: ProductImage,
+    ): Promise<void>;
 
-    // getThumbnail(
-    //     productId: string,
-    // ): Promise<ProductImage | null>;
+    update(
+        productImage: ProductImage,
+    ): Promise<void>;
+
+    delete(
+        id: string,
+    ): Promise<void>;
+    
+
+    // Write Batch
+
+    createMany(
+        productImages: readonly ProductImage[],
+    ): Promise<void>;
+
+    updateMany(
+        productImages: readonly ProductImage[],
+    ): Promise<void>;
+
+    deleteMany(
+        ids: readonly string[],
+    ): Promise<void>;
 
 }
 
@@ -53,75 +79,138 @@ export function createProductImageService(
 ): ProductImageService {
     return {
 
-        async getById(id) {
+        // Read Single
 
-            const image = 
-                await repository.get_by_id(id);
+        async getPrimaryById(
+            productId: string,
+        ): Promise<ProductImage | null> {
 
-            if (!image) {
+            const productImage = 
+                await repository.getPrimaryById(productId);
+
+            if (!productImage) {
+                return null;
+            }
+            
+            return productImage;
+           
+        },
+
+        async getThumbnailById(
+            productId: string,
+        ): Promise<ProductImage | null> {
+
+            const productImage = 
+                await repository.getThumbnailById(productId);
+            
+            if (!productImage) {
                 return null;
             }
 
-            return image;
+            return productImage;
         },
 
-        async listByProductId(productId) {
-            const images = 
-                await repository.list_by_product_id(productId);
+        async getAllById(
+            productId: string,
+        ): Promise<ProductImage[] | null> {
 
-            if (!images) {
+            if (!productId) {
+                return null;
+            }
+
+            const productImages =
+                await repository.getAllById(productId);
+
+            if (!productImages) {
+                return null;
+            }
+
+            return productImages;
+        },
+
+        // Read Batch
+
+        async getPrimaryByIds(
+            productIds: readonly string[],
+        ): Promise<ProductImage[]> {
+            
+            const productImages =
+                await repository.getPrimaryByIds(productIds);
+            
+            if (!productImages) {
                 return [];
             }
 
-            return images;
+            return productImages;
         },
 
-        async getThumbnail(productId) {
+        async getThumbnailByIds(
+            productIds: readonly string[],
+        ): Promise<ProductImage[]> {
+            const productImages =
+                await repository.getThumbnailByIds(productIds);
 
-            const thumbnail = 
-                await repository.get_thumbnail(productId);
-
-            if (!thumbnail) {
-                return null;
+            if (!productImages) {
+                return [];
             }
 
-            return thumbnail;
+            return productImages;
         },
 
-        async getPrimary(productId) {
+        // Exists Single
 
-            const primary = 
-                await repository.get_primary(productId);
-            
-            if (!primary) {
-                return null;
-            }
-
-            return primary;
+        async existsIds(
+            id: string,
+        ): Promise<boolean> {
+            return await repository.existsIds(id);
         },
 
-        async listByProductIds(ids) {
+        // Exists Batch
 
-            const images = 
-                await repository.list_by_product_ids(ids);
-            
-            if (!images) {
-                return new Map();
-            }
-
-            return images;
+        async listExistingIds(
+            ids: readonly string[],
+        ): Promise<string[]> {
+            return await repository.listExistingIds(ids);
         },
 
-        async listThumbnails(productIds) {
+        // Write Single
 
-            const thumbnails = 
-                await repository.list_thumbnails(productIds);
+        async create(
+            productImage: ProductImage,
+        ): Promise<void> {
+            await repository.create(productImage);
+        },
 
-            if (!thumbnails) {
-                return new Map();
-            }
+        async update(
+            productImage: ProductImage,
+        ): Promise<void> {
+            await repository.update(productImage);
+        },
 
-            return thumbnails;
+        async delete(
+            id: string,
+        ): Promise<void> {
+            await repository.delete(id);
+        },
+
+        // Write Batch
+
+        async createMany(
+            productImages: readonly ProductImage[],
+        ): Promise<void> {
+            await repository.createMany(productImages);
+        },
+
+        async updateMany(
+            productImages: readonly ProductImage[],
+        ): Promise<void> {
+            await repository.updateMany(productImages);
+        },
+
+        async deleteMany(
+            ids: readonly string[],
+        ): Promise<void> {
+            await repository.deleteMany(ids);
         }
 
     }

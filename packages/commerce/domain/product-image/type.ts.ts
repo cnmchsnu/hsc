@@ -6,6 +6,8 @@ export interface ProductImage {
 
     url: string;
 
+    isPrimary: boolean;
+
     alt: string | null;
 
     displayOrder: number;

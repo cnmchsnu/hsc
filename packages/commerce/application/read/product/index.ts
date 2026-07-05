@@ -1,0 +1,1 @@
+export { createProductReadService, type ProductReadService } from './readService';

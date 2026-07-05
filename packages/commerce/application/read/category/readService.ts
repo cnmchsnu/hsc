@@ -10,6 +10,8 @@ import type {
     CategoryNavigation,
 } from "../../projections"
 
+import type { CategoryPage } from "./type";
+
 // builders
 import {
     buildCategoryTree,
@@ -23,6 +25,10 @@ import { CategoryNotFoundError } from '../../../domain/category/error';
 
 
 export interface CategoryReadService {
+
+    getCategoryPage(
+        slug: string,
+    ): Promise<CategoryPage | null>;
 
     getTree(): Promise<readonly CategoryTree[]>;
 
@@ -68,16 +74,17 @@ class DefaultCategoryReadService
     ): Promise<readonly BreadcrumbItem[]> {
 
         const category =
-            await this.categoryService.getBySlug(slug);
+            await this.categoryService.findBySlug(slug);
 
         if (!category) {
             throw new CategoryNotFoundError(slug);
         }
 
         const path =
-            await this.categoryService.getPathToRoot(
-                category.id,
-            );
+            await this.categoryService
+                .findPathToRoot(
+                    category.id
+                );
 
         return buildBreadcrumb(path);
 
@@ -97,6 +104,35 @@ class DefaultCategoryReadService
 
         return buildCategoryNavigation(tree, selectedSlugs);
 
+
+    }
+
+    async getCategoryPage(
+        slug: string,
+    ): Promise<CategoryPage | null> {
+
+
+        const category = await this.categoryService.findBySlug(slug);
+
+        if (!category) {
+            return null;
+        }
+
+        const breadcrumb = 
+            await this
+                .getBreadcrumb(
+                    category.id
+                );
+
+        const tree =
+            await this.getTree();
+
+
+        return {
+            category,
+            breadcrumb,
+            tree,
+        };
 
     }
 }
