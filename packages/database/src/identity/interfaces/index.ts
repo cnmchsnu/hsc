@@ -1,3 +1,1 @@
-export * from "./permission-repo";
-export * from "./profile-repo";
-export * from "./role-repo";
+export * from "../../../repositories/identity/permission-repo";

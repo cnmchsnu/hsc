@@ -1,0 +1,1 @@
+export { SupabaseProductImageService } from '../../../../database/src/product-image/supabase/product-image.repository';

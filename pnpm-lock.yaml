@@ -290,6 +290,18 @@ importers:
         specifier: ^17.0.8
         version: 17.0.8(i18next@26.3.2(typescript@5.9.3))(react@19.2.4)(typescript@5.9.3)
 
+  packages/infra:
+    dependencies:
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../database
+      '@supabase/supabase-js':
+        specifier: ^2.108.2
+        version: 2.108.2
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+
   packages/shared: {}
 
   packages/typescript-config: {}

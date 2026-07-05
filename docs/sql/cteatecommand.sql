@@ -167,37 +167,23 @@ CREATE TABLE commerce.product_snapshots (
 
 create table commerce.categories (
 
-    id uuid primary key
-        default gen_random_uuid(),
+    id uuid primary key default gen_random_uuid(),
 
-    parent_id uuid
-        references commerce.categories(id)
-        on delete set null,
+    parent_id uuid references commerce.categories(id) on delete set null,
 
-    name text
-        not null,
+    name text not null,
 
-    slug text
-        not null
-        unique,
+    slug text not null unique,
 
     description text,
 
-    display_order integer
-        not null
-        default 0,
+    display_order integer not null default 0,
 
-    status text
-        not null
-        default 'active',
+    status text not null default 'active',
 
-    created_at timestamptz
-        not null
-        default now(),
+    created_at timestamptz not null default now(),
 
-    updated_at timestamptz
-        not null
-        default now(),
+    updated_at timestamptz not null default now(),
 
     constraint categories_status_check
         check (
@@ -219,23 +205,17 @@ on commerce.categories(display_order);
 
 create table commerce.product_categories (
 
-    product_id uuid
-        not null
-        references commerce.products(id)
-        on delete cascade,
+    product_id uuid not null references commerce.products(id) on delete cascade,
 
-    category_id uuid
-        not null
-        references commerce.categories(id)
-        on delete cascade,
+    category_id uuid not null references commerce.categories(id) on delete cascade,
 
-    display_order integer
-        not null
-        default 0,
+    is_primary boolean not null default false,
 
-    created_at timestamptz
-        not null
-        default now(),
+    display_order integer not null default 0,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now(),
 
     primary key (
         product_id,

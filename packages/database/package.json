@@ -11,17 +11,12 @@
         "server-only": "^0.0.1"
     },
     "exports": {
-        ".": "./src/index.ts",
-        "./proxy": "./src/client/proxy.ts",
-        "./client/browser": "./src/client/browser.ts",
-        "./client/server": "./src/client/server.ts",
-        "./identity": "./src/identity/index.ts",
-        "./auth": "./src/authentication/index.ts",
-        "./authorization": "./src/authorization/index.ts",
-        "./product": "./src/product/index.ts",
-        "./generated": "./src/generated/index.ts",
-        "./category": "./src/category/index.ts",
-        "./read-models": "./src/application/read-models/index.ts",
-        "./product-image": "./src/product-image/index.ts"
+        "./proxy": "./client/proxy.ts",
+        "./client/browser": "./client/browser.ts",
+        "./client/server": "./client/server.ts",
+        "./client/supabase": "./client/supabase.ts",
+        "./entities": "./entities/index.ts",
+        "./mappers": "./mappers/index.ts",
+        "./repositories": "./repositories/index.ts"
     }
 }

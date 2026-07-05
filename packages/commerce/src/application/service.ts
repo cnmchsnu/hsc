@@ -23,7 +23,7 @@ import type {
 
 import { ProductCategoryRepository } from '@repo/database/read-models';
 
-import { CategoryNotFoundError, CategoryTreeError } from '../errors/errors';
+import { CategoryNotFoundError, CategoryTreeError } from '../../application/read/catgory/error';
 
 import {
     buildBreadcrumb,
@@ -61,20 +61,6 @@ export interface CommerceService {
     getCategoryPage(
         slug: string,
     ): Promise<CategoryPage | null>;
-
-    searchProducts(
-        criteria: ProductSearchCriteria,
-    ): Promise<ProductSearchResult>;
-
-    getTree(): Promise<readonly CategoryTree[]>;
-
-    getNavigation(
-        selectedSlugs: readonly string[],
-    ): Promise<CategoryNavigation>;
-
-    getBreadcrumb(
-        slug: string,
-    ): Promise<readonly BreadcrumbItem[]>;
 
 }
 
@@ -337,88 +323,6 @@ export class DefaultCommerceService
         };
 
     }
-
-    async searchProducts(
-        criteria: ProductSearchCriteria,
-    ): Promise<ProductSearchResult> {
-
-        const products = await this.productService.list({
-            page: criteria.page,
-            pageSize: criteria.pageSize,
-            keyword: criteria.keyword,
-            categoryIds: criteria.categoryIds ? [...criteria.categoryIds] : undefined,
-            status: ["active"],
-            sort: criteria.sort,
-        });
-
-        const summaries = await this.getProductSummaries(
-            products.items,
-        );
-
-        return {
-            items: summaries,
-            total: products.total,
-            page: products.page,
-            pageSize: products.pageSize,
-            totalPages: products.total,
-        }
-
-
-    }
-
-    async getTree() {
-
-        const categories = await this.categoryService.list();
-            
-        const tree = buildCategoryTree(categories);
-
-        if (!tree) {
-               throw new CategoryTreeError("Failed to build category tree");
-        }
-
-        return tree;
-
-    }  
-
-    async getBreadcrumb(
-        slug: string,
-    ): Promise<readonly BreadcrumbItem[]> {
-
-        const category =
-            await this.categoryService.getBySlug(slug);
-
-        if (!category) {
-            throw new CategoryNotFoundError(slug);
-        }
-
-        const path =
-            await this.categoryService.getPathToRoot(
-                category.id,
-            );
-
-        return buildBreadcrumb(path);
-
-    }
-
-    async getNavigation(
-        selectedSlugs: readonly string[],
-    ) {
-
-        const categories = await this.categoryService.list();
-
-        const tree = buildCategoryTree(categories);
-
-        if (!tree) {
-            throw new CategoryTreeError("Failed to build category tree");
-        }
-
-        return buildCategoryNavigation(tree, selectedSlugs);
-
-
-    } 
-
-
-
     
 }
 
