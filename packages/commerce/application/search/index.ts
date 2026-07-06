@@ -1,0 +1,1 @@
+export { createProductSearchService } from './product';

@@ -1,0 +1,14 @@
+{
+    "name": "@repo/commerce",
+    "private": true,
+    "dependencies": {
+        "@repo/database": "workspace:*",
+        "@repo/infra": "workspace:*",
+        "@supabase/postgrest-js": "^2.109.0",
+        "@supabase/supabase-js": "^2.108.2"
+    },
+    "exports": {
+        "./application": "./application/index.ts",
+        "./server": "./server/index.ts"
+    }
+}

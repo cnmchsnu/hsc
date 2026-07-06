@@ -1,0 +1,1 @@
+export { SupabaseProfileRepository } from './profile.repository';

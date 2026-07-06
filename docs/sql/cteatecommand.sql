@@ -87,6 +87,8 @@ CREATE TABLE commerce.campaigns (
 CREATE TABLE commerce.products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
+    slug TEXT NOT NULL UNIQUE
+
     name TEXT NOT NULL,
     description TEXT,
 
@@ -94,14 +96,26 @@ CREATE TABLE commerce.products (
 
     currency TEXT NOT NULL DEFAULT 'TWD',
 
+    compare_at_price INTEGER,
+
     stock_total INTEGER NOT NULL DEFAULT 0,
     stock_sold INTEGER NOT NULL DEFAULT 0,
 
     status TEXT NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
+
+create index idx_products_category_id
+on commerce.products(category_id);
+
+create index idx_products_status
+on commerce.products(status);
+
+create unique index idx_products_slug
+on commerce.products(slug);
 
 CREATE TABLE commerce.campaign_products (
     campaign_id UUID NOT NULL REFERENCES commerce.campaigns(id) ON DELETE CASCADE,
@@ -112,7 +126,6 @@ CREATE TABLE commerce.campaign_products (
     PRIMARY KEY (campaign_id, product_id)
 );
 
--- MVP Optional
 CREATE TABLE commerce.campaign_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -125,7 +138,6 @@ CREATE TABLE commerce.campaign_images (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- MVP Optional
 CREATE TABLE commerce.product_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -133,9 +145,13 @@ CREATE TABLE commerce.product_images (
 
     storage_path TEXT NOT NULL,
 
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+
     display_order INTEGER NOT NULL DEFAULT 0,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE commerce.product_snapshots (
@@ -151,6 +167,71 @@ CREATE TABLE commerce.product_snapshots (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+create table commerce.categories (
+
+    id uuid primary key default gen_random_uuid(),
+
+    parent_id uuid references commerce.categories(id) on delete set null,
+
+    name text not null,
+
+    slug text not null unique,
+
+    description text,
+
+    display_order integer not null default 0,
+
+    status text not null default 'active',
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now(),
+    version bigint NOT NULL DEFAULT 1,
+
+    constraint categories_status_check
+        check (
+            status in (
+                'active',
+                'inactive'
+            )
+        )
+);
+
+create index idx_categories_parent_id
+on commerce.categories(parent_id);
+
+create index idx_categories_status
+on commerce.categories(status);
+
+create index idx_categories_display_order
+on commerce.categories(display_order);
+
+create table commerce.product_categories (
+
+    product_id uuid not null references commerce.products(id) on delete cascade,
+
+    category_id uuid not null references commerce.categories(id) on delete cascade,
+
+    is_primary boolean not null default false,
+
+    display_order integer not null default 0,
+
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now(),
+    version bigint NOT NULL DEFAULT 1,
+    primary key (
+        product_id,
+        category_id
+    )
+);
+
+create index idx_product_categories_category
+on commerce.product_categories(category_id);
+
+create index idx_product_categories_product
+on commerce.product_categories(product_id);
 
 CREATE TABLE commerce.carts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

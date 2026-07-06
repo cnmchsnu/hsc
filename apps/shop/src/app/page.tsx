@@ -6,14 +6,8 @@ import {
   PromoCountdown
 } from "./components/home"
 
-interface Countdown {
-  hours: string;
-  minutes: string;
-  seconds: string;
-}
-
 export default async function Home() {
-
+  
 
   return (
     <div className="flex-grow flex flex-col">

@@ -1,6 +1,9 @@
-"use client";
 
-import { useState } from "react";
+import { getCurrentUser } from "@repo/auth/server";
+import { redirect } from 'next/navigation';
+
+import { PersonnalData, Actions } from "./components/";
+
 
 interface Order {
   id: string;
@@ -9,29 +12,20 @@ interface Order {
   status: "待配貨" | "可取貨" | "已完成";
 }
 
-export default function UserProfile() {
-  const [name, setName] = useState("陳小明");
-  const [phone, setPhone] = useState("0912-345-678");
-  const [email, setEmail] = useState("s11200123@gs.hs.ntnu.edu.tw");
-  const [studentId, setStudentId] = useState("11200123");
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+export default async function UserProfile() {
+  const currentuser = await getCurrentUser();
+
+  if (!currentuser) {
+    redirect("/login")
+  }
+
+  const userData = {name: currentuser?.displayName!, studentId: currentuser?.studentId!, email: currentuser?.email!, class: "1674", number: "00" };
 
   const orders: Order[] = [
     { id: "#HSNU-2024-0082", date: "2024/03/15", total: 1280, status: "待配貨" },
     { id: "#HSNU-2024-0075", date: "2024/02/28", total: 450, status: "可取貨" },
     { id: "#HSNU-2024-0012", date: "2024/01/10", total: 2100, status: "已完成" },
   ];
-
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
-    }, 1000);
-  };
 
   const getStatusStyle = (status: Order["status"]) => {
     if (status === "待配貨") return "bg-blue-100 text-blue-700";
@@ -48,26 +42,22 @@ export default function UserProfile() {
           <section className="bento-card bg-surface rounded-xl p-stack-lg flex flex-col items-center text-center border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
             <div className="relative w-32 h-32 mb-stack-md">
               <div className="w-full h-full rounded-full border-4 border-white shadow-md overflow-hidden bg-surface-container">
-                <img
-                  className="w-full h-full object-cover"
-                  alt="Student Avatar"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7psVRW_zk5tdh3CoktGgQhaZxxHwqx9d84SOHB-7LXsgY32K9kA3Je1Zo-FF7ArEX4aJEAR1eQNcOLz_Y_EUYI1kD5cxvJuWO7oTr7ZOrZY1SVAhfklDb0iqQuOKIcJ6DMQ651bazHVtqT-srMjXkfu5SF7UqF0ngvtFV38UOzrK64lLSNzkP8Q2QLBlmrTwRxdfnVFD-R-rd7j1yLO23WvmQ8X4TdsbKMjS50UOySefy2gFjyawr48cmzvJD6zj9ppDLMA9jg6Q"
-                />
+                { currentuser?.avatarUrl ? ( <img src={currentuser.avatarUrl!}/>) : <span></span> }
               </div>
-              <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-container transition-colors flex items-center justify-center">
+              {/* <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-container transition-colors flex items-center justify-center">
                 <span className="material-symbols-outlined text-sm font-bold">edit</span>
-              </button>
+              </button> */}
             </div>
-            <h1 className="font-headline-md text-headline-md text-on-surface font-bold text-2xl">{name}</h1>
-            <p className="font-label-md text-label-md text-text-secondary mt-1">學號：{studentId}</p>
-            <div className="mt-stack-md flex gap-stack-sm flex-wrap justify-center">
+            <h1 className="font-headline-md text-headline-md text-on-surface font-bold text-2xl">{currentuser?.displayName}</h1>
+            <p className="font-label-md text-label-md text-text-secondary mt-1">學號：{currentuser?.studentId}</p>
+            {/* <div className="mt-stack-md flex gap-stack-sm flex-wrap justify-center">
               <span className="px-3 py-1 bg-surface-container-high rounded-full font-label-sm text-label-sm text-primary font-bold">
                 高二 誠班
               </span>
               <span className="px-3 py-1 bg-surface-container-high rounded-full font-label-sm text-label-sm text-primary font-bold">
                 校慶籌備組
               </span>
-            </div>
+            </div> */}
           </section>
 
           {/* Membership Status Card */}
@@ -102,98 +92,14 @@ export default function UserProfile() {
           </section>
 
           {/* Settings & Actions */}
-          <section className="bento-card bg-surface rounded-xl p-stack-md flex flex-col gap-2 border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
-            <button className="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-lg transition-colors group">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">
-                  lock_reset
-                </span>
-                <span className="font-label-md text-label-md">更改密碼</span>
-              </div>
-              <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-            </button>
-            <button className="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-lg transition-colors group">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">
-                  shield_person
-                </span>
-                <span className="font-label-md text-label-md">隱私設定</span>
-              </div>
-              <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
-            </button>
-            <div className="h-px bg-outline-variant my-1"></div>
-            <button className="flex items-center justify-between p-3 hover:bg-error-container/30 rounded-lg transition-colors group text-error">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined">logout</span>
-                <span className="font-label-md text-label-md">登出</span>
-              </div>
-            </button>
-          </section>
+          <Actions />
         </div>
 
         {/* Right Column: Form & History */}
         <div className="lg:col-span-8 flex flex-col gap-gutter">
           {/* Personal Information Form */}
-          <section className="bento-card bg-white rounded-xl p-stack-lg border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
-            <form onSubmit={handleSave}>
-              <div className="flex items-center justify-between mb-stack-lg flex-wrap gap-4">
-                <h2 className="font-headline-md text-headline-md text-on-surface font-bold text-2xl">個人基本資料</h2>
-                <div className="flex items-center gap-2">
-                  {saved && <span className="text-secondary text-sm font-bold">✓ 儲存成功</span>}
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-full font-label-md hover:bg-primary-container transition-all active:scale-95 shadow-sm disabled:opacity-50 font-bold text-sm"
-                  >
-                    <span className="material-symbols-outlined text-sm font-bold">save</span>
-                    {saving ? "儲存中..." : "儲存變更"}
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md text-on-surface-variant block">姓名</label>
-                  <input
-                    className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md text-on-surface-variant block">學號 / 教職員代碼</label>
-                  <input
-                    className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all"
-                    type="text"
-                    value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md text-on-surface-variant block">手機號碼</label>
-                  <input
-                    className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-label-md text-label-md text-on-surface-variant block">學校信箱</label>
-                  <input
-                    className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            </form>
-          </section>
+
+          <PersonnalData {...userData} />
 
           {/* Order History Table */}
           <section className="bento-card bg-white rounded-xl p-stack-lg border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200 overflow-hidden">

@@ -27,5 +27,7 @@ export function buildSyncUpdate(
         update.avatarUrl = input.AvatarUrl;
     }
 
+    update.studentId = input.StudentId
+
     return update;
 }

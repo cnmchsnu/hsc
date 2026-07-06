@@ -1,27 +1,31 @@
 import "server-only";
 
 import { requireUser } from "./require-user";
+import { createCurrentUserAbility } from "../ability";
 
 import { PermissionDeniedError } from "../errors/permission-denied";
 
 import type { PermissionKey } from "../types";
 
 export async function requirePermission(
-    permissions: PermissionKey,
+    permission: PermissionKey,
 ): Promise<void> {
+
 
     const currentUser =
         await requireUser();
 
-    if (
-        !currentUser.permissions.has(
-            permissions,
-        )
-    ) {
-        console.log(currentUser.permissions)
-        throw new PermissionDeniedError(
-            permissions,
+    const ability =
+        createCurrentUserAbility(
+            currentUser,
         );
+
+    if (!ability.can(permission)) {
+
+        throw new PermissionDeniedError(
+            permission,
+        );
+
     }
 
 }

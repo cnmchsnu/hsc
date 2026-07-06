@@ -1,0 +1,1 @@
+export { SupabaseCategoryIdentifier } from "./category-identifier.repository";

@@ -19,12 +19,9 @@ export default function LoginPage() {
     document.title = "會員登入 - 學生會商城";
   }, []);
 
-  useEffect(() => {
-  console.log("檢查變數:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-  }, []);
 
   useOneTap({
-    clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!, 
+    clientId: process.env.GOOGLE_CLIENT_ID!, 
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,7 +44,7 @@ const handleGoogleLogin = async () => {
     } finally {
       setIsLoading(false)
     }
-  }
+}
 
 
 
@@ -159,18 +156,18 @@ const handleGoogleLogin = async () => {
           </form>
 
           {/* Navigation for registration */}
-          <div className="mt-8 text-center">
+          {/* <div className="mt-8 text-center">
             <p className="font-body-md text-on-surface-variant text-sm">
               還沒有帳號嗎？{" "}
               <Link href="#" className="text-primary-container font-bold hover:underline decoration-2 underline-offset-4">
                 立即註冊
               </Link>
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Footer Trust Badges */}
-        <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
+        {/* <div className="mt-8 flex flex-wrap justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">shield</span>
             <span className="text-xs font-semibold">SSL 安全加密</span>
@@ -179,7 +176,7 @@ const handleGoogleLogin = async () => {
             <span className="material-symbols-outlined text-lg">school</span>
             <span className="text-xs font-semibold">師大附中學生會認證</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </main>
   );

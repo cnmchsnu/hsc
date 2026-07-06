@@ -1,0 +1,2 @@
+export { createProductResolveService, type ProductResolveService } from "./product-identifier-service";
+export { createCategoryResolveService, type CategoryResolveService } from "./category-identifier-service";
