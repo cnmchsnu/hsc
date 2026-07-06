@@ -5,9 +5,9 @@ import { CategoryService } from '../../../domain/category';
 
 // types
 import type {
-    CategoryTree,
     BreadcrumbItem,
     CategoryNavigation,
+    CategoryTreeNode,
 } from "../../projections"
 
 import type { CategoryPage } from "./type";
@@ -15,6 +15,7 @@ import type { CategoryPage } from "./type";
 // builders
 import {
     buildCategoryTree,
+    buildCategoryTreeNode,
     buildBreadcrumb,
     buildCategoryNavigation,
 } from "../../projections"
@@ -30,7 +31,7 @@ export interface CategoryReadService {
         slug: string,
     ): Promise<CategoryPage | null>;
 
-    getCategoryTree(): Promise<readonly CategoryTree[]>;
+    getCategoryTree(): Promise<readonly CategoryTreeNode[]>;
 
     // getNavigation(
     //     selectedSlugs: readonly string[],
@@ -61,11 +62,13 @@ class DefaultCategoryReadService
             
         const tree = buildCategoryTree(categories);
 
-        if (!tree) {
+        const treeNodes = buildCategoryTreeNode(tree);
+
+        if (!treeNodes) {
                throw new CategoryTreeError("Failed to build category tree");
         }
 
-        return tree;
+        return treeNodes;
 
     }  
 

@@ -1,4 +1,5 @@
-import type { CategoryTree, CategoryTreeNode } from "../projections/category";
+import type { CategoryTree } from "../build-graph-tree";
+import type { CategoryTreeNode } from "../build-category-tree-node";
 
 export function toCategoryTreeNodes(
     trees: readonly CategoryTree[],
