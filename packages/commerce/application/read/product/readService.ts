@@ -24,6 +24,10 @@ export interface ProductReadService {
         slug: string,
     ): Promise<ProductSummary | null>;
 
+    getProductSummaries(
+        products: readonly Product[],
+    ): Promise<ProductSummary[]>;
+
     getProductSummariesBySlugs(
         slugs: readonly string[],
     ): Promise<ProductSummary[]>;
@@ -142,7 +146,7 @@ class DefaultProductReadService
 
     }
 
-    private async getProductSummaries(
+    async getProductSummaries(
         products: readonly Product[],
     ): Promise<ProductSummary[]> {
 
