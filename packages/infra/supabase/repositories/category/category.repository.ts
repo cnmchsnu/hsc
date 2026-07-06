@@ -276,7 +276,15 @@ export class SupabaseCategoryRepository
                 .rpc(
                     "update_categories",
                     {
-                        p_categories: categories,
+                        categories: categories.map((cat: Category) => ({
+                            id: cat.id,
+                            name: cat.name,
+                            slug: cat.slug,
+                            status: cat.status,
+                            display_order: cat.displayOrder,
+                            description: cat.description,
+                            parent_id: cat.parentId,
+                        })),
                     }
                 );
 

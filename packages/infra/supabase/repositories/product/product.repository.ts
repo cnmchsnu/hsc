@@ -418,7 +418,14 @@ export class SupabaseProductRepository
         const { error } = await this.client
             .schema("commerce")
             .rpc("update_products", {
-                products,
+                products: products.map((product: Product) => ({
+                    id: product.id,
+                    name: product.name,
+                    slug: product.slug,
+                    description: product.description,
+                    status: product.status,
+                    price: product.price,
+                }))
             });
 
         if (error) {

@@ -12,11 +12,3 @@ export interface CategoryPage {
 
 }
 
-export interface CategorySelectionState {
-
-    selectedCategoryIds: readonly string[];
-
-    expandedCategoryIds: readonly string[];
-
-}
-

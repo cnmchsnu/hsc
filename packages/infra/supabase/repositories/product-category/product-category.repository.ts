@@ -213,7 +213,12 @@ export class SupabaseProductCategoryRepository
                 .schema("commerce")
                 .rpc(
                     "update_product_categories", {
-                        relations,
+                        relations: relations.map((relation) => ({
+                            product_id: relation.product_id,
+                            category_id: relation.category_id,
+                            is_primary: relation.is_primary,
+                            display_order: relation.display_order,
+                        })),
                     },
                 );
 

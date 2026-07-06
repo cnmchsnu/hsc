@@ -286,7 +286,12 @@ export class SupabaseProductImageService
         const  { error } = await this.client
             .schema("commerce")
             .rpc("update_product_images", {
-                product_images: productImages,
+                product_images: productImages.map((img: ProductImage) => ({
+                    product_id: img.productId,
+                    storage_path: img.url,
+                    is_primary: img.isPrimary,
+                    display_order: img.displayOrder,
+                }))
             });
 
         

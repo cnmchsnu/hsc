@@ -104,7 +104,8 @@ CREATE TABLE commerce.products (
     status TEXT NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 create index idx_products_category_id
@@ -149,7 +150,8 @@ CREATE TABLE commerce.product_images (
     display_order INTEGER NOT NULL DEFAULT 0,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE commerce.product_snapshots (
@@ -185,6 +187,7 @@ create table commerce.categories (
     created_at timestamptz not null default now(),
 
     updated_at timestamptz not null default now(),
+    version bigint NOT NULL DEFAULT 1,
 
     constraint categories_status_check
         check (
@@ -217,7 +220,7 @@ create table commerce.product_categories (
     created_at timestamptz not null default now(),
 
     updated_at timestamptz not null default now(),
-
+    version bigint NOT NULL DEFAULT 1,
     primary key (
         product_id,
         category_id

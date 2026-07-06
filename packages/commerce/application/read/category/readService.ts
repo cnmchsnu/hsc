@@ -30,11 +30,11 @@ export interface CategoryReadService {
         slug: string,
     ): Promise<CategoryPage | null>;
 
-    getTree(): Promise<readonly CategoryTree[]>;
+    getCategoryTree(): Promise<readonly CategoryTree[]>;
 
-    getNavigation(
-        selectedSlugs: readonly string[],
-    ): Promise<CategoryNavigation>;
+    // getNavigation(
+    //     selectedSlugs: readonly string[],
+    // ): Promise<CategoryNavigation>;
 
     getBreadcrumb(
         slug: string,
@@ -55,7 +55,7 @@ class DefaultCategoryReadService
         private readonly categoryService: CategoryService,
     ) {}
 
-    async getTree() {
+    async getCategoryTree() {
 
         const categories = await this.categoryService.list();
             
@@ -90,22 +90,22 @@ class DefaultCategoryReadService
 
     }
 
-    async getNavigation(
-        selectedSlugs: readonly string[],
-    ) {
+    // async getNavigation(
+    //     selectedSlugs: readonly string[],
+    // ) {
 
-        const categories = await this.categoryService.list();
+    //     const categories = await this.categoryService.list();
 
-        const tree = buildCategoryTree(categories);
+    //     const tree = buildCategoryTree(categories);
 
-        if (!tree) {
-            throw new CategoryTreeError("Failed to build category tree");
-        }
+    //     if (!tree) {
+    //         throw new CategoryTreeError("Failed to build category tree");
+    //     }
 
-        return buildCategoryNavigation(tree, selectedSlugs);
+    //     return buildCategoryNavigation(tree, selectedSlugs);
 
 
-    }
+    // }
 
     async getCategoryPage(
         slug: string,
@@ -125,7 +125,7 @@ class DefaultCategoryReadService
                 );
 
         const tree =
-            await this.getTree();
+            await this.getCategoryTree();
 
 
         return {
