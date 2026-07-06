@@ -4,7 +4,7 @@ import {
     ProductGrid,
 } from "./components";
 
-import { searchProducts, getCategoryTree } from "@repo/commerce/server";
+import { searchProducts, getCategoryTree, getNavigation } from "@repo/commerce/server";
 import StoreNotReady from "./not-opened";
 
 type searchParams = Promise<{
@@ -34,6 +34,8 @@ export default async function ProductList({ searchParams }: PageProps) {
 
     const categories = await getCategoryTree();
 
+    const categoriesNavigation = await getNavigation(searchCriteria.categoryIds || []);
+
     const products = await searchProducts({
         keyword: searchCriteria.keyword,
         categoryIds: searchCriteria.categoryIds,
@@ -51,7 +53,7 @@ export default async function ProductList({ searchParams }: PageProps) {
     return (
         <div className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row gap-gutter">
         {/* Left Sidebar Filter */}
-        <FilterPanel categories={categories} />
+        <FilterPanel categoriesNavigation={categoriesNavigation!} />
 
         {/* Main Product Grid Area */}
         <ProductGrid products={products!} />

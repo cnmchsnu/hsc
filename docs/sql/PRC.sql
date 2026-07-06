@@ -131,3 +131,464 @@ select
 from path
 order by depth desc;
 $$
+
+CREATE OR REPLACE FUNCTION commerce.update_products(
+    products jsonb
+)
+RETURNS TABLE (
+
+    id uuid,
+
+    success boolean,
+
+    reason text,
+
+    version bigint
+
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$$
+BEGIN
+
+RETURN QUERY
+
+WITH updated AS (
+
+    UPDATE commerce.products AS p
+
+    SET
+
+        slug = u.slug,
+
+        name = u.name,
+
+        description = u.description,
+
+        price = u.price,
+
+        status = u.status,
+
+        version = p.version + 1,
+
+        updated_at = now()
+
+    FROM jsonb_to_recordset(products) AS u(
+
+        id uuid,
+
+        version bigint,
+
+        slug text,
+
+        name text,
+
+        description text,
+
+        price numeric,
+
+        status text
+
+    )
+
+    WHERE
+
+        p.id = u.id
+
+        AND p.version = u.version
+
+    RETURNING
+
+        p.id,
+
+        p.version
+
+)
+
+SELECT
+
+    u.id,
+
+    updated.id IS NOT NULL,
+
+    CASE
+
+        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
+
+        ELSE NULL
+
+    END,
+
+    COALESCE(updated.version, u.version)
+
+FROM jsonb_to_recordset(products) AS u(
+
+    id uuid,
+
+    version bigint,
+
+    slug text,
+
+    name text,
+
+    description text,
+
+    price numeric,
+
+    status text
+
+)
+
+LEFT JOIN updated
+
+ON updated.id = u.id;
+
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION commerce.update_product_images(
+    product_images jsonb
+)
+RETURNS TABLE (
+
+    id uuid,
+
+    success boolean,
+
+    reason text,
+
+    version bigint
+
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$$
+BEGIN
+
+RETURN QUERY
+
+WITH updated AS (
+
+    UPDATE commerce.product_images AS p
+
+    SET
+
+        product_id = u.product_id,
+
+        storage_path = u.storage_path,
+
+        display_order = u.display_order,
+
+        is_primary = u.is_primary,
+
+        status = u.status,
+
+        version = p.version + 1,
+
+        updated_at = now()
+
+    FROM jsonb_to_recordset(product_images) AS u(
+
+        id uuid,
+
+        version bigint,
+
+        product_id uuid,
+
+        storage_path text,
+
+        display_order integer,
+
+        is_primary boolean,
+
+        status text
+
+    )
+
+    WHERE
+
+        p.id = u.id
+
+        AND p.version = u.version
+
+    RETURNING
+
+        p.id,
+
+        p.version
+
+)
+
+SELECT
+
+    u.id,
+
+    updated.id IS NOT NULL,
+
+    CASE
+
+        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
+
+        ELSE NULL
+
+    END,
+
+    COALESCE(updated.version, u.version)
+
+FROM jsonb_to_recordset(product_images) AS u(
+
+    id uuid,
+
+    version bigint,
+
+    product_id uuid,
+
+    storage_path text,
+
+    display_order integer,
+
+    is_primary boolean,
+
+    status text
+
+)
+
+LEFT JOIN updated
+
+ON updated.id = u.id;
+
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION commerce.update_product_categories(
+    product_categories jsonb
+)
+RETURNS TABLE (
+
+    id uuid,
+
+    success boolean,
+
+    reason text,
+
+    version bigint
+
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$$
+BEGIN
+
+RETURN QUERY
+
+WITH updated AS (
+
+    UPDATE commerce.product_categories AS p
+
+    SET
+
+        product_id = u.product_id,
+
+        category_id = u.category_id,
+
+        display_order = u.display_order,
+
+        is_primary = u.is_primary,
+
+        version = p.version + 1,
+
+        updated_at = now()
+
+    FROM jsonb_to_recordset(product_categories) AS u(
+
+        id uuid,
+
+        version bigint,
+
+        product_id uuid,
+
+        category_id uuid,
+
+        display_order integer,
+
+        is_primary boolean
+
+    )
+
+    WHERE
+
+        p.id = u.id
+
+        AND p.version = u.version
+
+    RETURNING
+
+        p.id,
+
+        p.version
+
+)
+
+SELECT
+
+    u.id,
+
+    updated.id IS NOT NULL,
+
+    CASE
+
+        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
+
+        ELSE NULL
+
+    END,
+
+    COALESCE(updated.version, u.version)
+
+FROM jsonb_to_recordset(product_categories) AS u(
+
+    id uuid,
+
+    version bigint,
+
+    product_id uuid,
+
+    category_id uuid,
+
+    display_order integer,
+
+    is_primary boolean
+
+)
+
+LEFT JOIN updated
+
+ON updated.id = u.id;
+
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION commerce.update_categories(
+    categories jsonb
+)
+RETURNS TABLE (
+
+    id uuid,
+
+    success boolean,
+
+    reason text,
+
+    version bigint
+
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$$
+BEGIN
+
+RETURN QUERY
+
+WITH updated AS (
+
+    UPDATE commerce.categories AS p
+
+    SET
+
+        partent_id = u.parent_id,    
+
+        slug = u.slug,
+
+        name = u.name,
+
+        description = u.description,
+
+        display_order = u.display_order,
+
+        status = u.status,
+
+        version = p.version + 1,
+
+        updated_at = now()
+
+    FROM jsonb_to_recordset(categories) AS u(
+
+        id uuid,
+
+        version bigint,
+
+        parent_id uuid,
+
+        slug text,
+
+        name text,
+
+        description text,
+
+        display_order integer,
+
+        status text
+
+    )
+
+    WHERE
+
+        p.id = u.id
+
+        AND p.version = u.version
+
+    RETURNING
+
+        p.id,
+
+        p.version
+
+)
+
+SELECT
+
+    u.id,
+
+    updated.id IS NOT NULL,
+
+    CASE
+
+        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
+
+        ELSE NULL
+
+    END,
+
+    COALESCE(updated.version, u.version)
+
+FROM jsonb_to_recordset(categories) AS u(
+
+    id uuid,
+
+    version bigint,
+
+    parent_id uuid,
+
+    slug text,
+
+    name text,
+
+    description text,
+
+    display_order integer,
+
+    status text
+
+)
+
+LEFT JOIN updated
+
+ON updated.id = u.id;
+
+END;
+$$;

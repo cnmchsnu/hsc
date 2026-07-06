@@ -104,7 +104,8 @@ CREATE TABLE commerce.products (
     status TEXT NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 create index idx_products_category_id
@@ -125,7 +126,6 @@ CREATE TABLE commerce.campaign_products (
     PRIMARY KEY (campaign_id, product_id)
 );
 
--- MVP Optional
 CREATE TABLE commerce.campaign_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -138,7 +138,6 @@ CREATE TABLE commerce.campaign_images (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- MVP Optional
 CREATE TABLE commerce.product_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -146,9 +145,13 @@ CREATE TABLE commerce.product_images (
 
     storage_path TEXT NOT NULL,
 
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+
     display_order INTEGER NOT NULL DEFAULT 0,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE commerce.product_snapshots (
@@ -167,37 +170,24 @@ CREATE TABLE commerce.product_snapshots (
 
 create table commerce.categories (
 
-    id uuid primary key
-        default gen_random_uuid(),
+    id uuid primary key default gen_random_uuid(),
 
-    parent_id uuid
-        references commerce.categories(id)
-        on delete set null,
+    parent_id uuid references commerce.categories(id) on delete set null,
 
-    name text
-        not null,
+    name text not null,
 
-    slug text
-        not null
-        unique,
+    slug text not null unique,
 
     description text,
 
-    display_order integer
-        not null
-        default 0,
+    display_order integer not null default 0,
 
-    status text
-        not null
-        default 'active',
+    status text not null default 'active',
 
-    created_at timestamptz
-        not null
-        default now(),
+    created_at timestamptz not null default now(),
 
-    updated_at timestamptz
-        not null
-        default now(),
+    updated_at timestamptz not null default now(),
+    version bigint NOT NULL DEFAULT 1,
 
     constraint categories_status_check
         check (
@@ -219,24 +209,18 @@ on commerce.categories(display_order);
 
 create table commerce.product_categories (
 
-    product_id uuid
-        not null
-        references commerce.products(id)
-        on delete cascade,
+    product_id uuid not null references commerce.products(id) on delete cascade,
 
-    category_id uuid
-        not null
-        references commerce.categories(id)
-        on delete cascade,
+    category_id uuid not null references commerce.categories(id) on delete cascade,
 
-    display_order integer
-        not null
-        default 0,
+    is_primary boolean not null default false,
 
-    created_at timestamptz
-        not null
-        default now(),
+    display_order integer not null default 0,
 
+    created_at timestamptz not null default now(),
+
+    updated_at timestamptz not null default now(),
+    version bigint NOT NULL DEFAULT 1,
     primary key (
         product_id,
         category_id

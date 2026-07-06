@@ -1,1 +1,0 @@
-export { SupabaseAuthorizationRepository } from './supabase'

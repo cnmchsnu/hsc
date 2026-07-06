@@ -1,1 +1,0 @@
-export type { CategoryRepository } from "./category-repo";
