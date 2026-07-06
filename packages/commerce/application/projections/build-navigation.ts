@@ -1,5 +1,6 @@
 import { toCategoryTreeNodes } from "./mappers/to-category-tree-nodes";
 import type { CategoryTree } from "./build-graph-tree";
+import { CategoryTreeNode } from "./build-category-tree-node";
 
 export interface CategoryNavigation {
 
@@ -8,22 +9,6 @@ export interface CategoryNavigation {
     expandedIds: readonly string[];
 
     indeterminateIds: readonly string[];
-
-}
-
-export interface CategoryTreeNode {
-
-    id: string;
-
-    slug: string;
-
-    name: string;
-
-    children: readonly CategoryTreeNode[];
-
-    depth: number;
-
-    hasChildren: boolean;
 
 }
 
@@ -81,7 +66,7 @@ function resolveExpandedCategorySlugs(
     const path = Array.from(expandedSet).filter(id => selectedSet.has(id));
 
     return { 
-        path: Array.from(expandedSet),
+        path,
         indeterminateSlugs: Array.from(indeterminateSet)
     };
 }
@@ -96,7 +81,6 @@ export function buildCategoryNavigation(
 
     const navigationTree = toCategoryTreeNodes(tree);
 
-    let expandedSlugs: string[] = [];
 
     if (selectedSlugs.length > 0) {
         return {

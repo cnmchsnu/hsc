@@ -1,5 +1,5 @@
 import type { Category } from '../../../domain/category';
-import type { BreadcrumbItem, CategoryTree } from "../../projections"
+import type { BreadcrumbItem, CategoryTreeNode } from "../../projections"
 
 
 export interface CategoryPage {
@@ -8,7 +8,7 @@ export interface CategoryPage {
 
     breadcrumb: readonly BreadcrumbItem[];
 
-    tree: readonly CategoryTree[];
+    tree: readonly CategoryTreeNode[];
 
 }
 
