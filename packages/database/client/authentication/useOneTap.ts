@@ -6,7 +6,7 @@ import { createBrowserClient } from '../browser'
 
 declare global {
   interface Window {
-    google?: typeof google
+    google?: any
   }
 }
 

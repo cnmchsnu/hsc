@@ -1,4 +1,5 @@
-import type { CategoryTree, CategoryGraph } from "../projections/category/";
+import type { CategoryGraph } from "../build-graph";
+import type { CategoryTree } from "../build-graph-tree";
 
 export function toCategoryTree(
     categorygraph: CategoryGraph,

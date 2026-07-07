@@ -1,5 +1,3 @@
-
-
 import { ProductCategory } from "../../../commerce/domain/product-category";
 import type { ProductCategoryRow } from "../../entities";
 

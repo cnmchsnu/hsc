@@ -1,5 +1,5 @@
-import type { Category } from "../../category/category";
-import type { BreadcrumbItem } from "../projections";
+import type { Category } from "../../../domain/category";
+import type { BreadcrumbItem } from "../build-breadcrumb";
 
 
 export function toBreadcrumbItem(
