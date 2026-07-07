@@ -1,4 +1,4 @@
-import type { Category } from "../../../commerce/src/category";
+import type { Category } from "../../../commerce/domain/category";
 import type { CategoryRow } from "../../entities";
 
 export function toCategory(

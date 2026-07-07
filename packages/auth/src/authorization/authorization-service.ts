@@ -1,6 +1,6 @@
 import { promises } from "dns";
 import type { Authorization } from "../types";
-import type { SupabaseAuthorizationRepository } from "@repo/database/authorization";
+import type { SupabaseAuthorizationRepository } from "@repo/infra/supabase/repositories";
 
 export interface AuthorizationService {
 

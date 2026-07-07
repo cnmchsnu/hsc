@@ -1,4 +1,4 @@
-import type { CategoryStatus } from "../../commerce/src/category";
+import type { CategoryStatus } from "../../commerce/domain/category";
 
 
 export interface CategoryRow {

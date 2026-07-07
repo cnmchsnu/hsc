@@ -1,4 +1,4 @@
-import type { ProfileRepository } from "@repo/database/identity";
+import type { ProfileRepository } from "@repo/database/repositories";
 import type {
     SyncProfileInput,
     UpdateProfileInput,

@@ -3,7 +3,7 @@
 import Link from "next/dist/client/link";
 import { useState } from "react";
 import { SkuSelector } from "./sku-selector";
-import type { ProductDetail } from "@repo/commerce/read-models";
+import type { ProductDetail } from "@repo/commerce/application";
 
 
 export function HeroSection({productData}: {productData: ProductDetail}) {

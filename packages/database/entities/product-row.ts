@@ -1,4 +1,4 @@
-import type { ProductStatus } from "../../commerce/src/product";
+import type { ProductStatus } from "../../commerce/domain/product";
 
 export interface ProductRow {
 
