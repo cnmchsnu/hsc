@@ -1,11 +1,10 @@
 import Link from "next/link";
 
-import type { ProductSearchResult } from "@repo/commerce/queries";
 
 import { SortSelect } from "./sort-select";
 
 
-export function ProductGrid({ products }: { products: ProductSearchResult }) {
+export function ProductGrid({ products }: { products: any }) {
     
 
     return (
@@ -15,9 +14,9 @@ export function ProductGrid({ products }: { products: ProductSearchResult }) {
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
-            {products.items.map((p) => (
+            {products.items.map((p: any) => (
                 <div
-                key={p.product.id}
+                key={p.product.slug}
                 className="product-card group bg-surface border border-surface-variant rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-on-primary-container/10 hover:-translate-y-1 relative"
                 >
                 <button className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur-md rounded-full text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant hover:text-white transition-all shadow-sm">
@@ -45,7 +44,7 @@ export function ProductGrid({ products }: { products: ProductSearchResult }) {
                     <span className="text-label-sm font-label-sm text-on-primary-fixed-variant uppercase tracking-wider mb-1 block">
                     {p.primaryCategory?.name}
                     </span>
-                    <Link href={`/products/${p.product.id}`} className="font-bold text-lg text-on-surface mb-2 line-clamp-1 block hover:underline">
+                    <Link href={`/products/${p.product.slug}`} className="font-bold text-lg text-on-surface mb-2 line-clamp-1 block hover:underline">
                     {p.product.name}
                     </Link>
                     <div className="flex items-center justify-between">

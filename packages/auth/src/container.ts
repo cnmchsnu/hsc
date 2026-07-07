@@ -2,8 +2,7 @@
 import "server-only";
 
 import { createServerClient } from "@repo/database/client/server";
-import { SupabaseProfileRepository } from "@repo/database/identity";
-import { SupabaseAuthorizationRepository } from "@repo/database/authorization"
+import { SupabaseProfileRepository, SupabaseAuthorizationRepository } from "@repo/infra/supabase/repositories";
 
 import { createCurrentUserService } from "./current-user";
 import { createProfileService } from "./profile";

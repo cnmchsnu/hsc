@@ -33,12 +33,30 @@ export class SupabaseCategoryIdentifier
 
         async resolveIdsBySlugs(
             slugs: readonly string[],
-        ): Promise< readonly string[]> {
+            ): Promise< readonly string[]> {
+
+            let slugsArray: string[] = [];
+            if (typeof slugs === 'string') {
+                slugsArray = [slugs];
+            } else if (Array.isArray(slugs)) {
+                slugsArray = [...slugs]; // 複製出一份乾淨的可變陣列
+            } else if (slugs) {
+                // 防止是其他種類的唯讀類陣列物件 (Array-like)
+                slugsArray = Array.from(slugs); 
+            }
+
+            const cleanSlugs = slugsArray
+                .flatMap(slug => (typeof slug === 'string' ? slug.split(',') : []))
+                .map(slug => slug.trim())
+                .filter(Boolean);
+
             const { data, error } = await this.client
                 .schema("commerce")
                 .from("categories")
                 .select("id")
-                .in("slug", slugs);
+                .in("slug", cleanSlugs);
+
+
 
             if (error) {
                 throw error;
