@@ -10,6 +10,7 @@ import { SupabaseProductIdentifier } from '@repo/infra/supabase/identifiers';
 
 
 import type { CategoryService } from '../domain/category';
+import type { CategoryResolveService } from '../application/identifiers';
 
 
 import {
@@ -32,7 +33,8 @@ export interface ProductContainer {
 }
 
 export async function createProductContainer(
-    categoryService: CategoryService
+    categoryService: CategoryService,
+    categoryResolveService: CategoryResolveService
 ): Promise<ProductContainer> {
 
     const client = 
@@ -88,7 +90,7 @@ export async function createProductContainer(
                     productService,
                     productCategoryService,
                     productReadService,
-                    categoryResolveService: productResolveService,
+                    categoryResolveService,
                 });
 
     return {

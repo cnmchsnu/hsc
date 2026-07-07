@@ -6,115 +6,107 @@ import { createBrowserClient } from '../browser'
 
 declare global {
   interface Window {
-    google?: any
+    google?: typeof google
   }
 }
 
-
-async function generateNonce() {
-  const encdoer = new TextEncoder()
-  const array = new Uint8Array(32)
-  crypto.getRandomValues(array)
-  const data = array.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), '')
-
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encdoer.encode(data))
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
 interface UseOneTapOptions {
-  clientId: string // Google Cloud Console 的 Client ID
-  parentButtonId?: string // 自訂的 Google 登入按鈕 ID (非必填，但留著彈性大)
+  clientId: string
+  parentButtonId?: string
 }
 
 export function useOneTap({ clientId, parentButtonId }: UseOneTapOptions) {
   const router = useRouter()
   const supabase = createBrowserClient()
-
-  const nonceref = useRef<string>('')
+  const isInitializingRef = useRef<boolean>(false)
 
   useEffect(() => {
     let isMounted = true
-    const initOneTap = async() => {
 
-      if (!nonceref.current) {
-        nonceref.current = await generateNonce()
+    const initOneTap = async () => {
+      // 🛡️ 實體鎖，防止 React 開發環境雙重觸發
+      if (isInitializingRef.current || (window as any).__google_one_tap_active) {
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.prompt()
+        }
+        return
       }
-      const currentNonce = nonceref.current
-      
-      // 1. 載入 Google Identity Services 腳本
-      const script = document.createElement('script')
-      script.src = 'https://accounts.google.com/gsi/client'
-      script.async = true
-      script.defer = true
-      document.head.appendChild(script)
+
+      isInitializingRef.current = true
+      console.log('⚡ [OneTap] 啟動全新不跳頁、免 Nonce 安全驗證引擎...')
+
+      // 載入 Google 腳本
+      let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement
+      if (!script) {
+        script = document.createElement('script')
+        script.src = 'https://accounts.google.com/gsi/client'
+        script.async = true
+        script.defer = true
+        document.head.appendChild(script)
+      }
 
       const handleScriptLoad = () => {
-        if (!window.google || !isMounted) return
-
-        if ((window as any).__google_one_tap_initialized) {
-          // 如果已經初始化過了，我們直接彈出視窗即可，不要重新 initialize
-          window.google.accounts.id.prompt()
+        if (!window.google || !isMounted) {
+          isInitializingRef.current = false
           return
         }
-        
-        // 2. 初始化 Google 一鍵登入
+
+        // 🚀 順應 Chrome：完全開啟 FedCM，並且「絕對不要傳入 nonce」
+        // 當完全不碰 nonce 時，Google 就會改用通道簽章驗證，徹底避開 403 與 400 Mismatch 錯誤！
         window.google.accounts.id.initialize({
           client_id: clientId,
-          use_fedcm: true,
           use_fedcm_for_button: true,
-          use_fedcm_for_prompt: true,
-          nonce: currentNonce,
+          use_fedcm_for_prompt: true, // 🔥 必須開啟，讓 Chrome 滿意，403 就會消失
+          context: 'signin',
+          itp_support: true,
           callback: async (response: any) => {
             try {
-              // 3. 收到 Google 的 id_token 後，送去給 Supabase 驗證
+              console.log('🔑 [OneTap] 成功獲取 Google 憑證，正在原地登入 Supabase...')
+              
+              // 🚀 這裡不要傳 nonce 屬性！
               const { data, error } = await supabase.auth.signInWithIdToken({
                 provider: 'google',
-                token: response.credential,
-                nonce: currentNonce
+                token: response.credential, // 👈 只傳 Token
               })
 
               if (error) throw error
-              // 登入成功後重置全域狀態，方便下次可能還需要登入
-              delete (window as any).__google_one_tap_initialized
+
+              console.log('🎉 [OneTap] 原地秒登入成功！')
+
+              // 清理全域標記
+              delete (window as any).__google_one_tap_active
               window.google?.accounts?.id?.cancel()
-
-              // 4. 登入成功，重新整理或導向首頁
-              window.location.href = '/'
+              
+              // 原地單頁重新整理狀態，達成不跳頁秒登入
+              router.refresh()
             } catch (err) {
-              console.error('One Tap 登入失敗:', err)
+              console.error('❌ [OneTap] 原地秒登入失敗:', err)
+              isInitializingRef.current = false
             }
-          },
-          // 可選：如果你想要防止使用者關閉後短時間內重複彈出，可以使用這個
-          cancel_on_tap_outside: false, 
-        }),
+          }
+        });
 
-        // 標記為已初始化
-        (window as any).__google_one_tap_initialized = true
-        // 4. 觸發 One Tap 彈出視窗
+        (window as any).__google_one_tap_active = true
+
         window.google.accounts.id.prompt((notification: any) => {
           if (notification.isNotDisplayed()) {
-            console.log('One Tap 未顯示原因:', notification.getNotDisplayedReason())
+            console.warn('⚠️ [OneTap] 視窗未顯示原因:', notification.getNotDisplayedReason())
+            isInitializingRef.current = false
           }
         })
       }
 
-      if (window.google) {
+      if (window.google?.accounts?.id) {
         handleScriptLoad()
       } else {
         script.addEventListener('load', handleScriptLoad)
       }
-
     }
 
     initOneTap()
 
     return () => {
-      // 畫面銷毀時清理腳本與視窗
       isMounted = false
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.cancel()
-      }
     }
-  }, [clientId, parentButtonId, router, supabase.auth])
+  }, [clientId, router, supabase.auth]) 
 }

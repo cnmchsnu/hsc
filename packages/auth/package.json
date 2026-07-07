@@ -2,11 +2,12 @@
     "name": "@repo/auth",
     "private": true,
     "dependencies": {
+        "@repo/database": "workspace:*",
+        "@repo/infra": "workspace:*",
         "@supabase/ssr": "^0.12.0",
         "@supabase/supabase-js": "^2.108.2",
         "@types/google.accounts": "^0.0.18",
         "@types/react-dom": "^19.2.3",
-        "@repo/database": "workspace:*",
         "next": "16.2.9",
         "server-only": "^0.0.1"
     },

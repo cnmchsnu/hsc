@@ -3,7 +3,7 @@ import { getProductSummariesByCategory } from "@repo/commerce/server";
 
 export async function PromoProducts() {
 
-  const promoProducts = await getProductSummariesByCategory("861b1526-ee8b-4d29-857e-7d292c32fd29");
+  const promoProducts = await getProductSummariesByCategory("Promo");
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
       {promoProducts!.map((p) => (

@@ -17,7 +17,8 @@ export async function createCommerceContainer(): Promise<CommerceContainer> {
     
     const productContainer =
         await createProductContainer(
-            categoryContainer.categoryService
+            categoryContainer.categoryService,
+            categoryContainer.categoryResolveService
         );
 
     

@@ -3,7 +3,7 @@ import { getProductSummariesByCategory } from "@repo/commerce/server";
 
 export async function FeaturedProducts() {
 
-    const featuredProducts = await getProductSummariesByCategory("7af5f48c-71a3-462b-bca4-e7c9bc5b3f96");
+    const featuredProducts = await getProductSummariesByCategory("Featured");
 
 
 

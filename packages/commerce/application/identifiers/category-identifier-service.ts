@@ -50,6 +50,7 @@ export function createCategoryResolveService(
                 await categoryIdentifier.resolveIdsBySlugs(slugs);
 
             if (!ids || ids.length === 0) {
+                
                 throw new Error(`Slugs not found`);
             }
 

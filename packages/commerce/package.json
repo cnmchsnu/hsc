@@ -9,6 +9,7 @@
     },
     "exports": {
         "./application": "./application/index.ts",
+        "./domain": "./domain/index.ts",
         "./server": "./server/index.ts"
     }
 }

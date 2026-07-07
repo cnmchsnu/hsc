@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@repo/ui/button";
-import { useOneTap, signInWithGoogle } from "@repo/database/auth"; // Import the Google sign-in function
+import { signInWithGoogle } from "@repo/database/authentication"; // Import the Google sign-in function
 
 
 export default function LoginPage() {
@@ -19,10 +19,6 @@ export default function LoginPage() {
     document.title = "會員登入 - 學生會商城";
   }, []);
 
-
-  useOneTap({
-    clientId: process.env.GOOGLE_CLIENT_ID!, 
-  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

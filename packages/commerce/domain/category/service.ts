@@ -130,14 +130,20 @@ export function createCategoryService(
                 return [];
             }
 
-            const categories =
-                await repository.findByIds(ids);
-            
-            if (!categories) {
-                return [];
-            }
+            try {
+                const categories =
+                    await repository.findByIds(ids);
+               
 
-            return categories;
+                if (!categories) {
+                    return [];
+                }
+
+                return categories;
+            } catch (error) {
+                console.error("Error fetching categories by IDs:", error);
+                return [];
+            } 
         },
         
         async findBySlugs(
