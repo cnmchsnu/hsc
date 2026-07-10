@@ -15,13 +15,7 @@
         "@types/react": "^19.2.17"
     },
     "exports": {
-        ".": {
-            "import": "./src/index.ts",
-            "types": "./src/index.ts"
-        },
-        "./server": "./src/server/index.ts",
-        "./types": {
-            "types": "./src/types/index.ts"
-        }
+        "./application": "./application/index.ts",
+        "./server": "./server/index.ts"
     }
 }
