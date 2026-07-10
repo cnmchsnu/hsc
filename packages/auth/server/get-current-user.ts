@@ -1,30 +1,11 @@
-import "server-only";
+import { createAuthContainer } from '../container';
 
-import { createAuthContainer } from "../container";
+import type { CurrentUser } from '../application/CurrentUserService';
 
-export async function getCurrentUser() {
-    const { client, currentUserService } =
-        await createAuthContainer();
 
-    const {
-        data,
-        error,
-    } = await client.auth.getUser();
+export async function getCurrentUser(): Promise<CurrentUser | null> {
 
-    if (
-    error &&
-    error.name === "AuthSessionMissingError"
-    ) {
-        return null;
-    }
+    const { authenticationService } = await createAuthContainer();
 
-    if (error) {
-        throw error;
-    }
-
-    if (!data.user) {
-        return null;
-    }
-
-    return currentUserService.get(data.user);
+    return authenticationService.getCurrentUser();
 }

@@ -1,0 +1,1 @@
+export { SupabaseRolePermissionRepository } from "./role-permission.repository";

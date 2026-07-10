@@ -1,15 +1,12 @@
-import type { Session } from "@supabase/supabase-js";
+import { createAuthContainer } from '../container';
 
-import { getSession } from "./get-session";
+export async function requireSession(): Promise<void> {
 
-import { AuthenticationRequiredError } from "./errors";
+    const { authenticationService } = await createAuthContainer();
 
-export async function requireSession(): Promise<Session> {
-    const session = await getSession();
+    const session = await authenticationService.getSession();
 
     if (!session) {
-        throw new AuthenticationRequiredError();
+        throw new Error("No session found.");
     }
-
-    return session;
 }

@@ -1,15 +1,11 @@
-import type { Session } from "@supabase/supabase-js";
+import { createAuthContainer } from '../container';
 
-import { createServerClient } from "@repo/database/client/server";
+import type { Session } from '../domain/identity';
 
-export async function getSession(): Promise<Session | null> {
-    const supabase = await createServerClient();
 
-    const { data, error } = await supabase.auth.getSession();
+export async function getSession(): Promise<Session| null> {
 
-    if (error) {
-        throw error;
-    }
+    const { authenticationService } = await createAuthContainer();
 
-    return data.session;
+    return await authenticationService.getSession();
 }

@@ -1,0 +1,1 @@
+export { SupabaseUserRepository } from './user.repository';

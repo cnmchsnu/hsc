@@ -5,8 +5,8 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  // next 參數可以用來支持登入後跳轉到指定頁面（例如：/dashboard）
-  const next = searchParams.get('next') ?? '/' 
+  // redirect_to 參數可以用來支持登入後跳轉到指定頁面（例如：/dashboard）
+  const redirect_to = searchParams.get('redirect_to') ?? '/' 
 
   if (code) {
     const cookieStore = await cookies()
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     // 關鍵：用 code 交換 session
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`${origin}${redirect_to}`)
     }
   }
 

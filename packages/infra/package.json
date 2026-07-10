@@ -4,10 +4,16 @@
     "dependencies": {
         "@repo/database": "workspace:*",
         "@supabase/supabase-js": "^2.108.2",
+        "@types/google.accounts": "^0.0.18",
         "server-only": "^0.0.1"
     },
     "exports": {
         "./supabase/repositories": "./supabase/repositories/index.ts",
-        "./supabase/identifiers": "./supabase/identifiers/index.ts"
+        "./supabase/identifiers": "./supabase/identifiers/index.ts",
+        "./supabase/client": "./supabase/client/index.ts",
+        "./supabase/auth": "./supabase/auth/index.ts"
+    },
+    "devDependencies": {
+        "@types/node": "^26.1.0"
     }
 }

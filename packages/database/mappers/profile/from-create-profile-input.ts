@@ -1,6 +1,6 @@
 import type {
     CreateProfileInput,
-} from "../../../auth/src/types";
+} from "../../../auth/application/profile";
 
 
 export function fromCreateProfileInput(

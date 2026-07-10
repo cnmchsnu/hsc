@@ -1,15 +1,12 @@
-import "server-only";
+import { createAuthContainer } from '../container';
 
-import type { CurrentUser } from "../domain/current-user/type";
+export async function requireUser(): Promise<void> {
 
-import { getCurrentUser } from "./get-current-user";
+    const { authenticationService } = await createAuthContainer();
 
-export async function requireUser(): Promise<CurrentUser> {
-    const user = await getCurrentUser();
+    const currentUser = await authenticationService.getCurrentUser();
 
-    if (!user) {
-        throw new Error("Authentication required.");
+    if (!currentUser) {
+        throw new Error("No current user found.");
     }
-
-    return user;
 }
