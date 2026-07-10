@@ -1,7 +1,7 @@
 import { createCommerceContainer } from '../../container';
-import { CategoryTree } from '../../application/projections';
+import { CategoryTreeNode } from '../../application/projections';
 
-export async function getCategoryTree(): Promise<readonly CategoryTree[] | null> {
+export async function getCategoryTree(): Promise<readonly CategoryTreeNode[] | null> {
     const {
         categoryContainer,
     } = await createCommerceContainer();

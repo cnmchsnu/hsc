@@ -1,16 +1,16 @@
-import { ProductSort } from "@repo/commerce/product";
+import { ProductSort } from "@repo/commerce/domain";
 import {
     FilterPanel,
     ProductGrid,
 } from "./components";
 
-import { searchProducts, getCategoryTree, getNavigation } from "@repo/commerce/server";
+import { getCategoryTree, searchProduct } from "@repo/commerce/server";
 import StoreNotReady from "./not-opened";
 
 type searchParams = Promise<{
     keyword?: string;
     
-    categoryIds?: readonly string[];
+    categorySlugs?: readonly string[];
     
     minPrice?: number;
     
@@ -34,16 +34,14 @@ export default async function ProductList({ searchParams }: PageProps) {
 
     const categories = await getCategoryTree();
 
-    const categoriesNavigation = await getNavigation(searchCriteria.categoryIds || []);
-
-    const products = await searchProducts({
+    const products = await searchProduct({
         keyword: searchCriteria.keyword,
-        categoryIds: searchCriteria.categoryIds,
+        categorySlugs: searchCriteria.categorySlugs,
         minPrice: searchCriteria.minPrice,
         maxPrice: searchCriteria.maxPrice,
         sort: searchCriteria.sort,
         page: searchCriteria.page || 1,
-        pageSize: searchCriteria.pageSize || 10,
+        pageSize: searchCriteria.pageSize|| 10,
     });
 
     if (!products) StoreNotReady();
@@ -53,7 +51,7 @@ export default async function ProductList({ searchParams }: PageProps) {
     return (
         <div className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row gap-gutter">
         {/* Left Sidebar Filter */}
-        <FilterPanel categoriesNavigation={categoriesNavigation!} />
+        <FilterPanel categoriesTreeNode={categories!} />
 
         {/* Main Product Grid Area */}
         <ProductGrid products={products!} />

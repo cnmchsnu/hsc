@@ -1,6 +1,6 @@
 'use client'
 
-import { signOut } from "@repo/database/auth"
+import { signOut } from "@repo/database/authentication"
 
 export function Actions() {
 

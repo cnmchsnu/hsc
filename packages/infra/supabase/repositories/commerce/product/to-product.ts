@@ -1,4 +1,4 @@
-import type { Product } from "../../../commerce/src/product";
+import type { Product } from "../../../commerce/domain/product";
 
 import type { ProductRow } from "../../entities";
 

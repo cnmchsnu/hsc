@@ -1,4 +1,4 @@
-name: Mirror Repository
+name: Mirror Dev Repository
 
 on:
   push:
@@ -17,5 +17,7 @@ jobs:
 
       - name: Push Mirror
         run: |
+          git config --global user.name "ip192htwhsnu[bot]"
+          git config --global user.email "11410541@gs.hs.ntnu.edu.tw"
           git remote add mirror https://x-access-token:${{ secrets.HSCSHOP_MIRROR_DEPLOY }}@github.com/ip192htwhsnu/hscshop-dev-deploy.git
-          git push mirror main --force
+          git push mirror HEAD:main --force

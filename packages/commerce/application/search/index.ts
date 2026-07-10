@@ -1,1 +1,1 @@
-export { createProductSearchService } from './product';
+export * from './product';

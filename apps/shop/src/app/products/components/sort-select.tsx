@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import type { ProductSearchResult } from "@repo/commerce/queries";
+import type { ProductSearchResult } from "@repo/commerce/application";
 
 export function SortSelect({sortcount}: {sortcount: ProductSearchResult["total"]}) {
 
