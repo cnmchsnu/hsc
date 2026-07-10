@@ -1,11 +1,17 @@
+import { ProfileStatus } from "../../auth/domain/profile/type";
+
 export interface UserProfileRow {
     user_id: string;
 
     display_name: string | null;
 
-    avatar_url: string | null;
-
     student_id: string | null;
+
+    class: string | null;
+
+    number: string | null;
+
+    avatar_url: string | null;
 
     auto_classification: string;
 
@@ -16,6 +22,10 @@ export interface UserProfileRow {
     sync_display_name: boolean;
 
     sync_avatar: boolean;
+
+    status: ProfileStatus;
+
+    version: number;
 
     created_at: string;
 

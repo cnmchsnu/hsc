@@ -1,4 +1,4 @@
-import type { UserProfile } from "../../../auth/src/types";
+import type { UserProfile } from "../../../auth/application/profile";
 
 import type { UserProfileRow } from "../../entities";
 

@@ -1,6 +1,6 @@
 import type {
     UpdateProfileInput,
-} from "../../../auth/src/types";
+} from "../../../auth/application/profile";
 
 export function fromUpdateProfileInput(
     input: UpdateProfileInput,

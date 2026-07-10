@@ -1,2 +1,2 @@
-export type { CategoryIdentifier } from "./category";
-export type { ProductIdentifier } from "./product";
+export { CategoryIdentifier } from "./category";
+export { ProductIdentifier } from "./product";

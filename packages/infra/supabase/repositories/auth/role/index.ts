@@ -1,0 +1,1 @@
+export { SupabaseRoleRepository } from './role.repository';

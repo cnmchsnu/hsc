@@ -1,4 +1,4 @@
-import { createServerClient } from '@repo/database/client/server';
+import { createServerClient } from '@repo/infra/supabase/client';
 
 
 import { SupabaseCategoryRepository } from '@repo/infra/supabase/repositories';

@@ -6,6 +6,9 @@ CREATE TABLE identity.user_profiles (
     display_name TEXT,
     student_id TEXT UNIQUE,
 
+    class TEXT,
+    number TEXT,
+
     auto_classification TEXT NOT NULL,
     manual_override TEXT,
 
@@ -14,14 +17,15 @@ CREATE TABLE identity.user_profiles (
     ) STORED,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version bigint NOT NULL DEFAULT 1
 );
 
 CREATE TABLE identity.roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     name TEXT NOT NULL UNIQUE,
-    type TEXT NOT NULL,
+    scope TEXT NOT NULL,
     description TEXT,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -33,6 +37,7 @@ CREATE TABLE identity.permissions (
 
     key TEXT NOT NULL UNIQUE,
     description TEXT,
+    scope TEXT NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -54,7 +59,6 @@ CREATE TABLE identity.user_roles (
     PRIMARY KEY (user_id, role_id)
 );
 
--- MVP Optional
 CREATE TABLE identity.user_preferences (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
 
