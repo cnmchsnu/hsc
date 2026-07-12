@@ -1,6 +1,6 @@
 import { Session } from "../../../auth/domain/identity";
 import { SessionProvider } from "./session-provider";
-import { createServerClient } from "../client";
+import { createServerClient } from "../client/server";
 
 import { toSession } from "./mapper";
 
@@ -32,6 +32,24 @@ export class SupabaseSessionProvider
         }
 
         return toSession(session);
+
+    }
+
+    async exchangeCodeForSession(code: string): Promise<void> {
+
+        const supabase =
+            await createServerClient();
+
+        const { error, data } =
+            await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        // return toSession(data.session);
 
     }
 

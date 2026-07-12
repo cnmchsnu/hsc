@@ -1,4 +1,4 @@
-import type { Permission } from "../../domain/permissions";
+import type { Permission } from "../permissions";
 
 export interface PermissionPolicy {
 

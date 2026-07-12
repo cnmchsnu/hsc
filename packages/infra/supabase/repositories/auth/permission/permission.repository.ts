@@ -255,7 +255,7 @@ export class SupabasePermissionRepository
     }
 
     async update(
-        permission: Permission,
+        permission: string,
         newPermission: Permission
     ): Promise<void> {
         const { error } =
@@ -263,7 +263,7 @@ export class SupabasePermissionRepository
                 .schema("identity")
                 .from("permissions")
                 .update(newPermission)
-                .eq("permission", permission.key);
+                .eq("permission", permission);
 
         if (error) {
             throw error;

@@ -1,4 +1,6 @@
-import { createServerClient } from '@repo/infra/supabase/client';
+"server-only";
+
+import { createServerClient } from '@repo/infra/supabase/client/server';
 
 
 import { SupabaseCategoryRepository } from '@repo/infra/supabase/repositories';

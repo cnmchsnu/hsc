@@ -1,5 +1,6 @@
 import type { AuthenticationProvider } from "@repo/infra/supabase/auth";
 
+
 export interface AuthenticationService {
 
     signInWithGoogle(redirectTo?: string): Promise<void>;
@@ -34,6 +35,7 @@ export class DefaultAuthenticationService
     async signOut(): Promise<void> {
         return this.authenticationProvider.signOut();
     }
+
 
     async refreshSession(): Promise<void> {
         return this.authenticationProvider.refreshSession();

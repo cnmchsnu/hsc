@@ -1,5 +1,5 @@
-import type { Category } from "../../../commerce/domain/category";
-import type { CategoryRow } from "../../entities";
+import type { Category } from "../../../../../commerce/domain/category";
+import type { CategoryRow } from "@repo/database/entities";
 
 export function toCategory(
     row: CategoryRow,

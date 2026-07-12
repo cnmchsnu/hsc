@@ -1,4 +1,6 @@
-import { createServerClient } from "../client";
+
+
+import { createBrowserClient } from "../client/browser";
 
 export interface AuthenticationProvider {
 
@@ -25,7 +27,7 @@ export class SupabaseAuthenticationProvider
         const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
         const supabase =
-            await createServerClient();
+            await createBrowserClient();
 
         const { data, error } =
             await supabase.auth.signInWithOAuth({
@@ -35,7 +37,7 @@ export class SupabaseAuthenticationProvider
                 options: {
 
                     redirectTo:
-                        redirectTo,
+                        `${origin}/auth/callback`,
 
                 },
 
@@ -53,7 +55,7 @@ export class SupabaseAuthenticationProvider
     async signOut(): Promise<void> {
 
         const supabase =
-            await createServerClient();
+            await createBrowserClient();
 
         const { error } =
             await supabase.auth.signOut();
@@ -69,7 +71,7 @@ export class SupabaseAuthenticationProvider
     async refreshSession(): Promise<void> {
 
         const supabase =
-            await createServerClient();
+            await createBrowserClient();
 
         const { error } =
             await supabase.auth.refreshSession();
@@ -85,7 +87,7 @@ export class SupabaseAuthenticationProvider
     async revokeSession(): Promise<void> {
 
         const supabase =
-            await createServerClient();
+            await createBrowserClient();
 
         const { error } =
             await supabase.auth.signOut({

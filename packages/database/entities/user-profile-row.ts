@@ -1,4 +1,4 @@
-import { ProfileStatus } from "../../auth/domain/profile/type";
+import { ProfileStatus } from "../../auth/domain/profile";
 
 export interface UserProfileRow {
     user_id: string;

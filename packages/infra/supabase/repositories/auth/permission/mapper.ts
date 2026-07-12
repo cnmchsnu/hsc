@@ -1,4 +1,4 @@
-import type { Permission } from "../../../../../auth/domain/permissions";
+import type { Permission } from "../../../../../auth/domain/authorization";
 import type { PermissionRow } from "@repo/database/entities";
 
 export function toPermission(

@@ -48,7 +48,6 @@ export interface ProfileService {
     ): Promise<void>;
 
     update(
-        userId: string, 
         profile: Profile
     ): Promise<void>;
 
@@ -77,37 +76,59 @@ export function createProfileService(
     return {
 
         // Read Single
-        async getProfile(
+        async findbyId(
             userId: string
         ): Promise<Profile | null> {
-            throw new Error('Not implemented');
+            const profile = await repository.findById(userId);
+
+            if (!profile) {
+                throw new Error(`Profile not found for userId: ${userId}`);
+            }
+            return profile;
         },
 
         // Read Batch
-        async getProfilesById(
+        async findByIds(
             userIds: readonly string[],
         ): Promise<Profile[]> {
-            throw new Error('Not implemented');
+            const profiles = await repository.findByIds(userIds);
+
+            if (!profiles || profiles.length === 0) {
+                throw new Error(`Profiles not found for userIds: ${userIds.join(', ')}`);
+            }
+
+            return profiles;
         },
 
-        async getProfilesByClass(
+        async findByClass(
             classes: string[]
         ): Promise<Profile[]> {
-            throw new Error('Not implemented')
+            return repository.findByClass(classes);
+        },
+
+        // Query
+        async list(): Promise<Profile[]> {
+            return repository.list();
+        },
+
+        async search(
+            options: ProfileListOptions
+        ): Promise<ProfileList> {
+            return repository.search(options);
         },
 
         // Existing Single
         async exists(
             userId: string,
         ): Promise<boolean> {
-            throw new Error('Not implemented');
+            return repository.exists(userId);
         },
 
         // Existing Batch
         async listExistingUserIds(
             userIds: readonly string[],
         ): Promise<string[]> {
-            throw new Error('Not implemented');
+            return repository.listExistingUserIds(userIds);
         },
 
         // Write Single
@@ -116,20 +137,22 @@ export function createProfileService(
             userId: string,
             profile: Partial<Profile>
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.create({
+                ...profile,
+                userId,
+            } as Profile);
         },
 
         async update(
-            userId: string,
-            profile: Partial<Profile>
+            profile: Profile
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.update(profile);
         },
 
         async delete(
             userId: string
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.delete(userId);
         },
 
         // Write Batch
@@ -137,19 +160,19 @@ export function createProfileService(
         async createMany(
             profiles: readonly Profile[],
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.createMany(profiles);
         },
 
         async updateMany(
             profiles: readonly Profile[],
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.updateMany(profiles);
         },
 
         async deleteMany(
             userIds: readonly string[],
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.deleteMany(userIds);
         }
 
     };

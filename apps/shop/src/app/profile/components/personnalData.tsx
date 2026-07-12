@@ -2,17 +2,9 @@
 
 import { useState } from "react";
 
-interface UserDataProps {
-  name: string | "";
-  studentId: string | "-";
-  email: string | "";
-  class: string | "";
-  number: string | ";"
-}
 
 
-
-export function PersonnalData(userData:UserDataProps) {
+export function PersonnalData(userData: any) {
     const [name, setName] = useState(userData.name);
     const [phone, setPhone] = useState("0912-345-678");
     const [email, setEmail] = useState(userData.email);

@@ -1,7 +1,7 @@
 
 import type { RoleRow } from "@repo/database/entities";
 
-import { Role } from "../../../../../auth/domain/role";
+import { Role } from "../../../../../auth/domain/authorization";
 
 export function toRole(
     row: RoleRow

@@ -27,7 +27,7 @@ export class SupabaseProfileRepository
     ) {
         let query = this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*");
 
         if (options.status) {
@@ -215,9 +215,9 @@ export class SupabaseProfileRepository
     ): Promise<Profile | null> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
-            .eq("id", userId)
+            .eq("user_id", userId)
             .single();
 
         if (error) {
@@ -236,9 +236,9 @@ export class SupabaseProfileRepository
     ): Promise<Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
-            .in("id", userIds);
+            .in("user_id", userIds);
 
         if (error) {
             throw error;
@@ -252,7 +252,7 @@ export class SupabaseProfileRepository
     ): Promise<Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
             .in("class", classes);
 
@@ -269,7 +269,7 @@ export class SupabaseProfileRepository
     async list(): Promise<Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*");
 
         if (error) {
@@ -305,9 +305,9 @@ export class SupabaseProfileRepository
     ): Promise<boolean> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .select("id", { count: "exact" })
-            .eq("id", userId)
+            .from("user_profiles")
+            .select("user_id", { count: "exact" })
+            .eq("user_id", userId)
             .single();
 
         if (error) {
@@ -327,15 +327,15 @@ export class SupabaseProfileRepository
     ): Promise<string[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .select("id")
-            .in("id", userIds);
+            .from("user_profiles")
+            .select("user_id")
+            .in("user_id", userIds);
 
         if (error) {
             throw error;
         }
 
-        return data.map((item) => item.id);
+        return data.map((item) => item.user_id);
     }
 
     // Write Single
@@ -345,7 +345,7 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .insert(profile);
 
         if (error) {
@@ -359,9 +359,9 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .update(profile)
-            .eq("id", profile.id);
+            .eq("user_id", profile.id);
 
         if (error) {
             throw error;
@@ -374,9 +374,9 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .delete()
-            .eq("id", userId);
+            .eq("user_id", userId);
 
         if (error) {
             throw error;
@@ -392,7 +392,7 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .insert(profiles);
 
         if (error) {
@@ -407,15 +407,16 @@ export class SupabaseProfileRepository
             .schema("identity")
             .rpc("update_profiles", {
                 profile: profiles.map((profile: Profile) => ({
-                    id: profile.id,
+                    user_id: profile.id,
                     display_name: profile.displayName,
-                    student_id: profile.studentId,
-                    class: profile.class,
-                    number: profile.number,
-                    avatar_url: profile.avatarUrl,
+                    student_id: profile.studentId ?? null,
+                    class: profile.class ?? null,
+                    number: profile.number ?? null,
+                    avatar_url: profile.avatarUrl ?? null,
                     status: profile.status,
                     auto_classification: profile.autoClassification,
-                    manual_override: profile.manualOverride,
+                    manual_override: profile.manualOverride ?? null,
+                    final_classification: profile.finalClassification,
                 }))
             });
 
@@ -430,7 +431,7 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .delete()
             .in("id", userIds);
 

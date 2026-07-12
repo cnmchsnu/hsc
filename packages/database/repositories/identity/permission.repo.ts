@@ -30,7 +30,7 @@ export interface PermissionRepository {
     ): Promise<void>;
 
     update(
-        permission: Permission,
+        permission: string,
         newPermission: Permission
     ): Promise<void>;
 

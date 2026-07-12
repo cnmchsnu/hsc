@@ -1,14 +1,13 @@
-import "server-only";
+"server-only";
 
-import { createServerClient } from '@repo/infra/supabase/client';
+import { createServerClient } from '@repo/infra/supabase/client/server';
 
 import {
-    SupabaseAuthenticationProvider,
-    SupabaseSessionProvider
+    SupabaseSessionProvider,
+    SupabaseUserProvider
 } from "@repo/infra/supabase/auth";
 
 import {
-    SupabaseUserRepository,
     SupabaseProfileRepository,
     SupabaseRoleRepository,
     SupabasePermissionRepository,
@@ -18,11 +17,11 @@ import {
             
 
 import { createAuthorizationService, type AuthorizationService } from "../application/AuthorizationService";
-import { createAuthenticationService, type AuthenticationService } from "../application/AuthenticationService";
-import { createCurrentUserService, type CurrentUserService } from "../application/CurrentUserService";
+import { createAuthenticationReadService, type AuthenticationReadService } from "../application/AuthenticationReadService";
+import { createCurrentUserService } from "../application/CurrentUserService";
 import { createProfileSyncService } from "../application/ProfileSyncService";
-import { createLoginFlowService } from "../application/LoginFlowService";
-import { createSessionService } from "../domain/identity";
+import { createLoginFlowService, type LoginFlowService } from "../application/LoginFlowService";
+import { createSessionService, createUserService } from "../domain/identity";
 import { createUserContextService } from "../application/UserContextService";
 import { createProfileInitializationService } from "../application/ProfileInitalizationService";
 import { createAutoClassificationService } from "../application/AutoClassificationService";
@@ -31,7 +30,7 @@ import { createAutoClassificationService } from "../application/AutoClassificati
 
 export interface AuthContainer {
 
-    authenticationService: AuthenticationService;
+    authenticationReadService: AuthenticationReadService;
 
     authorizationService: AuthorizationService;
 
@@ -42,9 +41,6 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const client = 
         await createServerClient();
-
-    const userRepository =
-        new SupabaseUserRepository(client);
 
     const profileRepository =
         new SupabaseProfileRepository(client);
@@ -63,13 +59,17 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const sessionProvider =
         new SupabaseSessionProvider();
+
+    const userProvider =
+        new SupabaseUserProvider();
     
-    const authenticationProvider
-        = new SupabaseAuthenticationProvider();
+    const userService = createUserService({
+        userProvider
+    });
 
     const userContextService =
         createUserContextService({
-            userRepository,
+            userService,
             profileRepository,
             roleRepository,
             permissionRepository,
@@ -95,7 +95,7 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const profileSyncService =
         createProfileSyncService({
-            userRepository,
+            userService,
             profileRepository
         });
 
@@ -114,27 +114,25 @@ export async function createAuthContainer(): Promise<AuthContainer> {
     const loginFlowService =
         createLoginFlowService({
             sessionService,
-            userRepository,
+            userService,
             profileSyncService,
             profileInitializationService
         });
 
-    const authenticationService =
-        createAuthenticationService({
-            provider: authenticationProvider,
+    const authenticationReadService =
+        createAuthenticationReadService({
             sessionService,
             currentUserService,
             loginFlowService
         });
 
-
     
 
     return {
         
-        authenticationService,
+        authenticationReadService,
 
-        authorizationService
-        
+        authorizationService,
+
     };
 }

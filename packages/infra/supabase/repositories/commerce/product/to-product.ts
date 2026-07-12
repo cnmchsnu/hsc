@@ -1,6 +1,6 @@
-import type { Product } from "../../../commerce/domain/product";
+import type { Product } from "../../../../../commerce/domain/product";
 
-import type { ProductRow } from "../../entities";
+import type { ProductRow } from "@repo/database/entities";
 
 export function toProduct(
     data: ProductRow

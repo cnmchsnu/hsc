@@ -1,4 +1,4 @@
-import type { ProductCategory } from "../../../../commerce/domain/product-category";
+import type { ProductCategory } from "../../../commerce/domain/product-category";
 
 
 export interface ProductCategoryRepository {

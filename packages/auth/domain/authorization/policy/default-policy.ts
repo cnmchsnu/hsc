@@ -1,5 +1,5 @@
 import { PermissionPolicy } from "./permission-policy";
-import type { Permission } from "../../domain/permissions";
+import type { Permission } from "../permissions";
 
 export class DefaultPermissionPolicy
     implements PermissionPolicy {

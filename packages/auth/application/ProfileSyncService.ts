@@ -1,6 +1,8 @@
-import { ProfileRepository, UserRepository } from "@repo/database/repositories"
+import { ProfileRepository } from "@repo/database/repositories"
 
 import { Profile } from "../domain/profile";
+import { UserService } from "../domain/identity";
+
 
 export interface ProfileSyncService {
 
@@ -12,7 +14,7 @@ export interface ProfileSyncService {
 
 interface ProfileSyncServiceDependencies {
 
-    userRepository: UserRepository;
+    userService: UserService;
     
     profileRepository: ProfileRepository;
 
@@ -23,14 +25,14 @@ class DefaultProfileSyncService
     implements ProfileSyncService {
 
         constructor(
-            private readonly userRepository: UserRepository,
+            private readonly userService: UserService,
             private readonly profileRepository: ProfileRepository,
         ) {}
 
         async sync(
             userId: string,
         ): Promise<void> {
-            const user = await this.userRepository.getById(userId);
+            const user = await this.userService.getUserById(userId);
 
             if (!user) {
                 throw new Error(`User with ID ${userId} not found.`);
@@ -57,7 +59,7 @@ export function createProfileSyncService(
     dependencies: ProfileSyncServiceDependencies,
 ): ProfileSyncService {
     return new DefaultProfileSyncService(
-        dependencies.userRepository,
+        dependencies.userService,
         dependencies.profileRepository,
     );
 }

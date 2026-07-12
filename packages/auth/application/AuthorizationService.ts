@@ -47,7 +47,7 @@ implements AuthorizationService {
         permission: string,
     ): Promise<boolean> {
         const currentUser = await this.currentUserService.get();
-        return currentUser?.permissions.some(p => p.key === permission) ?? false;
+        return currentUser?.userContext.permissions.some(p => p.key === permission) ?? false;
     }
 
     require(

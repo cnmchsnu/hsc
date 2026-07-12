@@ -1,4 +1,4 @@
-import "server-only";
+"server-only";
 // packages/database/src/client/server.ts
 import { cookies } from "next/headers";
 import { createServerClient as createSSRServerClient } from "@supabase/ssr";

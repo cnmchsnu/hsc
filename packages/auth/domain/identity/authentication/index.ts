@@ -1,1 +1,1 @@
-export type { AuthenticationProvider } from "./service";
+export type { AuthenticationService } from "./service";

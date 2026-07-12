@@ -5,6 +5,8 @@ export interface SessionService  {
 
     getSession(): Promise<Session | null>
 
+    exchangeCodeForSession(code: string): Promise<void>
+
     refresh(): Promise<Session | null>
 
     invalidate(): Promise<void>
@@ -26,9 +28,11 @@ implements SessionService {
 
 
     async getSession(): Promise<Session | null> {
-
         return await this.sessionProvider.getSession();
+    }
 
+    async exchangeCodeForSession(code: string): Promise<void> {
+        return await this.sessionProvider.exchangeCodeForSession(code);
     }
 
     async refresh(): Promise<Session | null> {  

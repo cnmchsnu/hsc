@@ -3,13 +3,13 @@ import {
     ProfileRepository,
     RolePermissionRepository,
     RoleRepository,
-    UserRepository,
     UserRoleRepository
 } from "@repo/database/repositories";
 
 import type { Profile } from "../domain/profile";
 import type { Role, Permission } from "../domain/authorization";
-import type { User } from "../domain/identity";
+import type { User, UserService } from "../domain/identity";
+
 
 
 
@@ -39,7 +39,7 @@ export interface UserContextService {
 
 interface UserContextDependencies {
 
-    userRepository: UserRepository;
+    userService: UserService;
 
     profileRepository: ProfileRepository;
 
@@ -58,7 +58,7 @@ class DefaultUserContextService
 
         constructor(
 
-            private readonly userRepository: UserRepository,
+            private readonly userService: UserService,
 
             private readonly profileRepository: ProfileRepository,
 
@@ -74,7 +74,7 @@ class DefaultUserContextService
 
         async getCurrentUser(userId: string): Promise<UserContext| null> {
 
-            const user = await this.userRepository.getById(userId);
+            const user = await this.userService.getUserById(userId);
 
             if (!user) {
                 return null;
@@ -106,7 +106,7 @@ export function createUserContextService(
     dependencies: UserContextDependencies
 ): UserContextService {
     return new DefaultUserContextService(
-        dependencies.userRepository,
+        dependencies.userService,
         dependencies.profileRepository,
         dependencies.userRoleRepository,
         dependencies.roleRepository,
