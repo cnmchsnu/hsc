@@ -14,8 +14,6 @@ interface LoginFlowServiceDependencies {
 
     sessionService: SessionService;
 
-    userService: UserService;
-
     profileSyncService: ProfileSyncService;
 
     profileInitializationService: ProfileInitializationService;

@@ -114,9 +114,9 @@ export async function createAuthContainer(): Promise<AuthContainer> {
     const loginFlowService =
         createLoginFlowService({
             sessionService,
-            userService,
             profileSyncService,
-            profileInitializationService
+            profileInitializationService,
+            profileRepository
         });
 
     const authenticationReadService =

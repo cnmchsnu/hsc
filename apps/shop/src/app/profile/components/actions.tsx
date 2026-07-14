@@ -1,3 +1,5 @@
+"use client";
+
 import { signOut } from "@repo/auth/server/browser"; // Import the sign-out function
 
 export function Actions() {

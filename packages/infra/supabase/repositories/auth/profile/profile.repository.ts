@@ -11,7 +11,7 @@ import type {
 } from "@repo/database/repositories";
 
 import {
-    toProfile,
+    ProfileRepositoryMapper as mapper,
 } from "./to-profile";
 
 
@@ -228,7 +228,7 @@ export class SupabaseProfileRepository
             return null;
         }
 
-        return toProfile(data);
+        return mapper.fromRow(data);
     }
 
     async findByIds(
@@ -244,12 +244,12 @@ export class SupabaseProfileRepository
             throw error;
         }
 
-        return data.map(toProfile);
+        return data.map(mapper.fromRow);
     }
 
     async findByClass(
         classes: readonly string[]
-    ): Promise<Profile[]> {
+    ): Promise<readonly Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
             .from("user_profiles")
@@ -260,13 +260,13 @@ export class SupabaseProfileRepository
             throw error;
         }
 
-        return data.map(toProfile);
+        return mapper.fromRows(data);
     }
 
 
     // Query
 
-    async list(): Promise<Profile[]> {
+    async list(): Promise<readonly Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
             .from("user_profiles")
@@ -276,7 +276,7 @@ export class SupabaseProfileRepository
             throw error;
         }
 
-        return data.map(toProfile);
+        return mapper.fromRows(data);
     }
 
     async search(
@@ -291,7 +291,7 @@ export class SupabaseProfileRepository
         }
 
         return {
-            items: data.map(toProfile),
+            items: mapper.fromRows(data),
             total: count ?? 0,
             page: options.page,
             pageSize: options.pageSize,
@@ -343,10 +343,13 @@ export class SupabaseProfileRepository
     async create(
         profile: Profile
     ): Promise<void> {
+
+        const row = mapper.toCreateRow(profile);
+
         const { error } = await this.client
             .schema("identity")
             .from("user_profiles")
-            .insert(profile);
+            .insert(row);
 
         if (error) {
             throw error;
@@ -357,10 +360,14 @@ export class SupabaseProfileRepository
     async update(
         profile: Profile
     ): Promise<void> {
+
+        const row = mapper.toUpdateRow(profile);
+
+
         const { error } = await this.client
             .schema("identity")
             .from("user_profiles")
-            .update(profile)
+            .update(row)
             .eq("user_id", profile.id);
 
         if (error) {
@@ -390,10 +397,13 @@ export class SupabaseProfileRepository
     async createMany(
         profiles: readonly Profile[],
     ): Promise<void> {
+
+        const rows = mapper.toCreateRows(profiles);
+
         const { error } = await this.client
             .schema("identity")
             .from("user_profiles")
-            .insert(profiles);
+            .insert(rows);
 
         if (error) {
             throw error;
@@ -403,21 +413,13 @@ export class SupabaseProfileRepository
     async updateMany(
         profiles: readonly Profile[],
     ): Promise<void> {
+
+        const rows = mapper.toUpdateRows(profiles);
+
         const { error } = await this.client
             .schema("identity")
             .rpc("update_profiles", {
-                profile: profiles.map((profile: Profile) => ({
-                    user_id: profile.id,
-                    display_name: profile.displayName,
-                    student_id: profile.studentId ?? null,
-                    class: profile.class ?? null,
-                    number: profile.number ?? null,
-                    avatar_url: profile.avatarUrl ?? null,
-                    status: profile.status,
-                    auto_classification: profile.autoClassification,
-                    manual_override: profile.manualOverride ?? null,
-                    final_classification: profile.finalClassification,
-                }))
+                profile: rows
             });
 
         if (error) {

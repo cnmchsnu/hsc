@@ -26,7 +26,7 @@ export interface Profile {
 
 export interface ProfileList {
 
-    items: Profile[];
+    items: readonly Profile[];
 
     total: number;
 
