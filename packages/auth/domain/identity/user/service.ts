@@ -1,68 +1,38 @@
-import { User } from "./type";
+import type { User } from "./type";
 
-import { UserRepository } from "@repo/database/repositories";
+import { UserProvider } from "@repo/infra/supabase/auth";
 
 export interface UserService {
 
-    // Read Single
+    getUserById(id: string,): Promise<User | null>;
 
-    getUserByEmail(
-        email: string,
-    ): Promise<User | null>;
+}
 
-    getUserById(
+interface UserServiceDependencies {
+
+    userProvider: UserProvider;
+}
+
+class DefaultUserService
+    implements UserService {
+
+    constructor(
+        private readonly userProvider: UserProvider,
+    ) {}
+
+    async getUserById(
         id: string,
-    ): Promise<User | null>;
-
-    // Read Batch
-
-    getUsersByEmails(
-        emails: readonly string[],
-    ): Promise<User[]>;
-
-    getUsersByIds(
-        ids: readonly string[],
-    ): Promise<User[]>;
-
-    listUsers(): Promise<User[]>;
+    ): Promise<User | null> {
+        return await this.userProvider.getById(id);
+    }
 
 }
 
 export function createUserService(
-    repository: UserRepository
+    dependencies: UserServiceDependencies
 ): UserService {
-    return {
-        // Read Single
-
-        async getUserByEmail(   
-            email: string,
-        ): Promise<User | null> {
-            throw new Error("Not implemented");
-        },
-
-        async getUserById(
-            id: string,
-        ): Promise<User | null> {
-            throw new Error("Not implemented");
-        },
-
-        // Read Batch
-
-        async getUsersByEmails(
-            emails: readonly string[],
-        ): Promise<User[]> {
-            throw new Error("Not implemented");
-        },
-
-        async getUsersByIds(
-            ids: readonly string[],
-        ): Promise<User[]> {
-            throw new Error("Not implemented");
-        },
-
-        async listUsers(): Promise<User[]> {
-            throw new Error("Not implemented");
-        }
-
-    };
+    return new DefaultUserService(
+        dependencies.userProvider,
+    );
 }
+

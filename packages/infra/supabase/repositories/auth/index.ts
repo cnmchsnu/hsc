@@ -3,4 +3,3 @@ export { SupabaseRoleRepository } from './role';
 export { SupabasePermissionRepository } from './permission';
 export { SupabaseRolePermissionRepository } from './role-permission';
 export { SupabaseUserRoleRepository } from './user-role';
-export { SupabaseUserRepository } from './user';

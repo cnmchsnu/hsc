@@ -11,7 +11,7 @@ import type {
 } from "@repo/database/repositories";
 
 import {
-    toProfile,
+    ProfileRepositoryMapper as mapper,
 } from "./to-profile";
 
 
@@ -27,7 +27,7 @@ export class SupabaseProfileRepository
     ) {
         let query = this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*");
 
         if (options.status) {
@@ -215,9 +215,9 @@ export class SupabaseProfileRepository
     ): Promise<Profile | null> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
-            .eq("id", userId)
+            .eq("user_id", userId)
             .single();
 
         if (error) {
@@ -228,7 +228,7 @@ export class SupabaseProfileRepository
             return null;
         }
 
-        return toProfile(data);
+        return mapper.fromRow(data);
     }
 
     async findByIds(
@@ -236,23 +236,23 @@ export class SupabaseProfileRepository
     ): Promise<Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
-            .in("id", userIds);
+            .in("user_id", userIds);
 
         if (error) {
             throw error;
         }
 
-        return data.map(toProfile);
+        return data.map(mapper.fromRow);
     }
 
     async findByClass(
         classes: readonly string[]
-    ): Promise<Profile[]> {
+    ): Promise<readonly Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*")
             .in("class", classes);
 
@@ -260,23 +260,23 @@ export class SupabaseProfileRepository
             throw error;
         }
 
-        return data.map(toProfile);
+        return mapper.fromRows(data);
     }
 
 
     // Query
 
-    async list(): Promise<Profile[]> {
+    async list(): Promise<readonly Profile[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .select("*");
 
         if (error) {
             throw error;
         }
 
-        return data.map(toProfile);
+        return mapper.fromRows(data);
     }
 
     async search(
@@ -291,7 +291,7 @@ export class SupabaseProfileRepository
         }
 
         return {
-            items: data.map(toProfile),
+            items: mapper.fromRows(data),
             total: count ?? 0,
             page: options.page,
             pageSize: options.pageSize,
@@ -305,9 +305,9 @@ export class SupabaseProfileRepository
     ): Promise<boolean> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .select("id", { count: "exact" })
-            .eq("id", userId)
+            .from("user_profiles")
+            .select("user_id", { count: "exact" })
+            .eq("user_id", userId)
             .single();
 
         if (error) {
@@ -327,15 +327,15 @@ export class SupabaseProfileRepository
     ): Promise<string[]> {
         const { data, error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .select("id")
-            .in("id", userIds);
+            .from("user_profiles")
+            .select("user_id")
+            .in("user_id", userIds);
 
         if (error) {
             throw error;
         }
 
-        return data.map((item) => item.id);
+        return data.map((item) => item.user_id);
     }
 
     // Write Single
@@ -343,10 +343,13 @@ export class SupabaseProfileRepository
     async create(
         profile: Profile
     ): Promise<void> {
+
+        const row = mapper.toCreateRow(profile);
+
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .insert(profile);
+            .from("user_profiles")
+            .insert(row);
 
         if (error) {
             throw error;
@@ -357,11 +360,15 @@ export class SupabaseProfileRepository
     async update(
         profile: Profile
     ): Promise<void> {
+
+        const row = mapper.toUpdateRow(profile);
+
+
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .update(profile)
-            .eq("id", profile.id);
+            .from("user_profiles")
+            .update(row)
+            .eq("user_id", profile.id);
 
         if (error) {
             throw error;
@@ -374,9 +381,9 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .delete()
-            .eq("id", userId);
+            .eq("user_id", userId);
 
         if (error) {
             throw error;
@@ -390,10 +397,13 @@ export class SupabaseProfileRepository
     async createMany(
         profiles: readonly Profile[],
     ): Promise<void> {
+
+        const rows = mapper.toCreateRows(profiles);
+
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
-            .insert(profiles);
+            .from("user_profiles")
+            .insert(rows);
 
         if (error) {
             throw error;
@@ -403,20 +413,13 @@ export class SupabaseProfileRepository
     async updateMany(
         profiles: readonly Profile[],
     ): Promise<void> {
+
+        const rows = mapper.toUpdateRows(profiles);
+
         const { error } = await this.client
             .schema("identity")
             .rpc("update_profiles", {
-                profile: profiles.map((profile: Profile) => ({
-                    id: profile.id,
-                    display_name: profile.displayName,
-                    student_id: profile.studentId,
-                    class: profile.class,
-                    number: profile.number,
-                    avatar_url: profile.avatarUrl,
-                    status: profile.status,
-                    auto_classification: profile.autoClassification,
-                    manual_override: profile.manualOverride,
-                }))
+                profile: rows
             });
 
         if (error) {
@@ -430,7 +433,7 @@ export class SupabaseProfileRepository
     ): Promise<void> {
         const { error } = await this.client
             .schema("identity")
-            .from("profiles")
+            .from("user_profiles")
             .delete()
             .in("id", userIds);
 

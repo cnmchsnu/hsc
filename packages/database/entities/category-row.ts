@@ -17,8 +17,8 @@ export interface CategoryRow {
 
     display_order: number;
 
-    created_at: Date;
+    created_at: string;
 
-    updated_at: Date;
+    updated_at: string;
 
 }

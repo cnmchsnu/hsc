@@ -1,16 +1,31 @@
-import { createBrowserClient as createSSRBrowserClient } from '@supabase/ssr'
+// "server-only";
+// // packages/database/src/client/server.ts
+// import { cookies } from "next/headers";
+// import { createServerClient as createSSRServerClient } from "@supabase/ssr";
 
-export const createAdminClient = () => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+// export async function createAdminClient() {
+//     const cookieStore = await cookies();
+//     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+//     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  // 防禦性檢查：沒讀到時在控制台警告，而不是直接炸掉
-  if (!url || !anonKey) {
-    console.error('❌ Supabase 環境變數遺失！請檢查 .env.local 是否正確放進 apps/shop 目錄下。')
-    // 回傳一個空的或 mock client，避免前端整頁白畫面
-    return createSSRBrowserClient('https://placeholder.supabase.co', 'placeholder')
-  }
-
-  return createSSRBrowserClient(url, anonKey)
-}
-
+//     return createSSRServerClient(
+//         supabaseUrl!,
+//         supabaseKey!,
+//         {
+//             cookies: {
+//                 getAll() {
+//                     return cookieStore.getAll();
+//                 },
+//                 setAll(cookiesToSet) {
+//                     try {
+//                         cookiesToSet.forEach(({ name, value, options }) =>
+//                             cookieStore.set(name, value, options),
+//                         );
+//                     } catch {
+//                         // Ignore when called from a Server Component.
+//                     }
+//                 },
+//             },
+//         },
+//     );
+// }

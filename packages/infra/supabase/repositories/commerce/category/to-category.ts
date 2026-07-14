@@ -1,30 +1,74 @@
-import type { Category } from "../../../commerce/domain/category";
-import type { CategoryRow } from "../../entities";
+import type { Category } from "../../../../../commerce/domain/category";
+import type { CreateCategory, UpdateCategory } from "../../../../../commerce/application/command/category";
+import type { CategoryRow } from "@repo/database/entities";
 
-export function toCategory(
-    row: CategoryRow,
-): Category {
+import { RepositoryMapper } from "../../shared/repository-mapper";
 
-    return {
+export const CategoryRepositoryMapper: RepositoryMapper<
+    Category,
+    CategoryRow,
+    CreateCategory,
+    UpdateCategory
+> = {
 
-        id: row.id,
+    fromRow(
+        row: CategoryRow,
+    ): Category {
+        return {
+            id: row.id,
+            name: row.name,
+            slug: row.slug,
+            description: row.description,
+            parentId: row.parent_id,
+            status: row.status,
+            displayOrder: row.display_order,
+            createdAt: new Date(row.created_at),
+            updatedAt: new Date(row.updated_at),
+        };
+    },
 
-        name: row.name,
+    fromRows(
+        rows: readonly CategoryRow[],
+    ): Category[] {
+        return rows.map(this.fromRow);
+    },
 
-        slug: row.slug,
+    toCreateRow(
+        dto: CreateCategory,
+    ): Partial<CategoryRow> {
+        return {
+            name: dto.name,
+            slug: dto.slug,
+            description: dto.description ?? null,
+            parent_id: dto.parentId ?? null,
+            status: dto.status,
+            display_order: dto.displayOrder,
+        };
+    },
 
-        description: row.description,
+    toCreateRows(
+        dto: readonly CreateCategory[],
+    ): Partial<CategoryRow>[] {
+        return dto.map(this.toCreateRow);
+    },
 
-        parentId: row.parent_id,
+    toUpdateRow(
+        dto: UpdateCategory,
+    ): Partial<CategoryRow> {
+        return {
+            id: dto.id,
+            name: dto.name,
+            slug: dto.slug,
+            description: dto.description,
+            parent_id: dto.parentId,
+            status: dto.status,
+            display_order: dto.displayOrder,
+        };
+    },
 
-        status: row.status,
-
-        displayOrder: row.display_order,
-
-        createdAt: new Date(row.created_at),
-
-        updatedAt: new Date(row.updated_at),
-
-    };
-
-}
+    toUpdateRows(
+        dto: readonly UpdateCategory[],
+    ): Partial<CategoryRow>[] {
+        return dto.map(this.toUpdateRow);
+    },
+};

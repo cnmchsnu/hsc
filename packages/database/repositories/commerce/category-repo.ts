@@ -1,4 +1,5 @@
 import type { Category } from "../../../commerce/domain/category";
+import type { CreateCategory, UpdateCategory } from "../../../commerce/application/command/category";
 
 export interface CategoryRepository {
 
@@ -50,11 +51,11 @@ export interface CategoryRepository {
     // Write Single
 
     create(
-        category: Category,
+        category: CreateCategory,
     ): Promise<void>;
 
     update(
-        category: Category,
+        category: UpdateCategory,
     ): Promise<void>;
 
     delete(
@@ -65,11 +66,11 @@ export interface CategoryRepository {
     // Write Batch
 
     createMany(
-        categories: readonly Category[],
+        categories: readonly CreateCategory[],
     ): Promise<void>;
 
     updateMany(
-        categories: readonly Category[],
+        categories: readonly UpdateCategory[],
     ): Promise<void>;
 
     deleteMany(

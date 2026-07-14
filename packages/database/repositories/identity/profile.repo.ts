@@ -12,15 +12,15 @@ export interface ProfileRepository {
 
     findByIds(
         userIds: readonly string[],
-    ): Promise<Profile[]>;
+    ): Promise<readonly Profile[]>;
 
     findByClass(
         classes: readonly string[]
-    ): Promise<Profile[]>;
+    ): Promise<readonly Profile[]>;
 
     // Query
 
-    list(): Promise<Profile[]>;
+    list(): Promise<readonly Profile[]>;
 
     search(
         options: ProfileListOptions

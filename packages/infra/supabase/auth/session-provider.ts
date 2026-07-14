@@ -4,6 +4,8 @@ export interface SessionProvider {
 
     getSession(): Promise<Session | null>;
 
+    exchangeCodeForSession(code: string): Promise<void>;
+
     refreshSession(): Promise<Session | null>;
 
     invalidateSession(): Promise<void>;

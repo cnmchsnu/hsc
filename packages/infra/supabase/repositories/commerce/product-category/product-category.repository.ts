@@ -7,7 +7,7 @@ import type {
 
 import { ProductCategory } from "../../../../../commerce/domain/product-category";
 
-import { toProductCategory } from "@repo/database/mappers";
+import { toProductCategory } from "./to-product-category";
 
 export class SupabaseProductCategoryRepository
     implements ProductCategoryRepository {

@@ -7,10 +7,15 @@ import type {
 } from "../../../../../auth/domain/authorization";
 
 import type {
+    CreatePermission,
+    UpdatePermission,
+} from "../../../../../auth/application/authorization/permissions";
+
+import type {
     PermissionRepository,
 } from "@repo/database/repositories";
 
-import { toPermission } from "./mapper";
+import { PermissionRepositoryMapper as mapper } from "./mapper";
 
 
 export class SupabasePermissionRepository 
@@ -174,7 +179,7 @@ export class SupabasePermissionRepository
             return null;
         }
 
-        return toPermission(data);
+        return mapper.fromRow(data);
     }
 
    // Read Batch 
@@ -197,7 +202,7 @@ export class SupabasePermissionRepository
             throw error;
         }
 
-        return data.map(toPermission);
+        return [...mapper.fromRows(data)];
     }
 
     // Read Batch
@@ -213,7 +218,7 @@ export class SupabasePermissionRepository
             throw error;
         }
 
-        return data.map(toPermission);
+        return [...mapper.fromRows(data)];
     }
 
     async search(
@@ -231,7 +236,7 @@ export class SupabasePermissionRepository
         }
 
         return {
-            permissions: data.map(toPermission),
+            permissions: [...mapper.fromRows(data)],
             total: count ?? 0,
             page: options.page,
             pageSize: options.pageSize,
@@ -240,14 +245,18 @@ export class SupabasePermissionRepository
 
     // Write Single
 
-    async add(
-        permission: Permission
+    async create(
+        permission: CreatePermission
     ): Promise<void> {
+        const row = mapper.toCreateRow(permission);
+
         const { error } =
             await this.client
                 .schema("identity")
-                .from("user_permissions")
-                .insert(permission);
+                .from("permissions")
+                .insert(row)
+                .select("*")
+                .single();
 
         if (error) {
             throw error;
@@ -255,23 +264,25 @@ export class SupabasePermissionRepository
     }
 
     async update(
-        permission: Permission,
-        newPermission: Permission
+        permission: UpdatePermission
     ): Promise<void> {
+        const row = mapper.toUpdateRow(permission);
+
         const { error } =
             await this.client
                 .schema("identity")
                 .from("permissions")
-                .update(newPermission)
-                .eq("permission", permission.key);
+                .update(row)
+                .eq("id", permission.id)
+                .select("*")
+                .single();
 
         if (error) {
             throw error;
         }
-
     }
 
-    async remove(
+    async delete(
         permissionId: string
     ): Promise<void> {
         const { error } =
@@ -289,39 +300,52 @@ export class SupabasePermissionRepository
 
     // Write Batch
 
-    async addMany(
-        permissions: readonly Permission[]
+    async createMany(
+        permissions: readonly CreatePermission[]
     ): Promise<void> {
+        const rows = mapper.toCreateRows(permissions);
+
         const { error } =
             await this.client
                 .schema("identity")
-                .from("user_permissions")
-                .insert(permissions);
+                .from("permissions")
+                .insert(rows)
+                .select("*");
 
         if (error) {
-
             throw error;
+        }
+    }
+
+    async updateMany(
+        permissions: readonly UpdatePermission[]
+    ): Promise<void> {
+        if (permissions.length === 0) {
+            return;
+        }
+
+        const rows = mapper.toUpdateRows(permissions);
+
+        for (let index = 0; index < permissions.length; index += 1) {
+            const permission = permissions[index];
+            const row = rows[index];
+
+            const { error } = await this.client
+                .schema("identity")
+                .from("permissions")
+                .update(row)
+                .eq("id", permission.id)
+                .select("*")
+                .single();
+
+            if (error) {
+                throw error;
+            }
         }
 
     }
 
-    async updateMany(
-        permissions: readonly Permission[]
-    ): Promise<void> {
-        const { error } = await this.client
-            .schema("identity")
-            .rpc("update_profiles",{
-                permissions: permissions.map((permission: Permission) =>({
-                    id: permission.id,
-                    key: permission.key,
-                    description: permission.description,
-                    scope: permission.scope                    
-                }))
-
-            })
-    }
-
-    async removeMany(
+    async deleteMany(
         permissionIds: readonly string[]
     ): Promise<void> {
 

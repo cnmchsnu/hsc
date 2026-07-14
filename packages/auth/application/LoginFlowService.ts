@@ -1,8 +1,8 @@
-import { SessionService } from "../domain/identity";
-import { UserRepository } from "@repo/database/repositories";
+import { SessionService, UserService } from "../domain/identity";
 
 import { ProfileSyncService } from "./ProfileSyncService";
 import { ProfileInitializationService } from "./ProfileInitalizationService";
+import { ProfileRepository } from "../../database/repositories/identity";
 
 export interface LoginFlowService {
 
@@ -14,11 +14,11 @@ interface LoginFlowServiceDependencies {
 
     sessionService: SessionService;
 
-    userRepository: UserRepository;
-
     profileSyncService: ProfileSyncService;
 
     profileInitializationService: ProfileInitializationService;
+
+    profileRepository: ProfileRepository;
 
 }
 
@@ -27,9 +27,9 @@ class DefaultLoginFlowService
 
         constructor(
             private readonly sessionService: SessionService,
-            private readonly userRepository: UserRepository,
             private readonly profileSyncService: ProfileSyncService,
             private readonly profileInitializationService: ProfileInitializationService,
+            private readonly profileRepository: ProfileRepository
         ) {}
 
     async execute(): Promise<void> {
@@ -41,16 +41,14 @@ class DefaultLoginFlowService
             throw new Error("No active session found.");
         }
 
-        const user = 
-            await this.userRepository.getById(session.userId);
+        const existProfile = await this.profileRepository.exists(session.userId);
 
-        if (!user) {
-            throw new Error("User not found for the current session.");
+        if (!existProfile) {
+            await this.profileInitializationService.initialize(session.userId);
         }
+        
 
-        await this.profileInitializationService.initialize(user.id);
-
-        await this.profileSyncService.sync(user.id);
+        await this.profileSyncService.sync(session.userId);
     }
 }
 
@@ -59,9 +57,9 @@ export function createLoginFlowService(
 ): LoginFlowService {
     return new DefaultLoginFlowService(
         dependencies.sessionService,
-        dependencies.userRepository,
         dependencies.profileSyncService,
-        dependencies.profileInitializationService
+        dependencies.profileInitializationService,
+        dependencies.profileRepository
     );
 }
         

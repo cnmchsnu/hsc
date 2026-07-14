@@ -4,7 +4,7 @@ export interface PermissionRow {
 
     key: string;
 
-    description: string;
+    description: string | null;
 
     scope: string;
 

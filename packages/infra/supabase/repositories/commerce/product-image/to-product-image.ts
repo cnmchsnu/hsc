@@ -1,5 +1,5 @@
-import { ProductImage } from '../../../commerce/domain/product-image';
-import type { ProductImageRow } from '../../entities';
+import { ProductImage } from '../../../../../commerce/domain/product-image';
+import type { ProductImageRow } from '@repo/database/entities';
 
 export function toProductImage(
     row: ProductImageRow,

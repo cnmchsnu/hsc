@@ -1,8 +1,14 @@
 import type { AuthenticationProvider } from "@repo/infra/supabase/auth";
 
+
 export interface AuthenticationService {
 
     signInWithGoogle(redirectTo?: string): Promise<void>;
+
+    signInWithGoogleOneTap(
+        provider: string, 
+        token: string
+    ): Promise<void>;
 
     signOut(): Promise<void>;
 
@@ -15,6 +21,7 @@ export interface AuthenticationService {
 interface AuthenticationServiceDependencies {
 
     authenticationProvider: AuthenticationProvider;
+    
 
 }
 
@@ -31,9 +38,17 @@ export class DefaultAuthenticationService
         return this.authenticationProvider.signInWithGoogle(redirectTo);
     }
 
+    async signInWithGoogleOneTap(
+        provider: string,
+        token: string
+    ): Promise<void> {
+        return this.authenticationProvider.signInWithGoogleIdToken(provider, token);
+    }
+
     async signOut(): Promise<void> {
         return this.authenticationProvider.signOut();
     }
+
 
     async refreshSession(): Promise<void> {
         return this.authenticationProvider.refreshSession();

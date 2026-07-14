@@ -78,8 +78,7 @@ export function createRoleService(
         async getRole(
             roleId: string
         ): Promise<Role | null> {
-
-            throw new Error("Not implemented");
+            return repository.findById(roleId);
         },
 
         // Read Batch
@@ -87,12 +86,17 @@ export function createRoleService(
         async getRolesByType(
             roleType: RoleTypes,
         ): Promise<Role[]> {
-
-            throw new Error("Not implemented");
+            return repository.findByType(roleType);
         },
 
-        async listRoles(): Promise<Role[]> {
-            throw new Error("Not implemented");
+        async list(): Promise<Role[]> {
+            return repository.list();
+        },
+
+        async search(
+            options: RoleListOptions
+        ): Promise<RoleList> {
+            return repository.search(options);
         },
 
         // Existing Single
@@ -100,7 +104,7 @@ export function createRoleService(
         async exists(
             roleId: string,
         ): Promise<boolean> {
-            throw new Error("Not implemented");
+            return repository.exists(roleId);
         },
 
         // Existing Batch
@@ -108,7 +112,7 @@ export function createRoleService(
         async listExistingRoleIds(
             roleIds: readonly string[],
         ): Promise<string[]> {
-            throw new Error("Not implemented");
+            return repository.listExistingRoleIds(roleIds);
         },
 
         // Write Single
@@ -116,20 +120,20 @@ export function createRoleService(
         async create(
             role: Role
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.create(role);
         },
 
         async update(
             roleId: string, 
             role: Role
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.update(roleId, role);
         },
 
         async delete(
             roleId: string
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.delete(roleId);
         },
 
         // Write Batch
@@ -137,19 +141,19 @@ export function createRoleService(
         async createMany(
             roles: readonly Role[],
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.createMany(roles);
         },
 
         async updateMany(
             roles: readonly Role[],
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.updateMany(roles);
         },
 
         async deleteMany(
             roleIds: readonly string[],
         ): Promise<void> {
-            throw new Error("Not implemented");
+            return repository.deleteMany(roleIds);
         }
     };
 }

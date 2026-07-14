@@ -1,25 +1,27 @@
 
-import type { Permission, PermissionList, PermissionListOptions,  } from "./type";
-import { PermissionRepository } from "@repo/database/repositories";
+import type { Permission, PermissionList, PermissionListOptions } from "./type";
+
+import type { CreatePermission, UpdatePermission } from "../../../application/authorization/permissions";
+
+import type { PermissionRepository } from "../../../../database/repositories";
 
 export interface PermissionService {
 
-    // Read
+    // Read Single
 
-    hasPermission(
-        userId: string,
-        permission: string,
-    ): Promise<boolean>;
+    getPermission(
+        permissionId: string,
+    ): Promise<Permission | null>;
 
     // Read Batch
 
     getPermissions(
-        userId: string,
-    ): Promise<string[]>;
+        permissionIds: string[],
+    ): Promise<Permission[]>;
 
     // Query
 
-    list(): Promise<string[]>;
+    list(): Promise<Permission[]>;
 
     search(
         options: PermissionListOptions
@@ -27,38 +29,36 @@ export interface PermissionService {
 
     // Write signle
 
-    add(
+    create(
         userId: string,
-        permission: Permission
+        permission: CreatePermission
     ): Promise<void>;
 
     update(
         userId: string,
-        permissionId: string,
-        newPermission: Permission
+        newPermission: UpdatePermission
     ): Promise<void>;
 
-    remove(
+    delete(
         userId: string,
-        permission: Permission
+        permissionId: string
     ): Promise<void>;
 
     // Write batch
 
-    addMany(
+    createMany(
         userId: string,
-        permissions: readonly Permission[]
+        permissions: readonly CreatePermission[]
     ): Promise<void>;
 
     updateMany(
         userId: string,
-        permissions: readonly Permission[],
-        newPermissions: readonly Permission[]
+        permissions: readonly UpdatePermission[]
     ): Promise<void>;
 
-    removeMany(
+    deleteMany(
         userId: string,
-        permissions: readonly Permission[]
+        permissionIds: readonly string[]
     ): Promise<void>;
 }
 
@@ -67,71 +67,79 @@ export function createPermissionService(
 ): PermissionService {
     return {
 
-        // Read
+        // Read Single
 
-        async hasPermission(
-            userId: string,
-            permission: string,
-        ): Promise<boolean> {
-            throw new Error('Not implemented');
+        async getPermission(
+            permissionId: string,
+        ): Promise<Permission | null> {
+            return repository.getPermissionById(permissionId);
         },
+
+        // Read Batch
 
         async getPermissions(
-            userId: string,
-        ): Promise<string[]> {
-            throw new Error('Not implemented');
+            permissionIds: string[],
+        ): Promise<Permission[]> {
+            return repository.getPermissionsByIds(permissionIds);
         },
 
-        async listPermissions(): Promise<string[]> {
-            throw new Error('Not implemented');
+        // Query
+
+
+        async list(): Promise<Permission[]> {
+            return repository.list();
+        },
+
+        async search(
+            options: PermissionListOptions
+        ): Promise<PermissionList> {
+            return repository.search(options);
         },
 
         // Write signle
 
-        async add(
+        async create(
             userId: string,
-            permission: Permission
+            permission: CreatePermission
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.create(permission);
         },
 
         async update(
             userId: string,
-            permission: Permission,
-            newPermission: Permission
+            newPermission: UpdatePermission
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.update(newPermission);
         },
 
-        async remove(
+        async delete(
             userId: string,
-            permission: Permission
+            permissionId: string
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.delete(permissionId);
         },
 
         // Write batch
 
-        async addMany(
+        async createMany(
             userId: string,
-            permissions: readonly Permission[]
+            permissions: readonly CreatePermission[]
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.createMany(permissions);
         },
 
         async updateMany(
             userId: string,
-            permissions: readonly Permission[],
-            newPermissions: readonly Permission[]
+            permissions: readonly UpdatePermission[]
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.updateMany(permissions);
         },
 
-        async removeMany(
+        async deleteMany(
             userId: string,
-            permissions: readonly Permission[]
+            permissionIds: readonly string[]
         ): Promise<void> {
-            throw new Error('Not implemented');
+            return repository.deleteMany(permissionIds);
         }
 
     };

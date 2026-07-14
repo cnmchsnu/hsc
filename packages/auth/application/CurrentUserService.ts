@@ -7,7 +7,7 @@ export interface CurrentUser {
 
     session: Session;
     
-     userContext: UserContext;
+    userContext: UserContext;
 
 }
 

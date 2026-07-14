@@ -4,7 +4,12 @@ import type {
     Category,
 } from "../../../../../commerce/domain/category";
 
-import { toCategory } from "./to-category";
+import type {
+    CreateCategory,
+    UpdateCategory,
+} from "../../../../../commerce/application/command/category";
+
+import { CategoryRepositoryMapper as mapper } from "./to-category";
 
 import type { CategoryRepository } from "@repo/database/repositories";
 
@@ -35,7 +40,7 @@ export class SupabaseCategoryRepository
                 return null;
             }
 
-            return toCategory(data);
+            return mapper.fromRow(data);
         }
 
         async findBySlug(
@@ -56,7 +61,7 @@ export class SupabaseCategoryRepository
                 return null;
             }
 
-            return toCategory(data);
+            return mapper.fromRow(data);
         }
 
         // Read Batch
@@ -79,7 +84,7 @@ export class SupabaseCategoryRepository
                 throw error;
             }
 
-            return data.map(toCategory);
+            return [...mapper.fromRows(data)];
         }
 
         async findBySlugs(
@@ -100,7 +105,7 @@ export class SupabaseCategoryRepository
                 throw error;
             }
 
-            return data.map(toCategory);
+            return [...mapper.fromRows(data)];
         }
 
         // Query
@@ -115,7 +120,7 @@ export class SupabaseCategoryRepository
                 throw error;
             }
 
-            return data.map(toCategory);
+            return [...mapper.fromRows(data)];
         }
 
         // Exists Single
@@ -184,20 +189,14 @@ export class SupabaseCategoryRepository
         // Write Single
 
         async create(
-            category: Category,
+            category: CreateCategory,
         ): Promise<void> {
+            const row = mapper.toCreateRow(category);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("categories")
-                .insert({
-                    id: category.id,
-                    name: category.name,
-                    slug: category.slug,
-                    status: category.status,
-                    display_order: category.displayOrder,
-                    description: category.description,
-                    parent_id: category.parentId,
-                });
+                .insert(row);
 
             if (error) {
                 throw error;
@@ -205,19 +204,14 @@ export class SupabaseCategoryRepository
         }
 
         async update(
-            category: Category,
+            category: UpdateCategory,
         ): Promise<void> {
+            const row = mapper.toUpdateRow(category);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("categories")
-                .update({
-                    name: category.name,
-                    slug: category.slug,
-                    status: category.status,
-                    display_order: category.displayOrder,
-                    description: category.description,
-                    parent_id: category.parentId,
-                })
+                .update(row)
                 .eq("id", category.id);
 
             if (error) {
@@ -249,19 +243,14 @@ export class SupabaseCategoryRepository
         // Write Batch
 
         async createMany(
-            categories: readonly Category[],
+            categories: readonly CreateCategory[],
         ): Promise<void> {
+            const rows = mapper.toCreateRows(categories);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("categories")
-                .insert(categories.map((cat) => ({
-                    name: cat.name,
-                    slug: cat.slug,
-                    status: cat.status,
-                    display_order: cat.displayOrder,
-                    description: cat.description,
-                    parent_id: cat.parentId,
-                })));
+                .insert(rows);
 
             if (error) {
                 throw error;
@@ -269,27 +258,23 @@ export class SupabaseCategoryRepository
         }
 
         async updateMany(
-            categories: readonly Category[],
+            categories: readonly UpdateCategory[],
         ): Promise<void> {
-            const { error } = await this.client
-                .schema("commerce")
-                .rpc(
-                    "update_categories",
-                    {
-                        categories: categories.map((cat: Category) => ({
-                            id: cat.id,
-                            name: cat.name,
-                            slug: cat.slug,
-                            status: cat.status,
-                            display_order: cat.displayOrder,
-                            description: cat.description,
-                            parent_id: cat.parentId,
-                        })),
-                    }
-                );
+            const rows = mapper.toUpdateRows(categories);
 
-            if (error) {
-                throw error;
+            for (let index = 0; index < categories.length; index += 1) {
+                const category = categories[index];
+                const row = rows[index];
+
+                const { error } = await this.client
+                    .schema("commerce")
+                    .from("categories")
+                    .update(row)
+                    .eq("id", category.id);
+
+                if (error) {
+                    throw error;
+                }
             }
         }
         
@@ -336,7 +321,7 @@ export class SupabaseCategoryRepository
                 throw error;
             }
 
-            return data.map(toCategory);
+            return [...mapper.fromRows(data)];
         }
 
 
