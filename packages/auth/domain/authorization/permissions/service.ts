@@ -1,6 +1,9 @@
 
-import type { Permission, PermissionList, PermissionListOptions,  } from "./type";
-import { PermissionRepository } from "@repo/database/repositories";
+import type { Permission, PermissionList, PermissionListOptions } from "./type";
+
+import type { CreatePermission, UpdatePermission } from "../../../application/authorization/permissions";
+
+import type { PermissionRepository } from "../../../../database/repositories";
 
 export interface PermissionService {
 
@@ -26,38 +29,36 @@ export interface PermissionService {
 
     // Write signle
 
-    add(
+    create(
         userId: string,
-        permission: Permission
+        permission: CreatePermission
     ): Promise<void>;
 
     update(
         userId: string,
-        permissionId: string,
-        newPermission: Permission
+        newPermission: UpdatePermission
     ): Promise<void>;
 
-    remove(
+    delete(
         userId: string,
-        permission: Permission
+        permissionId: string
     ): Promise<void>;
 
     // Write batch
 
-    addMany(
+    createMany(
         userId: string,
-        permissions: readonly Permission[]
+        permissions: readonly CreatePermission[]
     ): Promise<void>;
 
     updateMany(
         userId: string,
-        permissions: readonly Permission[],
-        newPermissions: readonly Permission[]
+        permissions: readonly UpdatePermission[]
     ): Promise<void>;
 
-    removeMany(
+    deleteMany(
         userId: string,
-        permissions: readonly Permission[]
+        permissionIds: readonly string[]
     ): Promise<void>;
 }
 
@@ -97,50 +98,48 @@ export function createPermissionService(
 
         // Write signle
 
-        async add(
+        async create(
             userId: string,
-            permission: Permission
+            permission: CreatePermission
         ): Promise<void> {
-            return repository.add(permission);
+            return repository.create(permission);
         },
 
         async update(
             userId: string,
-            permissionId: string,
-            newPermission: Permission
+            newPermission: UpdatePermission
         ): Promise<void> {
-            return repository.update(permissionId, newPermission);
+            return repository.update(newPermission);
         },
 
-        async remove(
+        async delete(
             userId: string,
-            permission: Permission
+            permissionId: string
         ): Promise<void> {
-            return repository.remove(permission.id);
+            return repository.delete(permissionId);
         },
 
         // Write batch
 
-        async addMany(
+        async createMany(
             userId: string,
-            permissions: readonly Permission[]
+            permissions: readonly CreatePermission[]
         ): Promise<void> {
-            return repository.addMany(permissions);
+            return repository.createMany(permissions);
         },
 
         async updateMany(
             userId: string,
-            permissions: readonly Permission[],
-            newPermissions: readonly Permission[]
+            permissions: readonly UpdatePermission[]
         ): Promise<void> {
-            return repository.updateMany(permissions, newPermissions);
+            return repository.updateMany(permissions);
         },
 
-        async removeMany(
+        async deleteMany(
             userId: string,
-            permissions: readonly Permission[]
+            permissionIds: readonly string[]
         ): Promise<void> {
-            return repository.removeMany(permissions.map(p => p.id));
+            return repository.deleteMany(permissionIds);
         }
 
     };

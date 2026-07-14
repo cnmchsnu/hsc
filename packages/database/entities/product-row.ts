@@ -16,4 +16,14 @@ export interface ProductRow {
 
     compare_at_price: number | null;
 
+    currency: string;
+
+    stock_total: number;
+
+    stock_sold: number;
+
+    created_at: string;
+
+    updated_at: string;
+
 }

@@ -6,10 +6,15 @@ import type {
     ProductListOptions,
 } from "../../../../../commerce/domain/product";
 
+import type {
+    CreateProduct,
+    UpdateProduct,
+} from "../../../../../commerce/application/command/product";
+
 
 import type { ProductRepository } from "@repo/database/repositories";
 
-import { toProduct } from "./to-product";
+import { ProductRepositoryMapper as mapper } from "./to-product";
 
 
 export class SupabaseProductRepository
@@ -169,7 +174,7 @@ export class SupabaseProductRepository
             return null;
         }
 
-        return data;
+        return mapper.fromRow(data);
     }
 
     async findBySlug(
@@ -184,7 +189,12 @@ export class SupabaseProductRepository
         if (error) {
             throw new Error(error.message);
         }
-        return data;
+
+        if (!data) {
+            return null;
+        }
+
+        return mapper.fromRow(data);
     }
 
     // Read Batch
@@ -202,7 +212,7 @@ export class SupabaseProductRepository
             throw new Error(error.message);
         }
 
-        return data;
+        return [...mapper.fromRows(data)];
     }
 
     async findBySlugs(
@@ -218,7 +228,7 @@ export class SupabaseProductRepository
             throw new Error(error.message);
         }
 
-        return data;
+        return [...mapper.fromRows(data)];
     }
 
     // Query
@@ -233,7 +243,7 @@ export class SupabaseProductRepository
             throw error;
         }
 
-        return data.map(toProduct);
+        return [...mapper.fromRows(data)];
     
     }
 
@@ -253,7 +263,7 @@ export class SupabaseProductRepository
         return {
 
             items:
-                data.map(toProduct),
+                [...mapper.fromRows(data)],
 
             total:
                 count ?? 0,
@@ -336,10 +346,12 @@ export class SupabaseProductRepository
     async create(
         product: Product,
     ): Promise<void> {
+        const row = mapper.toCreateRow(product as CreateProduct);
+
         const { error } = await this.client
             .schema("commerce")
             .from("products")
-            .insert(product);
+            .insert(row);
         
         if (error) {
             throw new Error(error.message);
@@ -356,10 +368,12 @@ export class SupabaseProductRepository
             throw new Error(`Product with id ${product.id} does not exist.`);
         }
         
+        const row = mapper.toUpdateRow(product as UpdateProduct);
+
         const { error } = await this.client
             .schema("commerce")
             .from("products")
-            .update(product)
+            .update(row)
             .eq("id", product.id);
 
         if (error) {
@@ -393,17 +407,12 @@ export class SupabaseProductRepository
     async createMany(
         products: readonly Product[],
     ): Promise<void> {
+        const rows = mapper.toCreateRows(products as readonly CreateProduct[]);
+
         const { error } = await this.client
             .schema("commerce")
             .from("products")
-            .insert(products.map((product) => ({
-                name: product.name,
-                slug: product.slug,
-                description: product.description,
-                status: product.status,
-                price: product.price,
-                compareAtPrice: product.compareAtPrice,
-            })));
+            .insert(rows);
         
         if (error) {
             throw new Error(error.message);
@@ -415,17 +424,12 @@ export class SupabaseProductRepository
         products: readonly Product[],
     ): Promise<void> {
 
+        const rows = mapper.toUpdateRows(products as readonly UpdateProduct[]);
+
         const { error } = await this.client
             .schema("commerce")
             .rpc("update_products", {
-                products: products.map((product: Product) => ({
-                    id: product.id,
-                    name: product.name,
-                    slug: product.slug,
-                    description: product.description,
-                    status: product.status,
-                    price: product.price,
-                }))
+                products: rows
             });
 
         if (error) {

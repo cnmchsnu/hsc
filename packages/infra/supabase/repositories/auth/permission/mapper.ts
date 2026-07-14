@@ -1,19 +1,62 @@
 import type { Permission } from "../../../../../auth/domain/authorization";
+import type { CreatePermission, UpdatePermission } from "../../../../../auth/application/authorization/permissions";
 import type { PermissionRow } from "@repo/database/entities";
 
-export function toPermission(
-    row: PermissionRow
-): Permission {
+import { RepositoryMapper } from "../../shared/repository-mapper";
 
-    return {
-        id: row.id,
+export const PermissionRepositoryMapper: RepositoryMapper<
+    Permission,
+    PermissionRow,
+    CreatePermission,
+    UpdatePermission
+> = {
 
-        key: row.key,
+    fromRow(
+        row: PermissionRow,
+    ): Permission {
+        return {
+            id: row.id,
+            key: row.key,
+            scope: row.scope,
+            description: row.description,
+        };
+    },
 
-        scope: row.scope,
+    fromRows(
+        rows: readonly PermissionRow[],
+    ): Permission[] {
+        return rows.map(this.fromRow);
+    },
 
-        description: row.description,
+    toCreateRow(
+        dto: CreatePermission,
+    ): Partial<PermissionRow> {
+        return {
+            key: dto.key,
+            scope: dto.scope,
+            description: dto.description ?? null,
+        };
+    },
 
-    }
+    toCreateRows(
+        dto: readonly CreatePermission[],
+    ): Partial<PermissionRow>[] {
+        return dto.map(this.toCreateRow);
+    },
 
-}
+    toUpdateRow(
+        dto: UpdatePermission,
+    ): Partial<PermissionRow> {
+        return {
+            key: dto.key,
+            scope: dto.scope,
+            description: dto.description,
+        };
+    },
+
+    toUpdateRows(
+        dto: readonly UpdatePermission[],
+    ): Partial<PermissionRow>[] {
+        return dto.map(this.toUpdateRow);
+    },
+};

@@ -1,12 +1,14 @@
 import { createAuthContainer } from '../../container';
 
-export async function requireUser(): Promise<void> {
+export async function requireUser(): Promise<boolean> {
 
     const { authenticationReadService } = await createAuthContainer();
 
     const currentUser = await authenticationReadService.getCurrentUser();
 
     if (!currentUser) {
-        throw new Error("No current user found.");
+        return false;
     }
+
+    return true;
 }

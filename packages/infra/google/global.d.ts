@@ -1,4 +1,3 @@
-// packages/auth/src/global.d.ts
 
 import 'google.accounts'
 

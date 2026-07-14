@@ -24,9 +24,18 @@ importers:
       '@supabase/ssr':
         specifier: ^0.12.0
         version: 0.12.0(@supabase/supabase-js@2.108.2)
+      '@types/google.accounts':
+        specifier: ^0.0.18
+        version: 0.0.18
       '@types/node':
         specifier: ^20.19.43
         version: 20.19.43
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.17)
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
@@ -237,6 +246,9 @@ importers:
       next:
         specifier: 16.2.9
         version: 16.2.9(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -268,27 +280,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
-      '@types/google-one-tap':
-        specifier: ^1.2.7
-        version: 1.2.7
-      '@types/google.accounts':
-        specifier: ^0.0.18
-        version: 0.0.18
-      '@types/react':
-        specifier: ^19.2.17
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.17)
-      crypto:
-        specifier: ^1.0.1
-        version: 1.0.1
       next:
         specifier: 16.2.9
         version: 16.2.9(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react:
-        specifier: 19.2.4
-        version: 19.2.4
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -322,9 +316,15 @@ importers:
       '@types/google.accounts':
         specifier: ^0.0.18
         version: 0.0.18
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
       next:
         specifier: ^16.2.10
         version: 16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -1178,9 +1178,6 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
-
-  '@types/google-one-tap@1.2.7':
-    resolution: {integrity: sha512-u+1J+ldj/ZvvBBP7a5zC+sWy5LaHVfcTcOW/aaTKYoWUlsWi6OCBYYN4dsPlYRmA08y9jag8MtcT5rVgYdPf1g==}
 
   '@types/google.accounts@0.0.18':
     resolution: {integrity: sha512-yHaPznll97ZnMJlPABHyeiIlLn3u6gQaUjA5k/O9lrrpgFB9VT10CKPLuKM0qTHMl50uXpW5sIcG+utm8jMOHw==}
@@ -3558,8 +3555,6 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.9': {}
-
-  '@types/google-one-tap@1.2.7': {}
 
   '@types/google.accounts@0.0.18': {}
 

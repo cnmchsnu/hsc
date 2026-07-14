@@ -4,7 +4,10 @@ import Link from "next/link";
 import { MobileMenu } from "./header/MobileMenu"
 import { DesktopMenu } from "./header/DesktopMenu";
 
-import { getCurrentUser } from "@repo/auth/server";
+
+import { getCurrentUser, requireUser } from "@repo/auth/server";
+
+import { GoogleOneTap } from "./GoogleOneTap";
 
 export async function Header() {
 
@@ -81,6 +84,8 @@ export async function Header() {
             </Link>
 
             <MobileMenu navLinks={navLinks} />
+
+            {!currentUser && <GoogleOneTap />}
             
           </div>
         </div>

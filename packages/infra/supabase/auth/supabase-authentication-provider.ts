@@ -4,7 +4,15 @@ import { createBrowserClient } from "../client/browser";
 
 export interface AuthenticationProvider {
 
-    signInWithGoogle(redirectTo?: string): Promise<void>;
+    signInWithGoogle(
+        redirectTo?: string
+    ): Promise<void>;
+
+    signInWithGoogleIdToken(
+        provider: string,
+        token: string,
+    ): Promise<void>;
+
 
     signOut(): Promise<void>;
 
@@ -19,6 +27,8 @@ export interface AuthenticationProvider {
 export class SupabaseAuthenticationProvider
     implements AuthenticationProvider {
 
+    private readonly supabase = createBrowserClient();
+
 
     async signInWithGoogle(
         redirectTo?: string
@@ -26,11 +36,9 @@ export class SupabaseAuthenticationProvider
 
         const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
-        const supabase =
-            await createBrowserClient();
 
-        const { data, error } =
-            await supabase.auth.signInWithOAuth({
+        const { error } =
+            await this.supabase.auth.signInWithOAuth({
 
                 provider: "google",
 
@@ -52,13 +60,32 @@ export class SupabaseAuthenticationProvider
 
     }
 
+    async signInWithGoogleIdToken(
+        provider: string,
+        token: string,
+    ): Promise<void> {
+
+        
+        const { error } =
+            await this.supabase.auth.signInWithIdToken({
+                provider: provider,
+
+                token
+            });
+
+        if (error) {
+
+            throw error;
+
+        }
+
+    }
+
     async signOut(): Promise<void> {
 
-        const supabase =
-            await createBrowserClient();
 
         const { error } =
-            await supabase.auth.signOut();
+            await this.supabase.auth.signOut();
 
         if (error) {
 
@@ -70,11 +97,8 @@ export class SupabaseAuthenticationProvider
 
     async refreshSession(): Promise<void> {
 
-        const supabase =
-            await createBrowserClient();
-
         const { error } =
-            await supabase.auth.refreshSession();
+            await this.supabase.auth.refreshSession();
 
         if (error) {
 
@@ -86,11 +110,8 @@ export class SupabaseAuthenticationProvider
 
     async revokeSession(): Promise<void> {
 
-        const supabase =
-            await createBrowserClient();
-
         const { error } =
-            await supabase.auth.signOut({
+            await this.supabase.auth.signOut({
 
                 scope: "global",
 

@@ -9,6 +9,11 @@ export interface AuthenticationCommandService {
         redirectTo?: string,
     ): Promise<void>;
 
+    signInWithGoogleOneTap(
+        provider: string,
+        token: string,
+    ): Promise<void>;
+
 
     signOut(): Promise<void>;
 
@@ -33,12 +38,18 @@ class DefaultAuthenticationCommandService
         async signInWithGoogle(
             redirectTo?: string
         ): Promise<void> {
-            this.authenticationService.signInWithGoogle(redirectTo);
+            await this.authenticationService.signInWithGoogle(redirectTo);
+        }
 
+        async signInWithGoogleOneTap(
+            provider: string,
+            token: string
+        ): Promise<void> {
+            await this.authenticationService.signInWithGoogleOneTap(provider, token);
         }
 
         async signOut(): Promise<void> {
-            return this.authenticationService.signOut();
+            await this.authenticationService.signOut();
         }
 
 }
@@ -48,6 +59,6 @@ export function createAuthenticationCommandService(
     dependencies: AuthCommandServiceDependencies
 ): AuthenticationCommandService {
     return new DefaultAuthenticationCommandService(
-        dependencies.authenticationService,
+        dependencies.authenticationService
     )
 }

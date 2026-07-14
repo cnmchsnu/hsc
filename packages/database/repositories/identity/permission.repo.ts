@@ -1,5 +1,6 @@
 
 import type { Permission, PermissionList, PermissionListOptions } from "../../../auth/domain/authorization";
+import type { CreatePermission, UpdatePermission } from "../../../auth/application/authorization/permissions";
 
 export interface PermissionRepository {
 
@@ -25,31 +26,29 @@ export interface PermissionRepository {
 
     // Write signle
 
-    add(
-        permission: Permission
+    create(
+        permission: CreatePermission
     ): Promise<void>;
 
     update(
-        permission: string,
-        newPermission: Permission
+        permission: UpdatePermission
     ): Promise<void>;
 
-    remove(
+    delete(
         permissionId: string
     ): Promise<void>;
 
     // Write batch
 
-    addMany(
-        permissions: readonly Permission[]
+    createMany(
+        permissions: readonly CreatePermission[]
     ): Promise<void>;
 
     updateMany(
-        permissions: readonly Permission[],
-        newPermissions: readonly Permission[]
+        permissions: readonly UpdatePermission[]
     ): Promise<void>;
 
-    removeMany(
+    deleteMany(
         permissionIds: readonly string[]
     ): Promise<void>;
 }
