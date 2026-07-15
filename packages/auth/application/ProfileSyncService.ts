@@ -1,0 +1,65 @@
+import { ProfileRepository } from "@repo/database/repositories"
+
+import { Profile } from "../domain/profile";
+import { UserService } from "../domain/identity";
+
+
+export interface ProfileSyncService {
+
+    sync(
+        userId: string,
+    ): Promise<void>;
+
+}
+
+interface ProfileSyncServiceDependencies {
+
+    userService: UserService;
+    
+    profileRepository: ProfileRepository;
+
+}
+
+
+class DefaultProfileSyncService
+    implements ProfileSyncService {
+
+        constructor(
+            private readonly userService: UserService,
+            private readonly profileRepository: ProfileRepository,
+        ) {}
+
+        async sync(
+            userId: string,
+        ): Promise<void> {
+            const user = await this.userService.getUserById(userId);
+
+            if (!user) {
+                throw new Error(`User with ID ${userId} not found.`);
+            }
+
+            const profile = await this.profileRepository.findById(userId);
+
+            if (!profile) {
+                throw new Error(`Profile for user with ID ${userId} not found.`);
+            }
+
+            const newProfile: Profile = {
+                ...profile,
+                displayName: user.name,
+                avatarUrl: user.avatar!,
+            };
+
+            await this.profileRepository.update(newProfile);
+        }
+    }
+
+
+export function createProfileSyncService(
+    dependencies: ProfileSyncServiceDependencies,
+): ProfileSyncService {
+    return new DefaultProfileSyncService(
+        dependencies.userService,
+        dependencies.profileRepository,
+    );
+}

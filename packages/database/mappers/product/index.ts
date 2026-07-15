@@ -1,1 +1,0 @@
-export { toProduct } from "./to-product";

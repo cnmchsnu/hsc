@@ -13,13 +13,15 @@ interface Order {
 }
 
 export default async function UserProfile() {
-  const currentuser = await getCurrentUser();
 
-  if (!currentuser) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
     redirect("/login")
   }
 
-  const userData = {name: currentuser?.displayName!, studentId: currentuser?.studentId!, email: currentuser?.email!, class: "1674", number: "00" };
+  const userProfile = currentUser?.userContext;
+
 
   const orders: Order[] = [
     { id: "#HSNU-2024-0082", date: "2024/03/15", total: 1280, status: "待配貨" },
@@ -42,14 +44,14 @@ export default async function UserProfile() {
           <section className="bento-card bg-surface rounded-xl p-stack-lg flex flex-col items-center text-center border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
             <div className="relative w-32 h-32 mb-stack-md">
               <div className="w-full h-full rounded-full border-4 border-white shadow-md overflow-hidden bg-surface-container">
-                { currentuser?.avatarUrl ? ( <img src={currentuser.avatarUrl!}/>) : <span></span> }
+                { userProfile?.profile?.avatarUrl ? ( <img src={userProfile.profile.avatarUrl!} width="128" height="128" />) : <span></span> }
               </div>
               {/* <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-container transition-colors flex items-center justify-center">
                 <span className="material-symbols-outlined text-sm font-bold">edit</span>
               </button> */}
             </div>
-            <h1 className="font-headline-md text-headline-md text-on-surface font-bold text-2xl">{currentuser?.displayName}</h1>
-            <p className="font-label-md text-label-md text-text-secondary mt-1">學號：{currentuser?.studentId}</p>
+            <h1 className="font-headline-md text-headline-md text-on-surface font-bold text-2xl">{userProfile?.profile?.displayName}</h1>
+            {/* <p className="font-label-md text-label-md text-text-secondary mt-1">學號：{userProfile?.profile?.studentId}</p> */}
             {/* <div className="mt-stack-md flex gap-stack-sm flex-wrap justify-center">
               <span className="px-3 py-1 bg-surface-container-high rounded-full font-label-sm text-label-sm text-primary font-bold">
                 高二 誠班
@@ -61,8 +63,7 @@ export default async function UserProfile() {
           </section>
 
           {/* Membership Status Card */}
-          <section className="bento-card bg-primary-container text-white rounded-xl p-stack-lg relative overflow-hidden border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
-            {/* Subtle Glow Decoration */}
+          {/* <section className="bento-card bg-primary-container text-white rounded-xl p-stack-lg relative overflow-hidden border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-secondary-container opacity-20 blur-3xl rounded-full"></div>
             <div className="flex items-start justify-between mb-stack-md relative z-10">
               <div>
@@ -89,7 +90,7 @@ export default async function UserProfile() {
                 續費詳情
               </a>
             </div>
-          </section>
+          </section> */}
 
           {/* Settings & Actions */}
           <Actions />
@@ -99,7 +100,7 @@ export default async function UserProfile() {
         <div className="lg:col-span-8 flex flex-col gap-gutter">
           {/* Personal Information Form */}
 
-          <PersonnalData {...userData} />
+          <PersonnalData {...userProfile} />
 
           {/* Order History Table */}
           <section className="bento-card bg-white rounded-xl p-stack-lg border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200 overflow-hidden">

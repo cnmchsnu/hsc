@@ -1,5 +1,6 @@
 import type { Category } from "./type";
 import type { CategoryRepository } from "@repo/database/repositories";
+import type { CreateCategory, UpdateCategory } from "../../../commerce/application/command/category";
 import { CategoryNotFoundError } from "./error";
 
 
@@ -53,11 +54,11 @@ export interface CategoryService {
     // Write Single
 
     create(
-        category: Category,
+        category: CreateCategory,
     ): Promise<void>;
 
     update(
-        category: Category,
+        category: UpdateCategory,
     ): Promise<void>;
 
     delete(
@@ -68,11 +69,11 @@ export interface CategoryService {
     // Write Batch
 
     createMany(
-        categories: readonly Category[],
+        categories: readonly CreateCategory[],
     ): Promise<void>;
 
     updateMany(
-        categories: readonly Category[],
+        categories: readonly UpdateCategory[],
     ): Promise<void>;
 
     deleteMany(
@@ -219,13 +220,13 @@ export function createCategoryService(
 
         // Write Single
         async create(
-            category: Category
+            category: CreateCategory
         ): Promise<void> {
             await repository.create(category);
         },
 
         async update(
-            category: Category
+            category: UpdateCategory
         ): Promise<void> {
             await repository.update(category);
         },
@@ -238,7 +239,7 @@ export function createCategoryService(
 
         // Write Batch
         async createMany(
-            categories: readonly Category[]
+            categories: readonly CreateCategory[]
         ): Promise<void> {
             if (categories.length === 0) {
                 return;
@@ -248,7 +249,7 @@ export function createCategoryService(
         },
 
         async updateMany(
-            categories: readonly Category[]
+            categories: readonly UpdateCategory[]
         ): Promise<void> {
             if (categories.length === 0) {
                 return;

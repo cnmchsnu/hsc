@@ -1,1 +1,0 @@
-export type { ProductImageRepository } from './product-image-repo';

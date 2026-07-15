@@ -6,7 +6,6 @@ export async function FeaturedProducts() {
     const featuredProducts = await getProductSummariesByCategory("Featured");
 
 
-
     return (
         <section className="py-stack-lg bg-background">
         <div className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
