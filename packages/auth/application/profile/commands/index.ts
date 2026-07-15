@@ -1,2 +1,2 @@
-export { CreateProfile } from "./create-profile";
-export { UpdateProfile } from "./update-profile";
+export type { CreateProfile } from "./create-profile";
+export type { UpdateProfile } from "./update-profile";

@@ -1,2 +1,2 @@
-export { CreateCategory } from "./create-category";
-export { UpdateCategory } from "./update-category";
+export type { CreateCategory } from "./create-category";
+export type { UpdateCategory } from "./update-category";
