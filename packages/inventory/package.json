@@ -1,0 +1,7 @@
+{
+    "name": "@repo/inventory",
+    "private": true,
+    "dependencies": {
+        "@repo/shared": "workspace:*"
+    }
+}

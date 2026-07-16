@@ -1,4 +1,11 @@
 {
     "name": "@repo/shared",
-    "private": true
+    "private": true,
+    "exports": {
+        ".": {
+            "types": "./types.ts",
+            "import": "./repository.ts",
+            "require": "./repository.js"
+        }
+    }
 }

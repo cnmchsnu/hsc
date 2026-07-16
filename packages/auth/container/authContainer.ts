@@ -18,6 +18,7 @@ import {
 
 import { createAuthorizationService, type AuthorizationService } from "../application/AuthorizationService";
 import { createAuthenticationReadService, type AuthenticationReadService } from "../application/AuthenticationReadService";
+import { createProfileCommandService, type ProfileCommandService } from "../application/profile/ProfileCommandService";
 import { createCurrentUserService } from "../application/CurrentUserService";
 import { createProfileSyncService } from "../application/ProfileSyncService";
 import { createLoginFlowService, type LoginFlowService } from "../application/LoginFlowService";
@@ -33,6 +34,8 @@ export interface AuthContainer {
     authenticationReadService: AuthenticationReadService;
 
     authorizationService: AuthorizationService;
+
+    profileCommandService: ProfileCommandService;
 
 }
 
@@ -125,7 +128,12 @@ export async function createAuthContainer(): Promise<AuthContainer> {
             currentUserService,
             loginFlowService
         });
-
+    
+    const profileCommandService =
+        createProfileCommandService({
+            currentUserService,
+            profileRepository
+        });
     
 
     return {
@@ -133,6 +141,8 @@ export async function createAuthContainer(): Promise<AuthContainer> {
         authenticationReadService,
 
         authorizationService,
+
+        profileCommandService
 
     };
 }

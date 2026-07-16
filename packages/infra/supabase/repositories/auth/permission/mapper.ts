@@ -1,8 +1,8 @@
 import type { Permission } from "../../../../../auth/domain/authorization";
 import type { CreatePermission, UpdatePermission } from "../../../../../auth/application/authorization/permissions";
-import type { PermissionRow } from "@repo/database/entities";
+import type { PermissionRow } from "../../../../entities";
 
-import { RepositoryMapper } from "../../shared/repository-mapper";
+import { RepositoryMapper } from "@repo/shared";
 
 export const PermissionRepositoryMapper: RepositoryMapper<
     Permission,

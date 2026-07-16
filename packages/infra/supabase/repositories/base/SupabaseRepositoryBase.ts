@@ -1,0 +1,424 @@
+import { SupabaseClient } from '@supabase/supabase-js';
+
+import { RepositoryMapper } from '../../../../shared/repository-mapper';
+import { List, Query, Repository } from '@repo/shared';
+
+export abstract class SupabaseRepositoryBase<
+    TEntity,
+    TId,
+    TCreate,
+    TUpdate,
+    TQuery extends Query,
+    TList extends List<TEntity>,
+    TRow,
+> implements Repository<
+    TEntity,
+    TId,
+    TCreate,
+    TUpdate,
+    TQuery,
+    TList
+
+> {
+
+    protected abstract readonly schema: string;
+
+    protected abstract readonly table: string;
+
+    protected abstract readonly createRpc: string;
+
+    protected abstract readonly updateRpc: string;
+
+    protected abstract readonly mapper: RepositoryMapper<
+        TEntity,
+        TRow,
+        TCreate,
+        TUpdate
+    >;
+
+    constructor(
+
+        protected readonly client: SupabaseClient,
+
+    ) {}
+
+
+    protected from() {
+
+        return this.client
+
+            .schema(this.schema)
+
+            .from(this.table);
+
+    }
+
+    protected async getRow(
+
+        id: TId,
+
+    ) {
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .from()
+
+            .select("*")
+
+            .eq("id", id)
+
+            .maybeSingle();
+
+        if (error)
+
+            throw error;
+
+        return data;
+
+    }
+
+    protected async getRows(
+
+        ids: readonly TId[],
+
+    ) {
+
+        if (!ids.length)
+
+            return [];
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .from()
+
+            .select("*")
+
+            .in("id", [...ids]);
+
+        if (error)
+
+            throw error;
+
+        return data ?? [];
+
+    }
+
+    protected buildQuery(
+        options: TQuery,
+    ) {
+
+        return this.from().select(
+            "*",
+            {
+                count: "exact",
+            },
+        );
+
+    }
+
+    protected paginate(
+
+        query: any,
+
+        page: number,
+
+        pageSize: number,
+
+    ) {
+
+        return query.range(
+
+            (page - 1) * pageSize,
+
+            page * pageSize - 1,
+
+        );
+
+    }
+
+    protected normalizeQuery<T extends Query>(
+        options?: T,
+    ): T {
+
+        return {
+
+            page: 1,
+
+            pageSize: 50,
+
+            ...(options ?? {}),
+
+        } as T;
+
+    }
+
+    protected async executeQuery(
+
+        query: any,
+
+    ) {
+
+        const {
+
+            data,
+
+            error,
+
+            count,
+
+        } = await query;
+
+        if (error)
+
+            throw error;
+
+        return {
+
+            rows: data ?? [],
+
+            count: count ?? 0,
+
+        };
+
+    }
+
+    protected toList(
+        result: any,
+        options: TQuery,
+    ): TList {
+        return {
+            items: this.mapper.fromRows(result.rows),
+            total: result.count,
+            page: options.page ?? 1,
+            pageSize: options.pageSize ?? 50,
+        } as unknown as TList;
+    }
+
+    protected async executeRpc(
+
+        fn: string,
+
+        args?: Record<string, unknown>,
+
+    ): Promise<void> {
+
+        const { error } =
+
+            await this.client.rpc(fn, args);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+    }
+
+
+
+    protected async deleteRows(
+
+        ids: readonly TId[],
+
+    ) {
+
+        if (!ids.length)
+
+            return;
+
+        const { error } =
+
+            await this
+
+                .from()
+
+                .delete()
+
+                .in("id", [...ids]);
+
+        if (error)
+
+            throw error;
+
+    }
+
+    protected async listExistingRows(
+
+        ids: readonly TId[],
+
+    ): Promise<TId[]> {
+
+        if (!ids.length)
+
+            return [];
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .from()
+
+            .select("id")
+
+            .in("id", [...ids]);
+
+        if (error)
+
+            throw error;
+
+        return (data ?? [])
+
+            .map(
+
+                x => x.id,
+
+            );
+
+    }
+
+    async get(
+        id: TId,
+    ): Promise<TEntity | null> {
+
+        const row = await this.getRow(id);
+
+        if (!row) {
+            return null;
+        }
+
+        return this.mapper.fromRow(row);
+    }
+
+    async getMany(
+        ids: readonly TId[],
+    ): Promise<readonly TEntity[]> {
+
+        const rows = await this.getRows(ids);
+
+        return this.mapper.fromRows(rows);
+    }
+
+    async find(
+        options: TQuery,
+    ): Promise<TList> {
+
+
+        let query = this.buildQuery(
+            this.normalizeQuery(options)
+        );
+
+        query = this.paginate(
+            query,
+            options.page,
+            options.pageSize,
+        );
+
+        const result = await this.executeQuery(query);
+
+        return this.toList(
+            result,
+            options
+        );
+    }
+
+    async exists(
+        id: TId,
+        name?: string,
+    ): Promise<boolean> {
+        const data = await this.listExistingRows([id]);
+
+        return !!data;
+    }
+
+    async listExisting(
+        ids: readonly TId[],
+    ): Promise<readonly TId[]> {
+
+        return this.listExistingRows(ids);
+    }
+
+    async create(
+        command: TCreate,
+    ): Promise<void> {
+
+        await this.createMany([
+            command,
+        ]);
+    }
+
+    async createMany(
+        commands: readonly TCreate[],
+    ): Promise<void> {
+
+        if (!commands.length) {
+            return;
+        }
+
+        await this.executeRpc(
+            this.createRpc,
+            {
+                items: this.mapper.toCreateRows(commands),
+            },
+        );
+    }
+
+    async update(
+        command: TUpdate,
+    ): Promise<void> {
+
+        await this.updateMany([
+            command,
+        ]);
+    }
+
+    async updateMany(
+        commands: readonly TUpdate[],
+    ): Promise<void> {
+
+        if (!commands.length) {
+            return;
+        }
+
+        await this.executeRpc(
+            this.updateRpc,
+            {
+                items: this.mapper.toUpdateRows(commands),
+            },
+        );
+    }
+
+
+    async delete(
+        id: TId,
+    ): Promise<void> {
+
+        await this.deleteMany([
+            id,
+        ]);
+    }
+
+    async deleteMany(
+        ids: readonly TId[],
+    ): Promise<void> {
+
+        await this.deleteRows(ids);
+
+    }
+
+}

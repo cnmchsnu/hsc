@@ -4,15 +4,15 @@ export type ProductStatus =
     | "archived";
 
 
-export interface ProductCategory {
+// export interface ProductCategory {
 
-    id: string;
+//     id: string;
 
-    slug: string;
+//     slug: string;
 
-    name: string;
+//     name: string;
 
-}
+// }
 
 export interface Product {
 

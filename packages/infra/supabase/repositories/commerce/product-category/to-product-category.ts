@@ -1,7 +1,7 @@
 
 
 import { ProductCategory } from "../../../../../commerce/domain/product-category";
-import type { ProductCategoryRow } from "@repo/database/entities";
+import type { ProductCategoryRow } from "../../../entities";
 
 
 export function toProductCategory(

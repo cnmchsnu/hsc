@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { updateCurrentProfile } from "./action";
 
 
 
@@ -16,11 +17,16 @@ export function PersonnalData(userData: any) {
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-        setTimeout(() => {
-        setSaving(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-        }, 1000);
+        updateCurrentProfile({
+            id: userData.profile.user_id,
+            displayName: name,
+            class: classNum,
+            number
+        }).then(() => {
+            setSaving(false);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        });
     };
 
     return (

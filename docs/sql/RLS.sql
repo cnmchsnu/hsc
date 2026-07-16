@@ -137,3 +137,60 @@ using (
           and p.status = 'active'
     )
 );
+
+CREATE POLICY SKU_READ
+
+ON commerce.skus
+
+FOR SELECT
+
+TO AUTHENTICATED
+
+USING (TRUE);
+
+CREATE POLICY INVENTORY_READ
+
+ON inventory.inventory_items
+
+FOR SELECT
+
+TO AUTHENTICATED
+
+USING (TRUE);
+
+CREATE POLICY PRICE_READ
+
+ON pricing.prices
+
+FOR SELECT
+
+TO AUTHENTICATED
+
+USING (TRUE);
+
+ALTER TABLE commerce.variant_options
+ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY variant_options_select
+ON commerce.variant_options
+FOR SELECT
+TO authenticated
+USING (TRUE);
+
+ALTER TABLE commerce.variant_option_values
+ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY variant_option_values_select
+ON commerce.variant_option_values
+FOR SELECT
+TO authenticated
+USING (TRUE);
+
+ALTER TABLE commerce.sku_variant_values
+ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY sku_variant_values_select
+ON commerce.sku_variant_values
+FOR SELECT
+TO authenticated
+USING (TRUE);

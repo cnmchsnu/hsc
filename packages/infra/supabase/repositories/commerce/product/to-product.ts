@@ -1,8 +1,7 @@
-import type { Product } from "../../../../../commerce/domain/product";
-import type { CreateProduct, UpdateProduct } from "../../../../../commerce/application/command/product";
-import type { ProductRow } from "@repo/database/entities";
+import type { Product, CreateProduct, UpdateProduct } from "../../../../../commerce/domain/product";
+import type { ProductRow } from "../../../entities";
 
-import { RepositoryMapper } from "../../shared/repository-mapper";
+import { RepositoryMapper } from "@repo/shared";
 
 export const ProductRepositoryMapper: RepositoryMapper<
     Product,

@@ -18,7 +18,7 @@ CREATE TABLE identity.user_profiles (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    version bigint NOT NULL DEFAULT 1
+    version BIGINT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE identity.roles (
@@ -35,7 +35,7 @@ CREATE TABLE identity.roles (
 CREATE TABLE identity.permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    key TEXT NOT NULL UNIQUE,
+    KEY TEXT NOT NULL UNIQUE,
     description TEXT,
     scope TEXT NOT NULL,
 
@@ -59,7 +59,7 @@ CREATE TABLE identity.user_roles (
     PRIMARY KEY (user_id, role_id)
 );
 
-CREATE TABLE identity.user_preferences (
+CREATE TABLE identity.user_pREFERENCES (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
 
     language TEXT DEFAULT 'zh-TW',
@@ -109,7 +109,7 @@ CREATE TABLE commerce.products (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    version bigint NOT NULL DEFAULT 1
+    version BIGINT NOT NULL DEFAULT 1
 );
 
 create index idx_products_category_id
@@ -118,7 +118,7 @@ on commerce.products(category_id);
 create index idx_products_status
 on commerce.products(status);
 
-create unique index idx_products_slug
+create UNIQUE index idx_products_slug
 on commerce.products(slug);
 
 CREATE TABLE commerce.campaign_products (
@@ -149,13 +149,13 @@ CREATE TABLE commerce.product_images (
 
     storage_path TEXT NOT NULL,
 
-    is_primary BOOLEAN NOT NULL DEFAULT false,
+    is_PRIMARY BOOLEAN NOT NULL DEFAULT false,
 
     display_order INTEGER NOT NULL DEFAULT 0,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    version bigint NOT NULL DEFAULT 1
+    version BIGINT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE commerce.product_snapshots (
@@ -174,24 +174,24 @@ CREATE TABLE commerce.product_snapshots (
 
 create table commerce.categories (
 
-    id uuid primary key default gen_random_uuid(),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    parent_id uuid references commerce.categories(id) on delete set null,
+    parent_id uuid REFERENCES commerce.categories(id) on delete set NULL,
 
-    name text not null,
+    name TEXT NOT NULL,
 
-    slug text not null unique,
+    slug TEXT NOT NULL UNIQUE,
 
-    description text,
+    description TEXT,
 
-    display_order integer not null default 0,
+    display_order integer NOT NULL DEFAULT 0,
 
-    status text not null default 'active',
+    status TEXT NOT NULL DEFAULT 'active',
 
-    created_at timestamptz not null default now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    updated_at timestamptz not null default now(),
-    version bigint NOT NULL DEFAULT 1,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version BIGINT NOT NULL DEFAULT 1,
 
     constraint categories_status_check
         check (
@@ -213,19 +213,19 @@ on commerce.categories(display_order);
 
 create table commerce.product_categories (
 
-    product_id uuid not null references commerce.products(id) on delete cascade,
+    product_id uuid NOT NULL REFERENCES commerce.products(id) on delete cascade,
 
-    category_id uuid not null references commerce.categories(id) on delete cascade,
+    category_id uuid NOT NULL REFERENCES commerce.categories(id) on delete cascade,
 
-    is_primary boolean not null default false,
+    is_PRIMARY boolean NOT NULL DEFAULT false,
 
-    display_order integer not null default 0,
+    display_order integer NOT NULL DEFAULT 0,
 
-    created_at timestamptz not null default now(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
 
-    updated_at timestamptz not null default now(),
-    version bigint NOT NULL DEFAULT 1,
-    primary key (
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    version BIGINT NOT NULL DEFAULT 1,
+    PRIMARY KEY (
         product_id,
         category_id
     )
@@ -236,6 +236,121 @@ on commerce.product_categories(category_id);
 
 create index idx_product_categories_product
 on commerce.product_categories(product_id);
+
+CREATE TABLE commerce.skus (
+
+    id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
+
+    product_id UUID NOT NULL,
+
+    code TEXT NOT NULL,
+
+    barcode TEXT,
+
+    status TEXT NOT NULL,
+
+    version BIGINT NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_sku_product
+        FOREIGN KEY (product_id)
+        REFERENCES commerce.products(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_sku_code
+        UNIQUE (code)
+
+);
+
+create index idx_sku_product
+
+on commerce.skus(product_id);
+
+create unique index idx_sku_code
+
+on commerce.skus(code);
+
+CREATE TABLE commerce.variant_options (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    product_id UUID NOT NULL
+        REFERENCES commerce.products(id)
+        ON DELETE CASCADE,
+
+    name TEXT NOT NULL,
+
+    display_name TEXT NOT NULL,
+
+    sort_order INTEGER NOT NULL DEFAULT 0,
+
+    version INTEGER NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT uq_variant_option_name
+        UNIQUE (product_id, name)
+
+);
+
+CREATE INDEX idx_variant_options_product
+ON commerce.variant_options(product_id);
+
+CREATE TABLE commerce.variant_option_values (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    option_id UUID NOT NULL
+        REFERENCES commerce.variant_options(id)
+        ON DELETE CASCADE,
+
+    value TEXT NOT NULL,
+
+    display_value TEXT NOT NULL,
+
+    sort_order INTEGER NOT NULL DEFAULT 0,
+
+    version INTEGER NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT uq_variant_option_value
+        UNIQUE (option_id, value)
+
+);
+
+CREATE INDEX idx_variant_option_values_option
+ON commerce.variant_option_values(option_id);
+
+CREATE TABLE commerce.sku_variant_values (
+
+    sku_id UUID NOT NULL
+        REFERENCES commerce.skus(id)
+        ON DELETE CASCADE,
+
+    option_value_id UUID NOT NULL
+        REFERENCES commerce.variant_option_values(id)
+        ON DELETE CASCADE,
+
+    PRIMARY KEY (
+        sku_id,
+        option_value_id
+    )
+
+);
+
+CREATE INDEX idx_sku_variant_values_sku
+ON commerce.sku_variant_values(sku_id);
+
+CREATE INDEX idx_sku_variant_values_option_value
+ON commerce.sku_variant_values(option_value_id);
 
 CREATE TABLE commerce.carts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -322,6 +437,70 @@ CREATE TABLE commerce.payments (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE SCHEMA IF NOT EXISTS inventory;
+
+CREATE TABLE inventory.inventory_items (
+
+    sku_id UUID PRIMARY KEY,
+
+    available_quantity INTEGER NOT NULL DEFAULT 0,
+
+    reserved_quantity INTEGER NOT NULL DEFAULT 0,
+
+    incoming_quantity INTEGER NOT NULL DEFAULT 0,
+
+    version BIGINT NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT FK_INVENTORY_SKU
+        FOREIGN KEY (sku_id)
+        REFERENCES commerce.skus(id)
+        ON DELETE CASCADE
+
+);
+
+CREATE SCHEMA IF NOT EXISTS pricing;
+
+CREATE TABLE pricing.prices (
+
+    id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
+
+    sku_id UUID NOT NULL,
+
+    currency TEXT NOT NULL,
+
+    amount BIGINT NOT NULL,
+
+    compare_at BIGINT,
+
+    cost BIGINT,
+
+    effective_from TIMESTAMPTZ,
+
+    effective_to TIMESTAMPTZ,
+
+    version BIGINT NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT FK_PRICE_SKU
+        FOREIGN KEY (sku_id)
+        REFERENCES commerce.skus(id)
+        ON DELETE CASCADE
+
+);
+
+CREATE INDEX idx_prices_sku
+ON pricing.prices(sku_id);
+
+CREATE INDEX idx_prices_effective
+ON pricing.prices(effective_from, effective_to);
 
 CREATE SCHEMA IF NOT EXISTS fulfillment;
 
@@ -416,7 +595,7 @@ ON fulfillment.batch_items(order_id);
 
 CREATE SCHEMA IF NOT EXISTS system;
 
-CREATE TABLE system.notifications (
+CREATE TABLE system.NOTifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     user_id UUID NOT NULL
@@ -444,14 +623,14 @@ CREATE TABLE system.notifications (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_notifications_user
-ON system.notifications(user_id);
+CREATE INDEX idx_NOTifications_user
+ON system.NOTifications(user_id);
 
-CREATE INDEX idx_notifications_status
-ON system.notifications(status);
+CREATE INDEX idx_NOTifications_status
+ON system.NOTifications(status);
 
-CREATE INDEX idx_notifications_created_at
-ON system.notifications(created_at DESC);
+CREATE INDEX idx_NOTifications_created_at
+ON system.NOTifications(created_at DESC);
 
 -- MVP Optional
 CREATE TABLE system.files (
@@ -534,7 +713,7 @@ ON system.policies(priority DESC);
 CREATE TABLE system.settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    key TEXT NOT NULL UNIQUE,
+    KEY TEXT NOT NULL UNIQUE,
 
     value JSONB NOT NULL DEFAULT '{}'::jsonb,
 
@@ -547,8 +726,8 @@ CREATE TABLE system.settings (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_settings_key
-ON system.settings(key);
+CREATE INDEX idx_settings_KEY
+ON system.settings(KEY);
 
 CREATE SCHEMA IF NOT EXISTS audit;
 
