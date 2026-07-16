@@ -235,7 +235,7 @@ importers:
         specifier: ^0.12.0
         version: 0.12.0(@supabase/supabase-js@2.108.2)
       '@supabase/supabase-js':
-        specifier: ^2.108.2
+        specifier: 2.108.2
         version: 2.108.2
       '@types/google.accounts':
         specifier: ^0.0.18
@@ -278,7 +278,7 @@ importers:
   packages/database:
     dependencies:
       '@supabase/supabase-js':
-        specifier: ^2.108.2
+        specifier: 2.108.2
         version: 2.108.2
       next:
         specifier: 16.2.9
