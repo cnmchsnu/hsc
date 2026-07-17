@@ -1,19 +1,22 @@
 import { SignInWithGoogleButton } from "./components";
 
+import { getCurrentUser } from "@repo/auth/server";
 
-export default function LoginPage() {
+import { redirect } from "next/navigation";
 
-    // const handleSubmit = (e: React.FormEvent) => {
-    //   e.preventDefault();
-    //   setIsSubmitting(true);
-    //   // Mock login delay
-    //   setTimeout(() => {
-    //     setIsSubmitting(false);
-    //     alert(`登入成功！\n帳號：${email}`);
-    //   }, 1200);
-    // };
+export const metadata = {
+    title: "登入 - 學生會商城",
+    description: "登入學生會商城以享受更多功能。",
+};
 
 
+export default async function LoginPage() {
+
+    const user = await getCurrentUser();
+
+    if (user) {
+        redirect("/profile");
+    }
 
     return (
         <main className="min-h-[calc(100vh-64px-180px)] flex items-center justify-center py-12 px-4 relative overflow-hidden bg-background">

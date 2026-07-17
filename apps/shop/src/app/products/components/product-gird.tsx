@@ -19,9 +19,9 @@ export function ProductGrid({ products }: { products: any }) {
                 key={p.product.slug}
                 className="product-card group bg-surface border border-surface-variant rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-on-primary-container/10 hover:-translate-y-1 relative"
                 >
-                <button className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur-md rounded-full text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant hover:text-white transition-all shadow-sm">
+                {/* <button className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur-md rounded-full text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant hover:text-white transition-all shadow-sm">
                     <span className="material-symbols-outlined text-[20px]">favorite</span>
-                </button>
+                </button> */}
                 <div className="aspect-square relative overflow-hidden bg-surface-variant">
                     <img
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

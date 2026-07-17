@@ -14,15 +14,15 @@ export interface ProfileService {
 
     findByIds(
         userIds: readonly string[],
-    ): Promise<Profile[]>;
+    ): Promise<readonly Profile[]>;
 
     findByClass(
         classes: readonly string[]
-    ): Promise<Profile[]>;
+    ): Promise<readonly Profile[]>;
 
     // Query
 
-    list(): Promise<Profile[]>;
+    list(): Promise<readonly Profile[]>;
 
     search(
         options: ProfileListOptions
@@ -90,7 +90,7 @@ export function createProfileService(
         // Read Batch
         async findByIds(
             userIds: readonly string[],
-        ): Promise<Profile[]> {
+        ): Promise<readonly Profile[]> {
             const profiles = await repository.findByIds(userIds);
 
             if (!profiles || profiles.length === 0) {
@@ -102,12 +102,12 @@ export function createProfileService(
 
         async findByClass(
             classes: string[]
-        ): Promise<Profile[]> {
+        ): Promise<readonly Profile[]> {
             return repository.findByClass(classes);
         },
 
         // Query
-        async list(): Promise<Profile[]> {
+        async list(): Promise<readonly Profile[]> {
             return repository.list();
         },
 

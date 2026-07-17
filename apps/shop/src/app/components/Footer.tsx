@@ -15,13 +15,13 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                href="#"
+                href="https://sites.google.com/gs.hs.ntnu.edu.tw/hsc/home/"
               >
                 <span className="material-symbols-outlined">public</span>
               </a>
               <a
                 className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                href="#"
+                href="mailto:hsc@gs.hs.ntnu.edu.tw"
               >
                 <span className="material-symbols-outlined">mail</span>
               </a>
@@ -82,7 +82,7 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="#" target="_blank" rel="noreferrer">
+                  <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="https://www.facebook.com/HsnuStudentCouncil/" target="_blank" rel="noreferrer">
                     學生會 Facebook
                   </a>
                 </li>
