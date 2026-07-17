@@ -1,13 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type {
-    ProductCategoryRepository,
-} from "@repo/database/repositories";
 
+import { CreateProductCategory, ProductCategory, ProductCategoryRepository } from "../../../../../commerce/domain/product-category";
 
-import { ProductCategory } from "../../../../../commerce/domain/product-category";
-
-import { toProductCategory } from "./to-product-category";
+import { ProductCategoryRepositoryMapper as mapper } from "./mapper";
 
 export class SupabaseProductCategoryRepository
     implements ProductCategoryRepository {
@@ -34,7 +30,7 @@ export class SupabaseProductCategoryRepository
                 return [];
             }
 
-            return data.map(toProductCategory);
+            return mapper.fromRows(data);
         }
 
         async getByCategoryId(
@@ -54,7 +50,7 @@ export class SupabaseProductCategoryRepository
                 return [];
             }
 
-            return data.map(toProductCategory);
+            return mapper.fromRows(data);
         }
 
         async getPrimaryByProductId(
@@ -76,7 +72,7 @@ export class SupabaseProductCategoryRepository
                 return null;
             }
 
-            return toProductCategory(data);
+            return mapper.fromRow(data);
         }
 
         // Read Batch
@@ -98,7 +94,7 @@ export class SupabaseProductCategoryRepository
                 return [];
             }
 
-            return data.map(toProductCategory);
+            return mapper.fromRows(data);
         }
 
         async getByCategoryIds(
@@ -118,12 +114,12 @@ export class SupabaseProductCategoryRepository
                 return [];
             }
             
-            return data.map(toProductCategory);
+            return mapper.fromRows(data);
         }
 
         async getPrimaryByProductIds(
             productIds: string[],
-        ): Promise<ProductCategory[] | null> {
+        ): Promise<readonly ProductCategory[]> {
             const { data, error } = await this.client
                 .schema("commerce")
                 .from("product_categories")
@@ -136,21 +132,24 @@ export class SupabaseProductCategoryRepository
             }
 
             if (!data) {
-                return null;
+                return [];
             }
 
-            return data.map(toProductCategory);
+            return mapper.fromRows(data);
         }
 
         // Write Single
 
         async create(
-            relation: ProductCategory,
+            relation: CreateProductCategory,
         ): Promise<void> {
+
+            const row = mapper.toCreateRow(relation);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("product_categories")
-                .insert(relation);
+                .insert(row);
 
             if (error) {
                 throw error;
@@ -161,10 +160,13 @@ export class SupabaseProductCategoryRepository
         async update(
             relation: ProductCategory,
         ): Promise<void> {
+
+            const row = mapper.toUpdateRow(relation);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("product_categories")
-                .update(relation)
+                .update(row)
                 .eq("product_id", relation.product_id)
                 .eq("category_id", relation.category_id);
             if (error) {
@@ -193,12 +195,15 @@ export class SupabaseProductCategoryRepository
         // Write Batch
 
         async createMany(
-            relations: readonly ProductCategory[],
+            relations: readonly CreateProductCategory[],
         ): Promise<void> {
+
+            const rows = mapper.toCreateRows(relations);
+
             const { error } = await this.client
                 .schema("commerce")
                 .from("product_categories")
-                .insert(relations);
+                .insert(rows);
 
             if (error) {
                 throw error;
@@ -209,16 +214,14 @@ export class SupabaseProductCategoryRepository
         async updateMany(
             relations: readonly ProductCategory[],
         ): Promise<void> {
+
+            const rows = mapper.toUpdateRows(relations);
+
             const { error } = await this.client
                 .schema("commerce")
                 .rpc(
                     "update_product_categories", {
-                        relations: relations.map((relation) => ({
-                            product_id: relation.product_id,
-                            category_id: relation.category_id,
-                            is_primary: relation.is_primary,
-                            display_order: relation.display_order,
-                        })),
+                        relations: rows,
                     },
                 );
 

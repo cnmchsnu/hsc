@@ -22,8 +22,20 @@ export interface SKURepository
         code: string
     ): Promise<SKU | null>;
 
-    findByProduct(
+    existsByCode(
+        code: string
+    ): Promise<boolean>;
+
+    listExistingCode(
+        codes: readonly string[]
+    ): Promise<readonly string[]>;
+
+    getByProduct(
         productId: string
+    ): Promise<readonly SKU[]>;
+
+    getByProducts(
+        productIds: readonly string[]
     ): Promise<readonly SKU[]>;
 
     findActive(): Promise<readonly SKU[]>;

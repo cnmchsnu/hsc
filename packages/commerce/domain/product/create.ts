@@ -10,8 +10,4 @@ export interface CreateProduct {
 
     status: ProductStatus;
 
-    price: number;
-
-    compareAtPrice?: number | null;
-
 }

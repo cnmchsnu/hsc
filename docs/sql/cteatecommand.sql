@@ -96,15 +96,6 @@ CREATE TABLE commerce.products (
     name TEXT NOT NULL,
     description TEXT,
 
-    price INTEGER NOT NULL,
-
-    currency TEXT NOT NULL DEFAULT 'TWD',
-
-    compare_at_price INTEGER,
-
-    stock_total INTEGER NOT NULL DEFAULT 0,
-    stock_sold INTEGER NOT NULL DEFAULT 0,
-
     status TEXT NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -344,6 +335,18 @@ CREATE TABLE commerce.sku_variant_values (
         option_value_id
     )
 
+    CONSTRAINT fk_sku_variant_values_sku
+        FOREIGN KEY (sku_id)
+        REFERENCES commerce.skus(id)
+        ON DELETE CASCADE
+
+    CONSTRAINT fk_sku_variant_values_option_value
+        FOREIGN KEY (option_value_id)
+        REFERENCES commerce.variant_option_values(id)
+        ON DELETE CASCADE
+
+
+
 );
 
 CREATE INDEX idx_sku_variant_values_sku
@@ -467,7 +470,7 @@ CREATE SCHEMA IF NOT EXISTS pricing;
 
 CREATE TABLE pricing.prices (
 
-    id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
+    id UUID KEY DEFAULT GEN_RANDOM_UUID(),
 
     sku_id UUID NOT NULL,
 
@@ -493,6 +496,12 @@ CREATE TABLE pricing.prices (
         FOREIGN KEY (sku_id)
         REFERENCES commerce.skus(id)
         ON DELETE CASCADE
+
+    
+    PRIMARY KEY (
+        sku_id,
+        id
+    )
 
 );
 

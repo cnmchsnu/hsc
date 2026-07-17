@@ -10,7 +10,7 @@ export interface SKUVariantValueRepository {
 
     getBySKUs(
         skuIds: readonly string[],
-    ): Promise<ReadonlyMap<string, readonly SKUVariantValue[]>>;
+    ): Promise<readonly SKUVariantValue[]>;
 
     replace(
         skuId: string,

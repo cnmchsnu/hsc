@@ -44,14 +44,14 @@ export class SupabaseVariantOptionRepository
 
     protected readonly mapper = mapper;
 
-    async getByVariant(
-        variantId: string,
+    async getByProduct(
+        productId: string,
     ): Promise<readonly VariantOption[]> {
         const { data, error } = await this.client
             .schema("commerce")
             .from("variant_options")
             .select("*")
-            .eq("variant_id", variantId);
+            .eq("product_id", productId);
 
         if (error) {
 

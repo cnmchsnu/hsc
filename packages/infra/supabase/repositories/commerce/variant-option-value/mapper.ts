@@ -26,6 +26,8 @@ export const VariantOptionValueRepositoryMapper: RepositoryMapper<
 
             value: row.value,
 
+            value_name: row.value_name,
+
             displayValue: row.display_value,
 
             sortOrder: row.sort_order,
@@ -48,6 +50,8 @@ export const VariantOptionValueRepositoryMapper: RepositoryMapper<
             option_id: dto.optionId,
 
             value: dto.value,
+
+            value_name: dto.valueName,
 
             display_value: dto.displayValue,
 

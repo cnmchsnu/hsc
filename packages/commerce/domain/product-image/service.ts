@@ -1,5 +1,5 @@
-import type { ProductImage } from './type.ts';
-import { ProductImageRepository } from '@repo/database/repositories';
+import type { ProductImage } from './type';
+import { ProductImageRepository } from './repository';
 
 
 export interface ProductImageService {
@@ -16,18 +16,18 @@ export interface ProductImageService {
 
     getAllById(
         productId: string,
-    ): Promise<ProductImage[] | null>;
+    ): Promise<readonly ProductImage[] | null>;
 
 
     // Read Batch
 
     getPrimaryByIds(
         productIds: readonly string[],
-    ): Promise<ProductImage[]>;
+    ): Promise<readonly ProductImage[]>;
     
     getThumbnailByIds(
         productIds: readonly string[],
-    ): Promise<ProductImage[]>;
+    ): Promise<readonly ProductImage[]>;
 
     // Exists Single
 
@@ -40,7 +40,7 @@ export interface ProductImageService {
 
     listExistingIds(
         ids: readonly string[],
-    ): Promise<string[]>;
+    ): Promise<readonly string[]>;
 
 
     // Write Single
@@ -112,7 +112,7 @@ export function createProductImageService(
 
         async getAllById(
             productId: string,
-        ): Promise<ProductImage[] | null> {
+        ): Promise<readonly ProductImage[] | null> {
 
             if (!productId) {
                 return null;
@@ -132,7 +132,7 @@ export function createProductImageService(
 
         async getPrimaryByIds(
             productIds: readonly string[],
-        ): Promise<ProductImage[]> {
+        ): Promise<readonly ProductImage[]> {
             
             const productImages =
                 await repository.getPrimaryByIds(productIds);
@@ -146,7 +146,7 @@ export function createProductImageService(
 
         async getThumbnailByIds(
             productIds: readonly string[],
-        ): Promise<ProductImage[]> {
+        ): Promise<readonly ProductImage[]> {
             const productImages =
                 await repository.getThumbnailByIds(productIds);
 
@@ -162,15 +162,15 @@ export function createProductImageService(
         async existsIds(
             id: string,
         ): Promise<boolean> {
-            return await repository.existsIds(id);
+            return await repository.exists(id);
         },
 
         // Exists Batch
 
         async listExistingIds(
             ids: readonly string[],
-        ): Promise<string[]> {
-            return await repository.listExistingIds(ids);
+        ): Promise<readonly string[]> {
+            return await repository.listExisting(ids);
         },
 
         // Write Single

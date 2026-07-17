@@ -159,19 +159,68 @@ export class SupabaseSKURepository
         return mapper.fromRow(data);
     }
 
-    async findByProduct(
+    async existsByCode(
+        code: string,
+    ): Promise<boolean> {
+
+        const { data, error } = await this.from()
+            .select("code")
+            .eq("code", code)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return !!data;
+
+    }
+
+    async listExistingCode(
+        codes: readonly string[],
+    ): Promise<readonly string[]> {
+
+        const { data, error } = await this.from()
+            .select("code")
+            .in("code", codes);
+
+        if (error) {
+            throw error;
+        }
+
+        return data.map(
+            row => row.code,
+        );
+
+    }
+
+    async getByProduct(
         productId: string,
     ): Promise<readonly SKU[]> {
 
-        const options: SKUQuery = {
-            productId: [productId],
-            page: 1,
-            pageSize: 299,
-        };
+        const { data, error } = await this.from()
+            .select("*")
+            .eq("product_id", productId);
 
-        const list = await this.find(options);
+        if (error) {
+            throw error;
+        }
 
-        return list.items;
+        return mapper.fromRows(data);
+    }
+
+    async getByProducts(
+        productIds: readonly string[],
+    ): Promise<readonly SKU[]> {
+        const { data, error } = await this.from()
+            .select("*")
+            .in("product_id", productIds);
+
+        if (error) {
+            throw error;
+        }
+
+        return mapper.fromRows(data);
     }
 
     async findActive(): Promise<readonly SKU[]> {

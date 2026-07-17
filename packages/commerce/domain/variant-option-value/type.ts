@@ -6,6 +6,8 @@ export interface VariantOptionValue {
 
     value: string;
 
+    value_name: string;
+
     displayValue: string;
 
     sortOrder: number;

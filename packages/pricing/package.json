@@ -1,7 +1,0 @@
-{
-    "name": "@repo/pricing",
-    "private": true,
-    "dependencies": {
-        "@repo/shared": "workspace:*"
-    }
-}

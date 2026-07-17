@@ -25,4 +25,8 @@ export interface VariantOptionRepository
         name: VariantOptionName,
     ): Promise<boolean>;
 
+    getByProduct(
+        productId: string,
+    ): Promise<readonly VariantOption[]>;
+
 }

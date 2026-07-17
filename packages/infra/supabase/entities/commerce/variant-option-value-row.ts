@@ -6,6 +6,8 @@ export interface VariantOptionValueRow {
 
     value: string;
 
+    value_name: string;
+
     display_value: string;
 
     sort_order: number;

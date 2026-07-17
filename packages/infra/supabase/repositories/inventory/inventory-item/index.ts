@@ -1,1 +1,0 @@
-export { SupabaseInventoryItemService } from './SupabaseInventoryItemService';

@@ -1,26 +1,67 @@
-import { ProductImage } from '../../../../../commerce/domain/product-image';
+import { ProductImage, CreateProductImage, UpdateProductImage } from '../../../../../commerce/domain/product-image';
 import type { ProductImageRow } from '../../../entities';
 
-export function toProductImage(
-    row: ProductImageRow,
-): ProductImage {
+import { RepositoryMapper } from '@repo/shared';
 
-    return {
+export const ProductImageRepositoryMapper: RepositoryMapper<
+    ProductImage,
+    ProductImageRow,
+    CreateProductImage,
+    UpdateProductImage
+> = {
 
-        id: row.id,
+    fromRow(
+        row: ProductImageRow,
+    ): ProductImage {
+        return {
+            id: row.id,
+            productId: row.product_id,
+            url: row.storage_path,
+            isPrimary: row.is_primary,
+            displayOrder: row.display_order,
+            alt: null, // Assuming alt is not stored in the database and is set to null by default
+        };
+    },
 
-        productId: row.product_id,
+    fromRows(
+        rows: readonly ProductImageRow[],
+    ): ProductImage[] {
+        return rows.map(this.fromRow);
+    },
 
-        url: row.storage_path,
+    toCreateRow(
+        dto: CreateProductImage,
+    ): Partial<ProductImageRow> {
+        return {
+            product_id: dto.productId,
+            storage_path: dto.url,
+            is_primary: dto.isPrimary,
+            display_order: dto.displayOrder,
+        };
+    },
 
-        isPrimary: row.is_primary,
+    toCreateRows(
+        dto: readonly CreateProductImage[],
+    ): Partial<ProductImageRow>[] {
+        return dto.map(this.toCreateRow);
+    },
 
-        alt: null,
+    toUpdateRow(
+        dto: UpdateProductImage,
+    ): Partial<ProductImageRow> {
+        return {
+            id: dto.id,
+            storage_path: dto.url,
+            is_primary: dto.isPrimary,
+            display_order: dto.displayOrder,
+        };
+    },
 
-        displayOrder: row.display_order,
+    toUpdateRows(
+        dto: readonly UpdateProductImage[],
+    ): Partial<ProductImageRow>[] {
+        return dto.map(this.toUpdateRow);
+    }
 
-    };
-
-
-
+    
 }

@@ -1,4 +1,4 @@
-import type { ProductStatus } from ".";
+import type { ProductStatus } from "./type";
 
 export interface UpdateProduct {
 
@@ -11,9 +11,5 @@ export interface UpdateProduct {
     description?: string | null;
 
     status?: ProductStatus;
-
-    price?: number;
-
-    compareAtPrice?: number | null;
 
 }

@@ -77,5 +77,31 @@ export class SupabaseVariantOptionValueRepository
         return !!data;
     }
 
-}
+    async getByOption(
+        optionId: string,
+    ): Promise<readonly VariantOptionValue[]> {
+        const { data, error } = await this.from()
+            .select("*")
+            .eq("variant_option_id", optionId);
 
+        if (error) {
+            throw error;
+        }
+
+        return mapper.fromRows(data);
+    }
+
+    async getByOptions(
+        optionIds: readonly string[],
+    ): Promise<readonly VariantOptionValue[]> {
+        const { data, error } = await this.from()
+            .select("*")
+            .in("variant_option_id", optionIds);
+
+        if (error) {
+            throw error;
+        }
+
+        return mapper.fromRows(data);
+    }
+}

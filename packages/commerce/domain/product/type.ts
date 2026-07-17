@@ -25,10 +25,6 @@ export interface Product {
     description: string | null;
 
     status: ProductStatus;
-
-    price: number;
-
-    compareAtPrice: number | null;
 }
 
 export interface ProductList {
@@ -46,8 +42,6 @@ export interface ProductList {
 export type ProductSort =
     | "newest"
     | "oldest"
-    | "price-asc"
-    | "price-desc"
     | "name-asc"
     | "name-desc";
 
@@ -61,10 +55,6 @@ export interface ProductListOptions {
     keyword?: string;
 
     productIds?: readonly string[];
-
-    minPrice?: number;
-
-    maxPrice?: number;
 
     status?: ProductStatus[];
 

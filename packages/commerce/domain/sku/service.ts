@@ -16,15 +16,29 @@ export interface SKUService {
 
     getMany(ids: readonly string[]): Promise<readonly SKU[]>;
 
+    getByCode(code: string): Promise<SKU | null>;
+
+    getByProduct(productId: string): Promise<readonly SKU[]>;
+
+    getByProducts(productIds: readonly string[]): Promise<readonly SKU[]>;
+
     find(query: SKUQuery): Promise<SKUList>;
 
-    create(create: CreateSKU): Promise<SKU>;
+    create(create: CreateSKU): Promise<void>;
 
-    update(update: UpdateSKU): Promise<SKU>;
+    createMany(commands: readonly CreateSKU[]): Promise<void>;
+
+    update(update: UpdateSKU): Promise<void>;
+
+    updateMany(commands: readonly UpdateSKU[]): Promise<void>;
 
     delete(id: string): Promise<void>;
 
+    createMany(commands: readonly CreateSKU[]): Promise<void>;
+
     exists(code: string): Promise<boolean>;
+
+    listExisting(ids: readonly string[]): Promise<readonly string[]>;
 
     validateCode(code: string): Promise<void>;
 
@@ -44,7 +58,7 @@ class DefaultSKUService implements SKUService {
 
     async create(
         create: CreateSKU,
-    ): Promise<SKU> {
+    ): Promise<void> {
 
         let code = create.code;
 
@@ -60,37 +74,32 @@ class DefaultSKUService implements SKUService {
             ...create,
             code,
         });
-
-        const created = await this.repository.find({
-            codes: [code],
-            page: 1,
-            pageSize: 1,
-        });
-
-        if (created.items.length === 0) {
-            throw new Error("Failed to create SKU.");
-        }
-
-        return created.items[0];
     }
+
+    async createMany(
+        commands: readonly CreateSKU[],
+    ): Promise<void> {
+
+        await this.repository.createMany(commands);
+
+    }
+
+
 
     async exists(
         code: string,
     ): Promise<boolean> {
 
-        const result =
-            await this.repository.find({
+        return await this.repository.existsByCode(code);
 
-                codes: [code],
+    }
 
-                page: 1,
 
-                pageSize: 1,
+    async listExisting(
+        ids: readonly string[],
+    ): Promise<readonly string[]> {
 
-            });
-
-        return result.items.length > 0;
-
+        return await this.repository.listExistingCode(ids);
     }
 
     async validateCode(
@@ -131,6 +140,28 @@ class DefaultSKUService implements SKUService {
 
     }
 
+    async getByCode(
+        code: string,
+    ): Promise<SKU | null> {
+
+        return this.repository.getByCode(code);
+
+    }
+
+    async getByProduct(
+        productId: string,
+    ): Promise<readonly SKU[]> {
+
+        return this.repository.getByProduct(productId);
+
+    }
+
+    async getByProducts(
+        productIds: readonly string[],
+    ): Promise<readonly SKU[]> {
+        return this.repository.getByProducts(productIds);
+    }
+
     async find(
         query: SKUQuery,
     ): Promise<SKUList> {
@@ -141,27 +172,42 @@ class DefaultSKUService implements SKUService {
 
     async update(
         update: UpdateSKU,
-    ): Promise<SKU> {
+    ): Promise<void> {
+
+        const exists = await this.repository.exists(update.id);
+
+        if (!exists) {
+            return;
+        }
 
         await this.repository.update(update);
 
-        const sku =
-            await this.repository.get(update.id);
+    }
 
-        if (!sku) {
-            throw new Error("SKU not found.");
-        }
+    async updateMany(
+        commands: readonly UpdateSKU[],
+    ): Promise<void> {
 
-        return sku;
+        const exsits = await this.repository.listExisting(
+            commands.map(c => c.id),
+        );
+
+        const row = commands.filter(c => exsits.includes(c.id));
+
+        await this.repository.updateMany(row);
 
     }
 
     async delete(
         id: string,
     ): Promise<void> {
-
         await this.repository.delete(id);
+    }
 
+    async deleteMany(
+        ids: readonly string[],
+    ): Promise<void> {
+        await this.repository.deleteMany(ids);
     }
 
 

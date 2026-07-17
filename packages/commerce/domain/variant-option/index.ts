@@ -6,3 +6,5 @@ export type { VariantOptionList } from "./list";
 export type { VariantOptionQuery } from "./query";
 
 export type { VariantOptionRepository } from "./repository";
+
+export { createVariantOptionService, type VariantOptionService } from "./service";
