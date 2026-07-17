@@ -32,17 +32,23 @@ export default async function ProductList({ searchParams }: PageProps) {
 
     const searchCriteria = await searchParams;
 
-    const categories = await getCategoryTree();
+    const [categories, products] = await Promise.all([
+        getCategoryTree(),
+        searchProduct({
+            keyword: searchCriteria.keyword,
+            categorySlugs: searchCriteria.categorySlugs,
+            minPrice: searchCriteria.minPrice,
+            maxPrice: searchCriteria.maxPrice,
+            sort: searchCriteria.sort,
+            page: searchCriteria.page || 1,
+            pageSize: searchCriteria.pageSize|| 20,
+        })
+    ]);
 
-    const products = await searchProduct({
-        keyword: searchCriteria.keyword,
-        categorySlugs: searchCriteria.categorySlugs,
-        minPrice: searchCriteria.minPrice,
-        maxPrice: searchCriteria.maxPrice,
-        sort: searchCriteria.sort,
-        page: searchCriteria.page || 1,
-        pageSize: searchCriteria.pageSize|| 10,
-    });
+    if (!categories) {
+        // Handle the case where categories are not available
+        return <div>Failed to load categories</div>;
+    }
 
     if (!products) StoreNotReady();
 

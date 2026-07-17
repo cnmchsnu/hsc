@@ -1,11 +1,13 @@
 
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { MobileMenu } from "./header/MobileMenu"
 import { DesktopMenu } from "./header/DesktopMenu";
+import { UserAvatar } from "./header/UserAvatar";
 
 
-import { getCurrentUser, requireUser } from "@repo/auth/server";
+import { getCurrentUser } from "@repo/auth/server";
 
 import { GoogleOneTap } from "./GoogleOneTap";
 
@@ -69,19 +71,16 @@ export async function Header() {
             </button>
 
             {/* Profile Avatar */}
-            <Link
-              href="/profile"
-              className="h-10 w-10 md:h-10 md:w-10 rounded-full overflow-hidden cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center justify-center"
-            >
-              { !currentUser?.userContext?.profile?.avatarUrl ? (
-                <span className="material-symbols-outlined text-primary text-[30px]">
+            <Suspense fallback={
+              <div className="h-10 w-10 md:h-10 md:w-10 rounded-full overflow-hidden cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center justify-center" >
+                 <span className="material-symbols-outlined text-primary text-[30px]">
                 account_circle
                 </span>
-              ) : (
-                <img src={currentUser.userContext.profile?.avatarUrl!} width={48} height={48} />
-              )
-              }
-            </Link>
+              </div>
+              }>
+              <UserAvatar />
+            </Suspense>
+            
 
             <MobileMenu navLinks={navLinks} />
 
