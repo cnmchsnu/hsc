@@ -1,1 +1,1 @@
-export { SupabaseProductRepository } from './product.repository';
+export { SupabaseProductRepository } from './SupabaseProductRepository';

@@ -3,3 +3,4 @@ export { getCurrentUser } from './get-current-user';
 export { requireUser } from './require-user';
 export { requireSession } from './require-session';
 export { completeOAuthCallback } from './complete-oauth-callback';
+export { updateUserProfile } from './update-user-profile';

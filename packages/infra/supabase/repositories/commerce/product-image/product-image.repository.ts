@@ -2,62 +2,47 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type {
     ProductImage,
+    CreateProductImage,
+    UpdateProductImage,
+    ProductImageRepository,
 } from '../../../../../commerce/domain/product-image';
 
 
-import type { ProductImageRepository } from '@repo/database/repositories';
 
-import { toProductImage } from './to-product-image';
-
-
-export function groupBy<
-    T,
-    K,
->(
-    items: readonly T[],
-    keySelector: (
-        item: T,
-    ) => K,
-): Map<K, T[]> {
-
-    const result =
-        new Map<K, T[]>();
-
-    for (const item of items) {
-
-        const key =
-            keySelector(item);
-
-        const group =
-            result.get(key);
-
-        if (group) {
-
-            group.push(item);
-
-        } else {
-
-            result.set(
-                key,
-                [item],
-            );
-
-        }
-
-    }
-
-    return result;
-
-}
+import { SupabaseRepositoryBase } from '../../base/SupabaseRepositoryBase';
+import { ProductImageRepositoryMapper as mapper } from './to-product-image';
+import { ProductImageRow } from '../../../entities';
 
 
 
 export class SupabaseProductImageService
+    extends SupabaseRepositoryBase<
+        ProductImage,
+        string,
+        CreateProductImage,
+        UpdateProductImage,
+        any,
+        any,
+        ProductImageRow
+    >
     implements ProductImageRepository {
 
     constructor(
-        private readonly client: SupabaseClient,
-    ) {} 
+        protected readonly client: SupabaseClient,
+    ) {
+        super(client);
+    } 
+
+
+    protected readonly schema = 'commerce';
+
+    protected readonly table = 'product_images';
+
+    protected readonly createRpc = 'create_product_image';
+
+    protected readonly updateRpc = 'update_product_image';
+
+    protected readonly mapper = mapper;
 
     // Read Single
 
@@ -80,7 +65,7 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return toProductImage(data);
+        return mapper.fromRow(data);
     }
 
     async getThumbnailById(
@@ -102,12 +87,12 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return toProductImage(data);
+        return mapper.fromRow(data);
     }
 
     async getAllById(
         productId: string,
-    ): Promise<ProductImage[] | null> {
+    ): Promise<readonly ProductImage[] | null> {
         const { data, error } = await this.client
             .schema("commerce")
             .from("product_images")
@@ -122,7 +107,7 @@ export class SupabaseProductImageService
             return null;
         }
 
-        return data.map(toProductImage);
+        return mapper.fromRows(data);
     }
     
 
@@ -130,7 +115,7 @@ export class SupabaseProductImageService
 
     async getPrimaryByIds(
         productIds: readonly string[],
-    ): Promise<ProductImage[]> {
+    ): Promise<readonly ProductImage[]> {
         const { data, error } = await this.client
             .schema("commerce")
             .from("product_images")
@@ -146,12 +131,12 @@ export class SupabaseProductImageService
             return [];
         }
 
-        return data.map(toProductImage);
+        return mapper.fromRows(data);
     }
 
     async getThumbnailByIds(
         productIds: readonly string[],
-    ): Promise<ProductImage[]> {
+    ): Promise<readonly ProductImage[]> {
         const { data, error } = await this.client
             .schema("commerce")
             .from("product_images")
@@ -167,157 +152,8 @@ export class SupabaseProductImageService
             return [];
         }
 
-        return data.map(toProductImage);
+        return mapper.fromRows(data);
     }
 
-    // Exists Single
 
-    async existsIds(
-        id: string,
-    ): Promise<boolean> {
-        const { data, error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .select("id")
-            .eq("id", id)
-            .single();
-
-        if (error) {
-            throw new Error(`Error checking existence of product image ${id}: ${error.message}`);
-        }
-
-        return !!data;
-    }
-
-    // Exists Batch
-
-    async listExistingIds(
-        ids: readonly string[],
-    ): Promise<string[]> {
-        const { data, error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .select("id")
-            .in("id", ids);
-
-        if (error) {
-            throw new Error(`Error checking existence of product images ${ids.join(", ")}: ${error.message}`);
-        }
-
-        return data.map((row) => row.id);
-    }
-
-    // Write Single
-
-    async create(
-        productImage: ProductImage,
-    ): Promise<void> {
-        const { error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .insert(productImage);
-
-        if (error) {
-            throw new Error(`Error creating product image: ${error.message}`);
-        }
-    }
-
-    async update(
-        productImage: ProductImage,
-    ): Promise<void> {
-
-        const existing = await this.existsIds(productImage.id);
-
-        if (!existing) {
-            throw new Error(`Product image with id ${productImage.id} does not exist.`);
-        }
-
-        const { error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .update(productImage)
-            .eq("id", productImage.id);
-        
-        if (error) {
-            throw new Error(`Error updating product image ${productImage.id}: ${error.message}`);
-        }
-    }
-
-    async delete(
-        id: string,
-    ): Promise<void> {
-
-        const existing = await this.existsIds(id);
-
-        if (!existing) {
-            return; // No need to delete if it doesn't exist
-        }
-
-        const { error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .delete()
-            .eq("id", id);
-
-        if (error) {
-            throw new Error(`Error deleting product image ${id}: ${error.message}`);
-        }
-    }
-
-    // Write Batch
-
-    async createMany(
-        productImages: readonly ProductImage[],
-    ): Promise<void> {
-        const { error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .insert(productImages);
-
-        if (error) {
-            throw new Error(`Error creating product images: ${error.message}`);
-        }
-
-    }
-
-    async updateMany(
-        productImages: readonly ProductImage[],
-    ): Promise<void> {
-        const  { error } = await this.client
-            .schema("commerce")
-            .rpc("update_product_images", {
-                product_images: productImages.map((img: ProductImage) => ({
-                    product_id: img.productId,
-                    storage_path: img.url,
-                    is_primary: img.isPrimary,
-                    display_order: img.displayOrder,
-                }))
-            });
-
-        
-        if (error) {
-            throw new Error(`Error updating product images: ${error.message}`);
-        }
-
-    }
-
-    async deleteMany(
-        ids: readonly string[],
-    ): Promise<void> {
-        const existingIds = await this.listExistingIds(ids);
-
-        if (existingIds.length === 0) {
-            return; // No need to delete if none exist
-        }
-
-        const { error } = await this.client
-            .schema("commerce")
-            .from("product_images")
-            .delete()
-            .in("id", existingIds);
-        
-        if (error) {
-            throw new Error(`Error deleting product images ${existingIds.join(", ")}: ${error.message}`);
-        }
-    }
 }

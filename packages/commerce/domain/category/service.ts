@@ -1,8 +1,7 @@
 import type { Category } from "./type";
-import type { CategoryRepository } from "@repo/database/repositories";
-import type { CreateCategory, UpdateCategory } from "../../../commerce/application/command/category";
-import { CategoryNotFoundError } from "./error";
-
+import type { CategoryRepository } from "./repository";
+import type { CreateCategory } from "./create";
+import type { UpdateCategory } from "./update";
 
 export interface CategoryService {
 
@@ -21,16 +20,16 @@ export interface CategoryService {
 
     findByIds(
         ids: readonly string[],
-    ): Promise<Category[]>;
+    ): Promise<readonly Category[]>;
 
     findBySlugs(
         slugs: readonly string[],
-    ): Promise<Category[]>;
+    ): Promise<readonly Category[]>;
 
 
     // Query
 
-    list(): Promise<Category[]>;
+    list(): Promise<readonly Category[]>;
 
 
     // Exists Single
@@ -44,7 +43,7 @@ export interface CategoryService {
 
     listExistingIds(
         ids: readonly string[],
-    ): Promise<string[]>;
+    ): Promise<readonly string[]>;
 
     listExistingSlugs(
         slugs: readonly string[],
@@ -102,7 +101,7 @@ export function createCategoryService(
             id: string
         ): Promise<Category | null> {
             const category =
-                await repository.findById(id);
+                await repository.get(id);
             
             if (!category) {
                 return null;
@@ -114,7 +113,7 @@ export function createCategoryService(
             slug: string
         ): Promise<Category | null> {
             const category =
-                await repository.findBySlug(slug);
+                await repository.getBySlug(slug);
             
             if (!category) {
                 return null;
@@ -126,14 +125,14 @@ export function createCategoryService(
         // Read Batch
         async findByIds(
             ids: readonly string[]
-        ): Promise<Category[]> {
+        ): Promise<readonly Category[]> {
             if (ids.length === 0) {
                 return [];
             }
 
             try {
                 const categories =
-                    await repository.findByIds(ids);
+                    await repository.getMany(ids);
                
 
                 if (!categories) {
@@ -149,13 +148,13 @@ export function createCategoryService(
         
         async findBySlugs(
             slugs: readonly string[]
-        ): Promise<Category[]> {
+        ): Promise<readonly Category[]> {
             if (slugs.length === 0) {
                 return [];
             }
 
             const categories =
-                await repository.findBySlugs(slugs);
+                await repository.getBySlugs(slugs);
             
             if (!categories) {
                 return [];
@@ -165,7 +164,7 @@ export function createCategoryService(
         },
 
         // Query
-        async list(): Promise<Category[]> {
+        async list(): Promise<readonly Category[]> {
             const categories =
                 await repository.list();
             
@@ -186,13 +185,13 @@ export function createCategoryService(
         // Exists Batch
         async listExistingIds(
             ids: readonly string[]
-        ): Promise<string[]> {
+        ): Promise<readonly string[]> {
             if (ids.length === 0) {
                 return [];
             }
 
             const existingIds =
-                await repository.listExistingIds(ids);
+                await repository.listExisting(ids);
             
             if (!existingIds) {
                 return [];

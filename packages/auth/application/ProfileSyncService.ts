@@ -46,7 +46,7 @@ class DefaultProfileSyncService
 
             const newProfile: Profile = {
                 ...profile,
-                displayName: user.name,
+                displayName: profile.sync_display_name ? user.name : profile.displayName,
                 avatarUrl: user.avatar!,
             };
 

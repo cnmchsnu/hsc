@@ -2,16 +2,34 @@
 // services
 import { CategoryService } from '../../../domain/category';
 import { ProductService } from '../../../domain/product';
-import { ProductCategoryService } from '../../../domain/product-category';
+import { ProductCategory, ProductCategoryService } from '../../../domain/product-category';
 import { ProductImageService } from '../../../domain/product-image';
 import { ProductResolveService } from '../../identifiers';
+import { SKUService } from '../../../domain/sku';
+import { VariantOptionService } from '../../../domain/variant-option';
+import { VariantOptionValueService } from '../../../domain/variant-option-value';
 
+import { InventoryItemService } from '../../../domain/inventory-item';
+
+import { PriceService } from '../../../domain/price';
+
+// repositories
+
+import { SKUVariantValueRepository } from '../../../domain/sku-variant-value';
 
 
 // types
 import type { Product } from '../../../domain/product';
 import type { ProductDetail, ProductSummary } from "./type";
-import { buildBreadcrumb } from '../../projections';
+import {
+    buildBreadcrumb,
+    buildDisplayPrice,
+    buildProductAvailability,
+    buildInventorySummary,
+    buildCurrentPrice,
+    buildProductVariant
+} from '../../projections';
+
 
 
 export interface ProductReadService {
@@ -50,6 +68,18 @@ interface ProductReadServiceDependencies {
 
     productResolveService: ProductResolveService;
 
+    skuService: SKUService;
+
+    variantOptionService: VariantOptionService;
+
+    variantOptionValueService: VariantOptionValueService;
+
+    priceService: PriceService;
+
+    inventoryItemService: InventoryItemService;
+
+    skuVariantValueRepository: SKUVariantValueRepository;
+
 }
 
 class DefaultProductReadService
@@ -61,6 +91,12 @@ class DefaultProductReadService
         private readonly productCategoryService: ProductCategoryService,
         private readonly productImageService: ProductImageService,
         private readonly productResolveService: ProductResolveService,
+        private readonly priceService: PriceService,
+        private readonly inventoryItemService: InventoryItemService,
+        private readonly skuService: SKUService,
+        private readonly variantOptionService: VariantOptionService,
+        private readonly variantOptionValueService: VariantOptionValueService,
+        private readonly skuVariantValueRepository: SKUVariantValueRepository,
     ) {}
 
     async getProductDetail(
@@ -110,6 +146,79 @@ class DefaultProductReadService
             return null;
         }
 
+        const sku = 
+            await this.skuService
+                .getByProduct(
+                    product.id
+                );
+
+        const price =
+            await this.priceService
+                .getManyBySKUIds(
+                    sku.map(
+                        (sku) => sku.id
+                    )
+                );
+
+        const inventoryItems =
+            await this.inventoryItemService
+                .getMany(
+                    sku.map(
+                        (sku) => sku.id
+                    )
+                );
+
+        const displayPrice =
+            buildDisplayPrice(
+                sku,
+                price
+            );
+
+        const inventorySummary =
+            buildInventorySummary(
+                inventoryItems
+            );
+
+        const availability =
+            buildProductAvailability(
+                inventoryItems
+            );
+
+        const currentPrice =
+            sku.map((sku) => buildCurrentPrice(sku, price));
+
+        const option = 
+            await this.variantOptionService
+                .getByProduct(
+                    product.id
+                );
+
+        const optionValues =
+            await this.variantOptionValueService
+                .getByOptions(
+                    option.map(
+                        (option) => option.id
+                    )
+                );
+
+        const skuVariantValues =
+            await this.skuVariantValueRepository
+                .getBySKUs(
+                    sku.map(
+                        (sku) => sku.id
+                    )
+                );
+
+        const variants =
+            buildProductVariant(
+                option,
+                optionValues,
+                sku,
+                skuVariantValues,
+                inventoryItems,
+                currentPrice
+            );
+
         return {
             
             product,
@@ -119,6 +228,14 @@ class DefaultProductReadService
             images: images,
             
             breadcrumb: buildBreadcrumb(breadcrumbs),
+
+            variants,
+
+            displayPrice,
+
+            inventorySummary,
+
+            availability,
 
         };
 
@@ -172,7 +289,7 @@ class DefaultProductReadService
         const categoryIds =
             primaryCategories!
                 .map(
-                    relation => relation.category_id,
+                    (relation: ProductCategory) => relation.category_id,
                 );
 
         const categories =
@@ -196,14 +313,74 @@ class DefaultProductReadService
                 ),
             );
 
-        
+        const sku = 
+            await this.skuService
+                .getByProducts(
+                    productIds,
+                );
+
+        const skuMap = new Map(
+            sku.map(
+                sku => [
+                    sku.productId,
+                    sku,
+                ],
+            ),
+        );
+
+        const price =
+            await this.priceService
+                .getManyBySKUIds(
+                    sku.map(
+                        (sku) => sku.id
+                    )
+                );
+
+        const inventoryItems =
+            await this.inventoryItemService
+                .getMany(
+                    sku.map(
+                        (sku) => sku.id
+                    )
+                );
+
+        const inventoryItemsMap = new Map(
+            inventoryItems.map(item => [item.skuid, item])
+        );
+
+        const displayPriceMap =
+            new Map(
+                products.map(
+                    product => [
+                        product.id,
+                        buildDisplayPrice(
+                            skuMap.get(product.id) ? [skuMap.get(product.id)!] : [],
+
+                            price,
+                        ),
+                    ],
+                ),
+            );
+
+        const availabilityMap =
+            new Map(
+                sku.map(
+                    sku => [
+                        sku.id,
+                        buildProductAvailability(
+                            inventoryItemsMap.get(sku.id) ? [inventoryItemsMap.get(sku.id)!] : []
+                        ),
+                    ],
+                ),
+            );
+                
 
         return products.map(
             product => {
                 const categoryId =
                     primaryCategories
                         .find(
-                            relation => relation.product_id === product.id
+                            (relation: ProductCategory) => relation.product_id === product.id
                         )?.category_id;
 
                 return {
@@ -221,6 +398,16 @@ class DefaultProductReadService
                                 categoryId,
                             ) ?? null
                             : null,
+
+                    displayPrice:
+                        displayPriceMap.get(
+                            product.id,
+                        ) ?? null,
+
+                    availability:
+                        availabilityMap.get(
+                            skuMap.get(product.id)?.id || ''
+                        ) ?? null,
 
                 };
 
@@ -295,6 +482,12 @@ export function createProductReadService(
         dependencies.productCategoryService,
         dependencies.productImageService,
         dependencies.productResolveService,
+        dependencies.priceService,
+        dependencies.inventoryItemService,
+        dependencies.skuService,
+        dependencies.variantOptionService,
+        dependencies.variantOptionValueService,
+        dependencies.skuVariantValueRepository,
     );
 
 }

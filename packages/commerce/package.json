@@ -4,6 +4,7 @@
     "dependencies": {
         "@repo/database": "workspace:*",
         "@repo/infra": "workspace:*",
+        "@repo/shared": "workspace:*",
         "@supabase/postgrest-js": "^2.109.0",
         "@supabase/supabase-js": "^2.108.2"
     },

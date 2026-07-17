@@ -1,6 +1,6 @@
-import type { Category } from "../category";
 
-import type { ProductCategoryRepository } from "@repo/database/repositories";
+import { CreateProductCategory } from "./create";
+import type { ProductCategoryRepository } from "./repository";
 
 import { ProductCategory } from "./types";
 
@@ -32,12 +32,13 @@ export interface ProductCategoryService {
 
     getPrimaryByProductIds(
         productIds: string[],
-    ): Promise<ProductCategory[] | null>;
+    ): Promise<readonly ProductCategory[]>;
+
 
     // Write Single
 
     create(
-        relation: ProductCategory,
+        relation: CreateProductCategory,
     ): Promise<void>;
 
     update(
@@ -52,7 +53,7 @@ export interface ProductCategoryService {
     // Write Batch
 
     createMany(
-        relations: readonly ProductCategory[],
+        relations: readonly CreateProductCategory[],
     ): Promise<void>;
 
     updateMany(
@@ -170,25 +171,26 @@ export function createProductCategoryService(
 
         async getPrimaryByProductIds(
             productIds: string[],
-        ): Promise<ProductCategory[] | null> {
+        ): Promise<readonly ProductCategory[]> {
             if (!productIds || productIds.length === 0) {
-                return null;
+                return [];
             }
 
             const relations =
                 await repository.getPrimaryByProductIds(productIds);
 
             if (!relations) {
-                return null;
+                return [];
             }
 
             return relations;
         },
 
+
         // Write Single
 
         async create(
-            relation: ProductCategory,
+            relation: CreateProductCategory,
         ): Promise<void> {
             if (!relation) {
                 return;
@@ -221,7 +223,7 @@ export function createProductCategoryService(
         // Write Batch
 
         async createMany(
-            relations: readonly ProductCategory[],
+            relations: readonly CreateProductCategory[],
         ): Promise<void> {
             if (!relations || relations.length === 0) {
                 return;

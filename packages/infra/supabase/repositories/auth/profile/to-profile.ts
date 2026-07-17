@@ -1,10 +1,10 @@
-import { UserProfileRow } from "@repo/database/entities";
+import { UserProfileRow } from "../../../entities";
 
 import { Profile } from "../../../../../auth/domain/profile";
 
 import { CreateProfile, UpdateProfile } from "../../../../../auth/application/profile";
 
-import { RepositoryMapper } from "../../shared/repository-mapper";
+import { RepositoryMapper } from "@repo/shared";
 
 export const ProfileRepositoryMapper: RepositoryMapper<
     Profile,
@@ -36,6 +36,8 @@ export const ProfileRepositoryMapper: RepositoryMapper<
             manualOverride: row.manual_override,
 
             finalClassification: row.final_classification,
+
+            sync_display_name: row.sync_display_name,
 
             status: row.status,
 
@@ -104,6 +106,8 @@ export const ProfileRepositoryMapper: RepositoryMapper<
             avatar_url: dto.avatarUrl,
 
             manual_override: dto.manualOverride,
+
+            sync_display_name: dto.sync_display_name,
 
             status: dto.status,
 

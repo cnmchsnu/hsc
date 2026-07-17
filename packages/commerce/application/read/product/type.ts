@@ -1,9 +1,11 @@
-import { Product } from '../../../domain/product';
-import { Category } from '../../../domain/category';
-import { ProductImage } from '../../../domain/product-image';
-import type { BreadcrumbItem } from "../../projections";
+import type { Product } from '../../../domain/product';
+import type { Category } from '../../../domain/category';
+import type { ProductImage } from '../../../domain/product-image';
+import type { BreadcrumbItem, ProductVariant, DisplayPrice, ProductAvailability, InventorySummary } from "../../projections";
 
 
+
+ 
 
 export interface ProductSummary {
 
@@ -13,6 +15,10 @@ export interface ProductSummary {
 
     thumbnail: ProductImage | null;
 
+    displayPrice: DisplayPrice | null;
+
+    availability: ProductAvailability | null;
+
 }
 
 export interface ProductDetail {
@@ -21,13 +27,16 @@ export interface ProductDetail {
 
     categories: readonly Category[];
 
-    images: ProductImage[];
+    images: readonly ProductImage[];
 
-    
     breadcrumb: readonly BreadcrumbItem[];
 
-    // inventory: Inventory;
+    variants: ProductVariant;
 
-    // price: ProductPrice;
+    displayPrice: DisplayPrice;
+
+    inventorySummary: InventorySummary;
+
+    availability: ProductAvailability;
 
 }

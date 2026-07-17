@@ -16,5 +16,7 @@ export interface UpdateProfile {
 
     manualOverride?: string | null;
 
+    sync_display_name?: boolean;
+
     status?: ProfileStatus;
 }
