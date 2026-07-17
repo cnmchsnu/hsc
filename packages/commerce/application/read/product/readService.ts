@@ -355,7 +355,6 @@ class DefaultProductReadService
                         product.id,
                         buildDisplayPrice(
                             skuMap.get(product.id) ? [skuMap.get(product.id)!] : [],
-
                             price,
                         ),
                     ],

@@ -97,6 +97,13 @@ class DefaultInventoryItemService
         return inventory;
     }
 
+    createMany(
+        commands: readonly CreateInventoryItem[],
+    ): Promise<void> {
+
+        return this.repository.createMany(commands);
+    }
+
     async update(
         update: UpdateInventoryItem,
     ): Promise<InventoryItem> {
@@ -111,6 +118,12 @@ class DefaultInventoryItemService
         }
 
         return inventory;
+    }
+
+    updateMany(
+        commands: readonly UpdateInventoryItem[],
+    ): Promise<void> {
+        return this.repository.updateMany(commands);
     }
 
     async get(
@@ -145,6 +158,12 @@ class DefaultInventoryItemService
         skuId: string,
     ): Promise<void> {
         await this.repository.delete(skuId);
+    }
+
+    async deleteMany(
+        skuIds: readonly string[],
+    ): Promise<void> {
+        await this.repository.deleteMany(skuIds);
     }
 
     async reserve(

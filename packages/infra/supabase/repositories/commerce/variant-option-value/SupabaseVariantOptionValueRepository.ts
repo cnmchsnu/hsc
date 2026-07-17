@@ -52,7 +52,7 @@ export class SupabaseVariantOptionValueRepository
         }
 
         if (options.optionIds?.length) {
-            query = query.in("variant_option_id", options.optionIds);
+            query = query.in("option_id", options.optionIds);
         }
 
         return query;
@@ -66,7 +66,7 @@ export class SupabaseVariantOptionValueRepository
             .schema("commerce")
             .from("variant_option_values")
             .select("id")
-            .eq("variant_option_id", optionId)
+            .eq("option_id", optionId)
             .eq("value", value)
             .single();
 
@@ -82,7 +82,7 @@ export class SupabaseVariantOptionValueRepository
     ): Promise<readonly VariantOptionValue[]> {
         const { data, error } = await this.from()
             .select("*")
-            .eq("variant_option_id", optionId);
+            .eq("option_id", optionId);
 
         if (error) {
             throw error;
@@ -96,7 +96,7 @@ export class SupabaseVariantOptionValueRepository
     ): Promise<readonly VariantOptionValue[]> {
         const { data, error } = await this.from()
             .select("*")
-            .in("variant_option_id", optionIds);
+            .in("option_id", optionIds);
 
         if (error) {
             throw error;

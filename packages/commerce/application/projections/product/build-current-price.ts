@@ -10,9 +10,13 @@ export function buildCurrentPrice(
 
     const skuPrices = prices.filter(price => price.skuId === skus.id);
 
-    const activePrices = skuPrices.filter(price => {
-        price.effectiveFrom <= new Date() && (!price.effectiveTo || price.effectiveTo >= new Date());
-    });
+    const now = new Date();
+
+    const activePrices = skuPrices.filter(price =>
+        price.effectiveFrom <= now &&
+        (!price.effectiveTo || price.effectiveTo >= now)
+    );
+
 
     activePrices.sort((a, b) => a.effectiveFrom.getTime() - b.effectiveFrom.getTime());
 

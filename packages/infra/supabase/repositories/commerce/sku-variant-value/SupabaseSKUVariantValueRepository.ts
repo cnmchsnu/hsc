@@ -37,11 +37,7 @@ import { SKUVariantValueRepositoryMapper as mapper } from './mapper';
 
     async getBySKUs(
         skuIds: readonly string[],
-    ): Promise<
-        ReadonlyMap<
-            string,
-            readonly SKUVariantValue[]
-    >> {
+    ): Promise<readonly SKUVariantValue[] > {
         const { data, error } = await this.client
             .schema("commerce")
             .from("sku_variant_values")
@@ -55,24 +51,10 @@ import { SKUVariantValueRepositoryMapper as mapper } from './mapper';
 
         if (!data) {
 
-            return new Map();
+            return [];
         }
 
-        const values = mapper.fromRows(data);
-
-        const map = new Map<string, SKUVariantValue[]>();
-
-        for (const value of values) {
-
-            if (!map.has(value.skuId)) {
-
-                map.set(value.skuId, []);
-            }
-
-            map.get(value.skuId)!.push(value);
-        }
-
-        return map;
+        return mapper.fromRows(data);
     }
 
     async replace(

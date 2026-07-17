@@ -6,8 +6,10 @@ export function toProductVariantOption(
     options: VariantOption,
     values: readonly VariantOptionValue[]
 ):ProductVariantOption {
+    const filteredValues = values.filter((value) => value.optionId === options.id);
+
     return {
         option: options,
-        values: values.filter((value) => value.optionId === options.id),
+        values: filteredValues.length ? filteredValues : [],
     };
 }

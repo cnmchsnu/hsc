@@ -1,4 +1,4 @@
-import { InventoryItem, CreateInventoryItem, UpdateInventoryItem } from "../../../../../inventory/domain/inventoryItem";
+import { InventoryItem, CreateInventoryItem, UpdateInventoryItem } from "../../../../../commerce/domain/inventory-item";
 import type { InventoryItemRow } from "../../../entities";
 
 import { RepositoryMapper } from "@repo/shared";

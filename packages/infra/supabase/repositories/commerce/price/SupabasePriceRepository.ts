@@ -14,7 +14,7 @@ import {
 
 import { PriceRow } from '../../../entities';
 
-import { PriceRepositoryMapper as mapper } from './to-price';
+import { PriceRepositoryMapper as mapper } from './mapper';
 
 export class SupabasePriceRepository
     extends SupabaseRepositoryBase<

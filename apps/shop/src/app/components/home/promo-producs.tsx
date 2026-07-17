@@ -8,7 +8,7 @@ export async function PromoProducts() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
       {promoProducts!.map((p) => (
         <div
-          key={p.product.id}
+          key={p.product.slug}
           className="product-card bg-background rounded-xl overflow-hidden border border-outline-variant group flex flex-row h-48"
         >
           <div className="w-2/5 relative overflow-hidden">
@@ -24,16 +24,16 @@ export async function PromoProducts() {
         </div>
         <div className="w-3/5 p-stack-md flex flex-col justify-between">
           <div>
-            <Link href={`/products/${p.product.id}`} className="font-bold text-lg text-primary line-clamp-1 hover:underline">
+            <Link href={`/products/${p.product.slug}`} className="font-bold text-lg text-primary line-clamp-1 hover:underline">
               {p.product.name}
             </Link>
             <p className="text-on-surface-variant text-sm mt-1">{p.product.description}</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-baseline gap-2">
-                {/* <span className="text-lto-timer font-bold text-xl">${p.product.price}</span> */}
-                <span className="text-on-surface-variant text-xs line-through">${p.product.price}</span>
-              </div>
+                <span className="text-lto-timer font-bold text-xl">${p.displayPrice?.min?.amount ?? ""}</span>
+                <span className="text-on-surface-variant text-xs line-through">${p.displayPrice?.min?.compareAt ?? ""}</span>
+            </div>
               {/* <div className="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
                 <div className="h-full bg-lto-timer" style={{ width: `${p.progress}%` }}></div>
               </div>

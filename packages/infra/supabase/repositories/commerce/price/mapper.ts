@@ -1,4 +1,4 @@
-import { Price, CreatePrice, UpdatePrice } from "../../../../../pricing/domain/price";
+import { Price, CreatePrice, UpdatePrice } from "../../../../../commerce/domain/price";
 import type { PriceRow } from "../../../entities";
 
 import { RepositoryMapper } from "@repo/shared";

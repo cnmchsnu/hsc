@@ -1,0 +1,1 @@
+export { SupabaseVariantOptionValueRepository } from './SupabaseVariantOptionValueRepository';

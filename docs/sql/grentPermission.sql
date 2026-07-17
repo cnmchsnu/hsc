@@ -24,3 +24,13 @@ TO service_role;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA commerce
 GRANT SELECT ON TABLES TO anon, authenticated;
+
+GRANT USAGE ON SCHEMA pricing TO anon, authenticated;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA pricing TO anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA pricing 
+GRANT SELECT ON TABLES TO anon, authenticated;
+GRANT USAGE ON SCHEMA inventory TO anon, authenticated;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA inventory TO anon, authenticated;

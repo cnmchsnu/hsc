@@ -18,7 +18,7 @@ export async function FeaturedProducts() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
             {featuredProducts!.map((p) => (
                 <div
-                    key={p.product.id}
+                    key={p.product.slug}
                     className="product-card bg-surface rounded-xl overflow-hidden border border-outline-variant flex flex-col"
                 >
                     <div className="aspect-square relative overflow-hidden bg-white">
@@ -32,13 +32,13 @@ export async function FeaturedProducts() {
                         <span className="text-[10px] font-label-sm text-on-surface-variant uppercase tracking-widest">
                             {p.primaryCategory?.name}
                         </span>
-                        <Link href={`/products/${p.product.id}`} className="block font-bold text-primary mt-1 hover:underline">
+                        <Link href={`/products/${p.product.slug}`} className="block font-bold text-primary mt-1 hover:underline">
                             {p.product.name}
                         </Link>
                         <p className="text-on-surface-variant text-sm mt-1 line-clamp-2">{p.product.description}</p>
                         </div>
                         <div className="mt-4 pt-4 border-t border-outline-variant flex items-center justify-between">
-                        <span className="text-headline-md font-bold text-primary">${p.product.price}</span>
+                        <span className="text-headline-md font-bold text-primary">${p.displayPrice?.min?.amount ?? ""}</span>
                         <button className="p-2 bg-primary text-on-primary rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center">
                             <span className="material-symbols-outlined">add_shopping_cart</span>
                         </button>

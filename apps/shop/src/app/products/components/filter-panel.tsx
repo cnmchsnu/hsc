@@ -109,7 +109,7 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(["Stationery"]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState([0, 2000]);
 
     useEffect(() => {

@@ -48,11 +48,13 @@ export function HeroSection({productData}: {productData: ProductDetail}) {
             {productData.product.name}
           </h2>
           <div className="flex items-baseline gap-4 mb-stack-md">
-            <span className="text-3xl font-bold text-on-primary-fixed-variant">NT$ {productData.product.price}</span>
-            <span className="text-on-surface-variant line-through font-label-md">NT$ {productData.product.compareAtPrice}</span>
-            <span className="bg-secondary-container text-on-secondary-fixed-variant px-2 py-0.5 rounded-full text-xs font-bold">
-              8折
-            </span>
+            <span className="text-3xl font-bold text-on-primary-fixed-variant">NT$ {productData.displayPrice?.min?.amount}</span>
+            <span className="text-on-surface-variant line-through font-label-md">NT$ {productData.displayPrice?.min?.compareAt ?? ""}</span>
+            {productData.displayPrice?.min?.compareAt && (
+              <span className="bg-secondary-container text-on-secondary-fixed-variant px-2 py-0.5 rounded-full text-xs font-bold">
+                {Math.round(((productData.displayPrice?.min?.compareAt - productData.displayPrice?.min?.amount) / productData.displayPrice?.min?.compareAt || 1) * 100)}%OFF
+              </span>
+            )}
           </div>
 
           {/* LTO Timer */}
@@ -71,7 +73,7 @@ export function HeroSection({productData}: {productData: ProductDetail}) {
           <p className="text-on-surface-variant mb-stack-lg leading-relaxed">{productData.product.description}</p>
 
           {/* Selectors */}
-          <SkuSelector />
+          <SkuSelector productData={productData} />
           
 
           {/* Actions */}

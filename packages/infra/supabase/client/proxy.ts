@@ -51,7 +51,7 @@ export async function updateSession(
      * It refreshes the session if necessary and writes
      * updated cookies back through setAll().
      */
-    await supabase.auth.getUser();
+    await supabase.auth.getSession();
 
     return response;
 }

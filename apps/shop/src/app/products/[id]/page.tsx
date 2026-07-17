@@ -67,7 +67,7 @@ export default async function ProductDetail({ params, }: PageProps) {
           首頁
         </Link>
         <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-        {breadcrumb.map((item, index) => (
+        {breadcrumb.map((item) => (
           <span key={item.id} className="flex items-center gap-2">
             <Link
               className="hover:text-on-primary-fixed-variant transition-colors"

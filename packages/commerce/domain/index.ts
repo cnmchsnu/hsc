@@ -1,5 +1,5 @@
 export { createCategoryService, type CategoryService } from './category';
-export { createProductService,type ProductService } from './product';
+export { createProductService,type ProductService, type ProductSort } from './product';
 export { createProductCategoryService, type ProductCategoryService } from './product-category';
 export { createProductImageService, type ProductImageService } from './product-image';
 export { createSKUService, type SKUService } from './sku';

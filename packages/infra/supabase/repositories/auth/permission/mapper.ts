@@ -1,6 +1,6 @@
 import type { Permission } from "../../../../../auth/domain/authorization";
 import type { CreatePermission, UpdatePermission } from "../../../../../auth/application/authorization/permissions";
-import type { PermissionRow } from "../../../../entities";
+import type { PermissionRow } from "../../../entities";
 
 import { RepositoryMapper } from "@repo/shared";
 

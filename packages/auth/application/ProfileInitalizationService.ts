@@ -42,6 +42,7 @@ class DefaultProfileInitializationService
                 displayName: "",
                 autoClassification: autoClassification,
                 finalClassification: autoClassification,
+                sync_display_name: true,
                 status: "active",
                 version: 1,
             };

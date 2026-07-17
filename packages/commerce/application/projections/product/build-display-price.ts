@@ -32,8 +32,7 @@ export function buildDisplayPrice(
 
     const skuPrices = skus.map(sku => toSKUPrice(sku, prices)).filter(skuPrice => skuPrice.Prices.length !== 0);
 
-    const currentPrices = skuPrices.map(skuPrice => buildCurrentPrice(skuPrice.Prices)).filter(price => price !== null);
-
+    const currentPrices = skuPrices.map(skuPrice => buildCurrentPrice(skuPrice.sku, skuPrice.Prices)).filter(price => price !== null);
     
     const sortedPrices = currentPrices.sort((a, b) => a.amount - b.amount);
 
@@ -44,6 +43,6 @@ export function buildDisplayPrice(
         min: minPrice,
         max: maxPrice,
         current: null,
-        hasRange: minPrice.amount !== maxPrice.amount
+        hasRange: (minPrice?.amount ?? 0) !== (maxPrice?.amount ?? 0)
     };
 }

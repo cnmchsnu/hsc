@@ -66,8 +66,6 @@ class DefaultProductSearchService
             page: criteria.page,
             pageSize: criteria.pageSize,
             keyword: criteria.keyword,
-            minPrice: criteria.minPrice,
-            maxPrice: criteria.maxPrice,
             productIds: productIds.map(relation => relation.product_id),
             status: ["active"],
             sort: criteria.sort,
