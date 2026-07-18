@@ -5,6 +5,7 @@ import { getCurrentUser } from "@repo/auth/server";
 
 export async function UserAvatar() {
   const currentUser = await getCurrentUser();
+
   return (
     <Link
               href="/profile"

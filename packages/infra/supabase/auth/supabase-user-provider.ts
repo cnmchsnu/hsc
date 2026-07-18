@@ -13,7 +13,7 @@ export class SupabaseUserProvider
     ): Promise<User | null> {
 
         const supabase = await createServerClient();
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getUser(id);
 
         if (error) {
             throw new Error(`Error fetching user by ID ${id}: ${error.message}`);
@@ -23,6 +23,6 @@ export class SupabaseUserProvider
             return null;
         }
 
-        return toUser(data.session?.user!);
+        return toUser(data.user);
     }
 }

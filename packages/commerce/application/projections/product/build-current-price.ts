@@ -12,11 +12,13 @@ export function buildCurrentPrice(
 
     const now = new Date();
 
-    console.log('buildCurrentPrice - now:', now);
-
     const activePrices = skuPrices.filter(price =>
         price.effectiveFrom <= now &&
         (!price.effectiveTo || price.effectiveTo >= now)
+    );
+
+    throw new Error(
+        JSON.stringify({activePrices, now}, null, 2)
     );
 
 
