@@ -53,5 +53,7 @@ export async function updateSession(
      */
     await supabase.auth.getSession();
 
+    
+
     return response;
 }

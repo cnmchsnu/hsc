@@ -12,7 +12,6 @@ interface AutoClassificationServiceDependencies {
 
     userService: UserService;
 
-    profileRepository: ProfileRepository;
 
 }
 
@@ -21,8 +20,6 @@ class DefaultAutoClassificationService
 
         constructor(
             private readonly userService: UserService,
-
-            private readonly profileRepository: ProfileRepository,
         ) {}
 
         private matchEmail(
@@ -39,12 +36,6 @@ class DefaultAutoClassificationService
 
             if (!user) {
                 throw new Error("No user is currently logged in.");
-            }
-
-            const profile = await this.profileRepository.findById(user.id);
-
-            if (!profile) {
-                throw new Error("Profile not found for the current user.");
             }
 
             const userEmail = user.email;
@@ -70,6 +61,5 @@ export function createAutoClassificationService(
 ): AutoClassificationService {
     return new DefaultAutoClassificationService(
         dependencies.userService,
-        dependencies.profileRepository
     );
 }

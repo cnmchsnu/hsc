@@ -112,7 +112,6 @@ export const createAuthContainer = cache(async (): Promise<AuthContainer> => {
     const autoClassificationService =
         createAutoClassificationService({
             userService,
-            profileRepository
         });
 
     const profileInitializationService =

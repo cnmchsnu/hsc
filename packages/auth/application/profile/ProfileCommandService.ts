@@ -48,7 +48,6 @@ class DefaultProfileCommandService
                 autoClassification: currentUserProfile.autoClassification,
                 finalClassification: currentUserProfile.finalClassification,
                 version: currentUserProfile.version,
-                status: currentUserProfile.status,
                 
                 // ⭕ 只有當它們不是 undefined 時，才寫入屬性
                 ...(currentUserProfile.class !== undefined && { class: currentUserProfile.class }),

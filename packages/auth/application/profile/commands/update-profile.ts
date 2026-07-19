@@ -18,5 +18,4 @@ export interface UpdateProfile {
 
     sync_display_name?: boolean;
 
-    status?: ProfileStatus;
 }
