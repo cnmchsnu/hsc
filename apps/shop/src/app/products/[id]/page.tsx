@@ -9,6 +9,45 @@ import {
 
 import { getProductDetail } from "@repo/commerce/server";
 
+import { Metadata } from 'next';
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+// 1. 宣告並匯出 generateMetadata 函式
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+
+  // 從你的 API 或資料庫取得商品資料
+  const product = await getProductDetail(id);
+
+  if (!product) {
+    return {
+      title: "商品不存在",
+      description: "找不到該商品的詳細資訊。",
+    };
+  }
+
+  return {
+    title: product.product.name,
+    description: product.product.description,
+    openGraph: {
+      title: product.product.name,
+      description: product.product.description  ?? "",
+      // ⭕ 在這裡動態帶入資料庫撈出來的圖片網址
+      images: [
+        {
+          url: product.images.find(img => img.isPrimary === true)?.url || "/default-image.jpg", 
+          width: 500,
+          height: 500,
+          alt: product.product.name,
+        },
+      ],
+    },
+  };
+}
+
 
 type Params = Promise<{ id: string }>;
 

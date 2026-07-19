@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 export const metadata = {
     title: "登入 - 學生會商城",
     description: "登入學生會商城以享受更多功能。",
+    
 };
 
 

@@ -110,7 +110,6 @@ class DefaultProductReadService
             return null;
         }
 
-
         const [primaryCategory, productCategoryIds, images, sku, option] =
             await Promise.all([
             this.productCategoryService.getPrimaryByProductId(product.id),
@@ -127,6 +126,8 @@ class DefaultProductReadService
         const categoriesIds = productCategoryIds.map((relation) => relation.category_id);
         const skuIds = sku.map(sku => sku.id);
         const optionIds = option.map(option => option.id);
+
+
 
         const [breadcrumbs, categories, price, inventoryItems, skuVariantValues, optionValues] =
             await Promise.all([
@@ -149,8 +150,10 @@ class DefaultProductReadService
                 inventoryItems
             );
 
+
         const currentPrice =
             skuIds.map((id) => buildCurrentPrice(id, price));
+
 
         const displayPrice =
             buildDisplayPrice(currentPrice);

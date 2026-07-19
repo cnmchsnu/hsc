@@ -19,6 +19,8 @@ export function HeroSection({productData}: {productData: ProductDetail}) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               alt={productData.product.name}
               src={productData.images[activeThumb]?.url}
+              width={500}
+              height={500}
             />
           </div>
           <div className="grid grid-cols-4 gap-4">

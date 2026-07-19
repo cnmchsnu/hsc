@@ -24,9 +24,9 @@ export async function PromoProducts({promoProducts}: {promoProducts: ProductSumm
           </div>
           <div className="w-3/5 p-stack-md flex flex-col justify-between">
             <div>
-              <Link href={`/products/${p.product.slug}`} className="font-bold text-lg text-primary line-clamp-1 hover:underline">
+              <span className="font-bold text-lg text-primary line-clamp-1 hover:underline">
                 {p.product.name}
-              </Link>
+              </span>
               <p className="text-on-surface-variant text-sm mt-1">{p.product.description}</p>
             </div>
             <div className="space-y-2">

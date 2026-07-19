@@ -153,19 +153,19 @@ using (
 CREATE POLICY SKU_READ
 ON commerce.skus
 FOR SELECT
-TO AUTHENTICATED
+TO public
 USING (TRUE);
 
 CREATE POLICY INVENTORY_READ
 ON inventory.inventory_items
 FOR SELECT
-TO AUTHENTICATED
+TO public
 USING (TRUE);
 
 CREATE POLICY PRICE_READ
 ON pricing.prices
 FOR SELECT
-TO AUTHENTICATED
+TO public
 USING (TRUE);
 
 
@@ -173,7 +173,7 @@ USING (TRUE);
 CREATE POLICY variant_options_select
 ON commerce.variant_options
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
 
 
@@ -181,20 +181,21 @@ USING (TRUE);
 CREATE POLICY variant_option_values_select
 ON commerce.variant_option_values
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
 
 
 CREATE POLICY sku_variant_values_select
 ON commerce.sku_variant_values
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
 
 
 create policy "Public can read active pricings"
 on pricing.prices
 for select
+to public
 using (
     true
 );
