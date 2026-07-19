@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect} from "next/navigation";
 
 import {
   Recommendations,
@@ -20,8 +20,7 @@ interface PageProps {
 export default async function ProductDetail({ params, }: PageProps) {
   const { id } = await params;
 
-  try {
-  const productData = await getProductDetail(id || "1");
+  const productData = await getProductDetail(id);
   
   const breadcrumb = productData?.breadcrumb || [];
 
@@ -71,7 +70,7 @@ export default async function ProductDetail({ params, }: PageProps) {
           <span key={item.id} className="flex items-center gap-2">
             <Link
               className="hover:text-on-primary-fixed-variant transition-colors"
-              href={`/categories/${item.name}`}
+              href={`/products?categorySlugs=${item.slug}`} 
             >
               {item.name}
             </Link>
@@ -92,9 +91,4 @@ export default async function ProductDetail({ params, }: PageProps) {
       <Recommendations />
     </div>
   );
-
-  } catch (error) {
-    console.error("Error fetching product detail:", error);
-    notFound();
-  }
 }

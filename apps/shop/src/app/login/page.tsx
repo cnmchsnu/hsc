@@ -1,6 +1,6 @@
 import { SignInWithGoogleButton } from "./components";
 
-import { getCurrentUser } from "@repo/auth/server";
+import { getCurrentUserProfile } from "@repo/auth/server";
 
 import { redirect } from "next/navigation";
 
@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function LoginPage() {
 
-    const user = await getCurrentUser();
+    const user = await getCurrentUserProfile("LoginPage");
 
     if (user) {
         redirect("/profile");

@@ -5,11 +5,12 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    cacheComponents: false,
 };
 
 const configWithAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
+    enabled: process.env.ANALYZE === "true",
+
 })(nextConfig);
 
 export default configWithAnalyzer;

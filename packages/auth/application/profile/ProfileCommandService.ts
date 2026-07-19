@@ -34,27 +34,26 @@ class DefaultProfileCommandService
             command: UpdateProfile,
         ): Promise<Profile> {
             
-            const currentUser =
-            await this.currentUserService.get();
+            const currentUserProfile =
+                await this.currentUserService.getCurrentUserProfile();
 
-            if (!currentUser) {
+            if (!currentUserProfile) {
                 throw new Error('User not authenticated');
             }
 
-            const profile =
-                await this.profileRepository.findById(currentUser.session.userId);
-
-            if (!profile) {
-                throw new Error('Profile not found');
-            }
-
             const updatedProfile: Profile = {
-                ...profile,
-                displayName: command.displayName ?? profile.displayName,
-                class: command.class ?? profile.class,
-                number: command.number ?? profile.number,
-                sync_display_name: (command.displayName === profile.displayName) ? true : false,
-                version: profile.version + 1,
+                id: currentUserProfile.id,
+                displayName: currentUserProfile.displayName,
+                sync_display_name: currentUserProfile.sync_display_name,
+                autoClassification: currentUserProfile.autoClassification,
+                finalClassification: currentUserProfile.finalClassification,
+                version: currentUserProfile.version,
+                status: currentUserProfile.status,
+                
+                // ⭕ 只有當它們不是 undefined 時，才寫入屬性
+                ...(currentUserProfile.class !== undefined && { class: currentUserProfile.class }),
+                ...(currentUserProfile.number !== undefined && { number: currentUserProfile.number }),
+                ...(currentUserProfile.studentId !== undefined && { studentId: currentUserProfile.studentId }),
             };
 
             await this.profileRepository.update(updatedProfile);

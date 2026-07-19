@@ -7,5 +7,10 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "noUncheckedIndexedAccess": false,
+        "exactOptionalPropertyTypes": false,
+        "noImplicitOverride": false,
+        "noImplicitReturns": false
+
     }
 }

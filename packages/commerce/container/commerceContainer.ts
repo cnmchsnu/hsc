@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 
 import { createCategoryContainer, type CategoryContainer} from "./categoryContainer";
 import { createProductContainer, type ProductContainer } from "./productContainer";
@@ -9,8 +11,7 @@ export interface CommerceContainer {
     productContainer: ProductContainer;
 
 }
-
-export async function createCommerceContainer(): Promise<CommerceContainer> {
+export const createCommerceContainer = cache(async (): Promise<CommerceContainer> => {
 
     const categoryContainer =
         await createCategoryContainer();
@@ -32,4 +33,4 @@ export async function createCommerceContainer(): Promise<CommerceContainer> {
 
     };
 
-}
+});

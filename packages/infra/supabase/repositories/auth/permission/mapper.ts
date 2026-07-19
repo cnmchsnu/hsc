@@ -48,9 +48,9 @@ export const PermissionRepositoryMapper: RepositoryMapper<
         dto: UpdatePermission,
     ): Partial<PermissionRow> {
         return {
-            key: dto.key,
-            scope: dto.scope,
-            description: dto.description,
+            ...(dto.key !== undefined && { key: dto.key }),
+            ...(dto.scope !== undefined && { scope: dto.scope }),
+            ...(dto.description !== undefined && { description: dto.description }),
         };
     },
 

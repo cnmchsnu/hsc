@@ -1,5 +1,5 @@
-import { UserContextService } from "./UserContextService";
-import { SessionService } from "../domain/identity";
+import { UserService } from "../domain/identity";
+import { ProfileRepository } from "@repo/database/repositories";
 
 
 export interface AutoClassificationService {
@@ -10,9 +10,9 @@ export interface AutoClassificationService {
 
 interface AutoClassificationServiceDependencies {
 
-    sessionService: SessionService;
+    userService: UserService;
 
-    userContextService: UserContextService;
+    profileRepository: ProfileRepository;
 
 }
 
@@ -20,9 +20,9 @@ class DefaultAutoClassificationService
     implements AutoClassificationService {
 
         constructor(
-            private readonly sessionService: SessionService,
+            private readonly userService: UserService,
 
-            private readonly userContextService: UserContextService,
+            private readonly profileRepository: ProfileRepository,
         ) {}
 
         private matchEmail(
@@ -35,19 +35,19 @@ class DefaultAutoClassificationService
 
         async Determine(): Promise<string> {
 
-            const session = await this.sessionService.getSession();
+            const user = await this.userService.get();
 
-            if (!session) {
-                throw new Error("No active session found.");
+            if (!user) {
+                throw new Error("No user is currently logged in.");
             }
 
-            const userContext = await this.userContextService.getCurrentUser(session.userId);
+            const profile = await this.profileRepository.findById(user.id);
 
-            if (!userContext) {
-                throw new Error("User context not found for the current session.");
+            if (!profile) {
+                throw new Error("Profile not found for the current user.");
             }
 
-            const userEmail = userContext.user.email;
+            const userEmail = user.email;
 
             if (this.matchEmail(userEmail, /^(\d{6}|\d{8})@gs\.hs\.ntnu\.edu\.tw$/)) {
                 return "student";
@@ -69,7 +69,7 @@ export function createAutoClassificationService(
     dependencies: AutoClassificationServiceDependencies
 ): AutoClassificationService {
     return new DefaultAutoClassificationService(
-        dependencies.sessionService,
-        dependencies.userContextService,
+        dependencies.userService,
+        dependencies.profileRepository
     );
 }

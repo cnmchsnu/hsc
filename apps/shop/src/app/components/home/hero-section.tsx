@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from 'lucide-react';
 
 export function HeroSection() {
     
@@ -22,7 +23,7 @@ export function HeroSection() {
                 href="/products"
                 className="px-6 py-3 md:px-8 md:py-4 bg-on-primary text-primary font-bold rounded-xl hover:bg-surface-container-lowest hover:scale-105 transition-all shadow-lg flex items-center gap-2"
               >
-                立即選購 <span className="material-symbols-outlined">arrow_forward</span>
+                立即選購 <ChevronRight size={20} />
               </Link>
               <button className="px-6 py-3 md:px-8 md:py-4 border-2 border-on-primary text-on-primary font-bold rounded-xl hover:bg-white/10 transition-all">
                 品牌故事

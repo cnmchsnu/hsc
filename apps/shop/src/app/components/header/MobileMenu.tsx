@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -47,18 +47,19 @@ export function MobileMenu({ navLinks }: MobileMenuProps) {
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href.split("?")[0]!));
             return (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2 px-3 rounded-lg text-body-md transition-colors ${
-                  isActive
-                    ? "bg-surface-container-low text-primary font-bold"
-                    : "text-on-surface-variant hover:bg-surface"
-                }`}
-              >
-                {link.name}
-              </Link>
+              <Suspense key={link.name} fallback={<span className="block py-2 px-3 rounded-lg text-body-md transition-colors text-on-surface-variant"></span>}>
+                <Link
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block py-2 px-3 rounded-lg text-body-md transition-colors ${
+                    isActive
+                      ? "bg-surface-container-low text-primary font-bold"
+                      : "text-on-surface-variant hover:bg-surface"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              </Suspense>
             );
           })}
         </div>

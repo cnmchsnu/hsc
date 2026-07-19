@@ -7,7 +7,7 @@ import * as Slider from '@radix-ui/react-slider';
 
 import type { CategoryTreeNode } from "@repo/commerce/application";
 
-import { ChevronRight, ChevronDown, Check} from 'lucide-react';
+import { ChevronRight, ChevronDown, Check } from 'lucide-react';
 
 
 
@@ -146,8 +146,8 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
 
         const currentParams = new URLSearchParams(searchParams.toString());
 
-        currentParams.set('minPrice', priceRange[0].toString());
-        currentParams.set('maxPrice', priceRange[1].toString());
+        currentParams.set('minPrice', priceRange[0]?.toString() ?? '0');
+        currentParams.set('maxPrice', priceRange[1]?.toString() ?? '2000');
 
         router.push(`${pathname}?${currentParams.toString()}`);
 

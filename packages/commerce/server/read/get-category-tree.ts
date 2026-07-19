@@ -1,10 +1,16 @@
 import { createCommerceContainer } from '../../container';
 import { CategoryTreeNode } from '../../application/projections';
+import { cache } from 'react';
 
-export async function getCategoryTree(): Promise<readonly CategoryTreeNode[] | null> {
+export const getCategoryTree = cache(async (): Promise<readonly CategoryTreeNode[] | null> => {
+    console.time("getCategoryTree");
     const {
         categoryContainer,
     } = await createCommerceContainer();
 
-    return categoryContainer.categoryReadService.getCategoryTree();
-}
+    const result = await categoryContainer.categoryReadService.getCategoryTree();
+
+    console.timeEnd("getCategoryTree");
+
+    return result;
+});

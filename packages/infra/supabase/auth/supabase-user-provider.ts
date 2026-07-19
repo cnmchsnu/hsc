@@ -8,15 +8,14 @@ import { toUser } from "./mapper";
 export class SupabaseUserProvider
     implements UserProvider {
 
-    async getById(
-        id: string
-    ): Promise<User | null> {
+    async get(): Promise<User | null> {
 
         const supabase = await createServerClient();
-        const { data, error } = await supabase.auth.getUser(id);
+
+        const { data, error } = await supabase.auth.getUser();
 
         if (error) {
-            throw new Error(`Error fetching user by ID ${id}: ${error.message}`);
+            throw new Error(`Error fetching user: ${error.message}`);
         }
         
         if (!data) {

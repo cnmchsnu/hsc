@@ -4,6 +4,8 @@ import {
     ProductGrid,
 } from "./components";
 
+import { Suspense } from "react";
+
 import { getCategoryTree, searchProduct } from "@repo/commerce/server";
 import StoreNotReady from "./not-opened";
 
@@ -35,15 +37,15 @@ export default async function ProductList({ searchParams }: PageProps) {
     const [categories, products] = await Promise.all([
         getCategoryTree(),
         searchProduct({
-            keyword: searchCriteria.keyword,
-            categorySlugs: searchCriteria.categorySlugs,
-            minPrice: searchCriteria.minPrice,
-            maxPrice: searchCriteria.maxPrice,
-            sort: searchCriteria.sort,
+            ...(searchCriteria.keyword && {keyword: searchCriteria.keyword}),
             page: searchCriteria.page || 1,
-            pageSize: searchCriteria.pageSize|| 20,
+            pageSize: searchCriteria.pageSize || 20,
+            ...(searchCriteria.categorySlugs && { categorySlugs: searchCriteria.categorySlugs }),
+            ...(searchCriteria.minPrice !== undefined && { minPrice: searchCriteria.minPrice }),
+            ...(searchCriteria.maxPrice !== undefined && { maxPrice: searchCriteria.maxPrice }),
+            ...(searchCriteria.sort && { sort: searchCriteria.sort }),
         })
-    ]);
+    ]);``
 
     if (!categories) {
         // Handle the case where categories are not available
@@ -57,10 +59,15 @@ export default async function ProductList({ searchParams }: PageProps) {
     return (
         <div className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row gap-gutter">
         {/* Left Sidebar Filter */}
-        <FilterPanel categoriesTreeNode={categories!} />
+        <Suspense fallback={<span className="text-on-surface-variant text-center">Loading Filters...</span>}>
+            <FilterPanel categoriesTreeNode={categories!} />
+        </Suspense>
 
         {/* Main Product Grid Area */}
-        <ProductGrid products={products!} />
+        <Suspense fallback={<span className="text-on-surface-variant text-center">Loading products...</span>}>
+            <ProductGrid products={products!} />
+        </Suspense>
         </div>
     );
 }
+

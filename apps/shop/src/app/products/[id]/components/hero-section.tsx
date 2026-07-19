@@ -40,20 +40,21 @@ export function HeroSection({productData}: {productData: ProductDetail}) {
         <div className="flex flex-col">
           <div className="mb-stack-sm flex items-center gap-2">
             <span className="bg-primary-container text-white text-[10px] px-2 py-0.5 rounded uppercase tracking-wider font-bold">
-              校慶限定
+              {productData.categories.map((cat) => cat.name).join(", ")}
             </span>
-            {/* <span className="text-on-surface-variant font-label-sm">SKU: {productData.sku}</span> */}
           </div>
           <h2 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm font-bold text-3xl">
             {productData.product.name}
           </h2>
           <div className="flex items-baseline gap-4 mb-stack-md">
             <span className="text-3xl font-bold text-on-primary-fixed-variant">NT$ {productData.displayPrice?.min?.amount}</span>
-            <span className="text-on-surface-variant line-through font-label-md">NT$ {productData.displayPrice?.min?.compareAt ?? ""}</span>
-            {productData.displayPrice?.min?.compareAt && (
-              <span className="bg-secondary-container text-on-secondary-fixed-variant px-2 py-0.5 rounded-full text-xs font-bold">
-                {Math.round(((productData.displayPrice?.min?.compareAt - productData.displayPrice?.min?.amount) / productData.displayPrice?.min?.compareAt || 1) * 100)}%OFF
-              </span>
+            {productData.displayPrice?.current?.compareAt && (  
+              <div>
+                <span className="text-on-surface-variant line-through font-label-md">NT$ {productData.displayPrice?.min?.compareAt ?? ""}</span>
+                <span className="bg-secondary-container text-on-secondary-fixed-variant px-2 py-0.5 rounded-full text-xs font-bold">
+                  {Math.round(((productData.displayPrice?.current?.compareAt - productData.displayPrice?.current?.amount) / productData.displayPrice?.current?.compareAt || 1) * 100)}%OFF
+                </span>
+              </div>
             )}
           </div>
 
