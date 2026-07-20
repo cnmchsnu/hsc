@@ -324,25 +324,19 @@ export class SupabasePermissionRepository
             return;
         }
 
-        const rows = mapper.toUpdateRows(permissions);
-
-        for (let index = 0; index < permissions.length; index += 1) {
-            const permission = permissions[index];
-            const row = rows[index];
-
-            const { error } = await this.client
+        const { error } =
+            await this.client
                 .schema("identity")
-                .from("permissions")
-                .update(row)
-                .eq("id", permission.id)
-                .select("*")
-                .single();
+                .rpc(
+                    "update_permissions",
+                    {
+                        permissions: mapper.toUpdateRows(permissions),
+                    }
+                );
 
-            if (error) {
-                throw error;
-            }
+        if (error) {
+            throw error;
         }
-
     }
 
     async deleteMany(

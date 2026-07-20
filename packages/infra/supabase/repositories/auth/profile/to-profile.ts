@@ -39,8 +39,6 @@ export const ProfileRepositoryMapper: RepositoryMapper<
 
             sync_display_name: row.sync_display_name,
 
-            status: row.status,
-
             version: row.version,
 
         };
@@ -75,7 +73,6 @@ export const ProfileRepositoryMapper: RepositoryMapper<
 
             manual_override: dto.manualOverride ?? null,
 
-            status: dto.status,
 
         };
     },
@@ -108,8 +105,6 @@ export const ProfileRepositoryMapper: RepositoryMapper<
             manual_override: dto.manualOverride,
 
             sync_display_name: dto.sync_display_name,
-
-            status: dto.status,
 
         };
     },

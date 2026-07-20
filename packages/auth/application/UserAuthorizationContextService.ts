@@ -8,14 +8,11 @@ import {
 
 import type { Profile } from "../domain/profile";
 import type { Role, Permission } from "../domain/authorization";
-import type { User, UserService } from "../domain/identity";
 
 
 
 
-export interface UserContext {
-
-    user: User;
+export interface UserAuthorizationContext {
 
     profile: Profile | null;
 
@@ -25,21 +22,19 @@ export interface UserContext {
 
 }
 
-export interface UserContextService {
+export interface UserAuthorizationContextService {
 
-    getCurrentUser(
+    get(
         userId: string
-    ): Promise<UserContext| null>;
+    ): Promise<UserAuthorizationContext| null>;
 
     // getMany(
     //     userIds: readonly string[],
-    // ): Promise<readonly UserContext[]>;
+    // ): Promise<readonly UserAuthorizationContext[]>;
 
 }
 
-interface UserContextDependencies {
-
-    userService: UserService;
+interface UserAuthorizationContextDependencies {
 
     profileRepository: ProfileRepository;
 
@@ -53,12 +48,10 @@ interface UserContextDependencies {
 
 }
 
-class DefaultUserContextService
-    implements UserContextService {
+class DefaultUserAuthorizationContextService
+    implements UserAuthorizationContextService {
 
         constructor(
-
-            private readonly userService: UserService,
 
             private readonly profileRepository: ProfileRepository,
 
@@ -72,17 +65,13 @@ class DefaultUserContextService
 
         ) {}
 
-        async getCurrentUser(userId: string): Promise<UserContext| null> {
+        async get(userId: string): Promise<UserAuthorizationContext | null> {
 
-            const user = await this.userService.getUserById(userId);
 
-            if (!user) {
-                return null;
-            }
 
-            const profile = await this.profileRepository.findById(user.id);
+            const profile = await this.profileRepository.findById(userId);
 
-            const rolesIds = await this.userRoleRepository.getUserRoles(user.id);
+            const rolesIds = await this.userRoleRepository.getUserRoles(userId);
 
             const roles = await this.roleRepository.listByIds(rolesIds);
 
@@ -91,7 +80,6 @@ class DefaultUserContextService
             const permissions = await this.permissionRepository.getPermissionsByIds(permissionsIds);
 
             return {
-                user,
                 profile,
                 roles,
                 permissions
@@ -102,11 +90,10 @@ class DefaultUserContextService
 }
 
 
-export function createUserContextService(
-    dependencies: UserContextDependencies
-): UserContextService {
-    return new DefaultUserContextService(
-        dependencies.userService,
+export function createUserAuthorizationContextService(
+    dependencies: UserAuthorizationContextDependencies
+): UserAuthorizationContextService {
+    return new DefaultUserAuthorizationContextService(
         dependencies.profileRepository,
         dependencies.userRoleRepository,
         dependencies.roleRepository,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+
 import {
   Recommendations,
   Detail,
@@ -8,6 +9,45 @@ import {
 } from "./components";
 
 import { getProductDetail } from "@repo/commerce/server";
+
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+// 1. 宣告並匯出 generateMetadata 函式
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+
+  // 從你的 API 或資料庫取得商品資料
+  const product = await getProductDetail(id);
+
+  const headerList = await headers();
+  const host = headerList.get('host');
+
+  const ogImageUrl = `${host}/api/og?title=${encodeURIComponent(product?.product.name || '')}&description=${encodeURIComponent(product?.product.description || '')}&image=${encodeURIComponent(product?.images.find(img => img.isPrimary === true)?.url || '')}`;
+
+  if (!product) {
+    return {
+      title: "商品不存在",
+      description: "找不到該商品的詳細資訊。",
+    };
+  }
+
+  return {
+    title: product.product.name,
+    description: product.product.description,
+    openGraph: {
+      title: product.product.name,
+      description: product.product.description  ?? "",
+      images: [
+        { url: ogImageUrl },
+      ],
+    },
+  };
+}
 
 
 type Params = Promise<{ id: string }>;
@@ -20,14 +60,12 @@ interface PageProps {
 export default async function ProductDetail({ params, }: PageProps) {
   const { id } = await params;
 
-  try {
-  const productData = await getProductDetail(id || "1");
+  const productData = await getProductDetail(id);
   
   const breadcrumb = productData?.breadcrumb || [];
 
   if (!productData) notFound();
-
-  // const [activeThumb, setActiveThumb] = useState(0);
+;
   // const [countdown, setCountdown] = useState<Countdown>({
   //   hours: "04",
   //   minutes: "22",
@@ -67,11 +105,11 @@ export default async function ProductDetail({ params, }: PageProps) {
           首頁
         </Link>
         <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-        {breadcrumb.map((item, index) => (
+        {breadcrumb.map((item) => (
           <span key={item.id} className="flex items-center gap-2">
             <Link
               className="hover:text-on-primary-fixed-variant transition-colors"
-              href={`/categories/${item.name}`}
+              href={`/products?categorySlugs=${item.slug}`} 
             >
               {item.name}
             </Link>
@@ -89,12 +127,7 @@ export default async function ProductDetail({ params, }: PageProps) {
       <Detail />
 
       {/* Recommendations */}
-      <Recommendations />
+      <Recommendations categorySlug={productData.categories.find((c) => c.displayOrder === 0)?.slug || ""} currentProductId={productData.product.id} />
     </div>
   );
-
-  } catch (error) {
-    console.error("Error fetching product detail:", error);
-    notFound();
-  }
 }

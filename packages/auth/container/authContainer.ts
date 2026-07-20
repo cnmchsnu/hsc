@@ -1,6 +1,7 @@
 "server-only";
 
 import { createServerClient } from '@repo/infra/supabase/client/server';
+import { cache } from 'react';
 
 import {
     SupabaseSessionProvider,
@@ -14,20 +15,26 @@ import {
     SupabaseRolePermissionRepository,
     SupabaseUserRoleRepository
 } from "@repo/infra/supabase/repositories";
-            
 
-import { createAuthorizationService, type AuthorizationService } from "../application/AuthorizationService";
-import { createAuthenticationReadService, type AuthenticationReadService } from "../application/AuthenticationReadService";
-import { createProfileCommandService, type ProfileCommandService } from "../application/profile/ProfileCommandService";
-import { createCurrentUserService } from "../application/CurrentUserService";
-import { createProfileSyncService } from "../application/ProfileSyncService";
-import { createLoginFlowService, type LoginFlowService } from "../application/LoginFlowService";
+import type {
+    AuthorizationService,
+    AuthenticationReadService,
+    ProfileCommandService
+} from "../application";
+
+import {
+    createAuthorizationService,
+    createAuthenticationReadService,
+    createProfileCommandService,
+    createCurrentUserService,
+    createProfileSyncService,
+    createLoginFlowService,
+    createUserAuthorizationContextService,
+    createProfileInitializationService,
+    createAutoClassificationService,
+} from "../application/";
+
 import { createSessionService, createUserService } from "../domain/identity";
-import { createUserContextService } from "../application/UserContextService";
-import { createProfileInitializationService } from "../application/ProfileInitalizationService";
-import { createAutoClassificationService } from "../application/AutoClassificationService";
-
-
 
 export interface AuthContainer {
 
@@ -40,7 +47,7 @@ export interface AuthContainer {
 }
 
 
-export async function createAuthContainer(): Promise<AuthContainer> {
+export const createAuthContainer = cache(async (): Promise<AuthContainer> => {
 
     const client = 
         await createServerClient();
@@ -70,9 +77,8 @@ export async function createAuthContainer(): Promise<AuthContainer> {
         userProvider
     });
 
-    const userContextService =
-        createUserContextService({
-            userService,
+    const userAuthorizationContextService =
+        createUserAuthorizationContextService({
             profileRepository,
             roleRepository,
             permissionRepository,
@@ -87,8 +93,9 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const currentUserService =
         createCurrentUserService({
-            sessionService,
-            userContextService
+            userService,
+            profileRepository,
+            userAuthorizationContextService
         });
 
     const authorizationService =
@@ -104,8 +111,7 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const autoClassificationService =
         createAutoClassificationService({
-            sessionService,
-            userContextService
+            userService,
         });
 
     const profileInitializationService =
@@ -116,7 +122,7 @@ export async function createAuthContainer(): Promise<AuthContainer> {
 
     const loginFlowService =
         createLoginFlowService({
-            sessionService,
+            userService,
             profileSyncService,
             profileInitializationService,
             profileRepository
@@ -145,4 +151,4 @@ export async function createAuthContainer(): Promise<AuthContainer> {
         profileCommandService
 
     };
-}
+});

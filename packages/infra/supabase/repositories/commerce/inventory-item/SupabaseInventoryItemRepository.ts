@@ -9,7 +9,7 @@ import {
     UpdateInventoryItem
 } from '../../../../../commerce/domain/inventory-item';
 
-import { InventoryItemRepositoryMapper as mapper } from './to-inventory-item';
+import { InventoryItemRepositoryMapper as mapper } from './mapper';
 
 export class SupabaseInventoryItemRepository
     implements InventoryItemRepository {

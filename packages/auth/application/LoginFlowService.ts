@@ -1,7 +1,7 @@
-import { SessionService, UserService } from "../domain/identity";
+import { UserService } from "../domain/identity";
 
 import { ProfileSyncService } from "./ProfileSyncService";
-import { ProfileInitializationService } from "./ProfileInitalizationService";
+import { ProfileInitializationService } from "./ProfileInitializationService";
 import { ProfileRepository } from "../../database/repositories/identity";
 
 export interface LoginFlowService {
@@ -12,7 +12,7 @@ export interface LoginFlowService {
 
 interface LoginFlowServiceDependencies {
 
-    sessionService: SessionService;
+    userService: UserService;
 
     profileSyncService: ProfileSyncService;
 
@@ -26,7 +26,7 @@ class DefaultLoginFlowService
     implements LoginFlowService {
 
         constructor(
-            private readonly sessionService: SessionService,
+            private readonly userService: UserService,
             private readonly profileSyncService: ProfileSyncService,
             private readonly profileInitializationService: ProfileInitializationService,
             private readonly profileRepository: ProfileRepository
@@ -34,21 +34,21 @@ class DefaultLoginFlowService
 
     async execute(): Promise<void> {
 
-        const session =
-            await this.sessionService.getSession();
+        const user =
+            await this.userService.get();
 
-        if (!session) {
-            throw new Error("No active session found.");
+        if (!user) {
+            throw new Error("No active user found.");
         }
 
-        const existProfile = await this.profileRepository.exists(session.userId);
+        const existProfile = await this.profileRepository.exists(user.id);
 
         if (!existProfile) {
-            await this.profileInitializationService.initialize(session.userId);
+            await this.profileInitializationService.initialize(user.id);
         }
         
 
-        await this.profileSyncService.sync(session.userId);
+        await this.profileSyncService.sync(user.id);
     }
 }
 
@@ -56,7 +56,7 @@ export function createLoginFlowService(
     dependencies: LoginFlowServiceDependencies
 ): LoginFlowService {
     return new DefaultLoginFlowService(
-        dependencies.sessionService,
+        dependencies.userService,
         dependencies.profileSyncService,
         dependencies.profileInitializationService,
         dependencies.profileRepository

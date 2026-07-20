@@ -91,7 +91,7 @@ export interface CategoryService {
 }
 
 export function createCategoryService(
-    repository: CategoryRepository,
+    categoryRepository: CategoryRepository,
 ): CategoryService {
 
     return {
@@ -101,7 +101,7 @@ export function createCategoryService(
             id: string
         ): Promise<Category | null> {
             const category =
-                await repository.get(id);
+                await categoryRepository.get(id);
             
             if (!category) {
                 return null;
@@ -113,7 +113,7 @@ export function createCategoryService(
             slug: string
         ): Promise<Category | null> {
             const category =
-                await repository.getBySlug(slug);
+                await categoryRepository.getBySlug(slug);
             
             if (!category) {
                 return null;
@@ -130,20 +130,17 @@ export function createCategoryService(
                 return [];
             }
 
-            try {
-                const categories =
-                    await repository.getMany(ids);
+
+            const categories =
+                await categoryRepository.getMany(ids);
                
 
-                if (!categories) {
-                    return [];
-                }
-
-                return categories;
-            } catch (error) {
-                console.error("Error fetching categories by IDs:", error);
+            if (!categories) {
                 return [];
-            } 
+            }
+
+            return categories;
+
         },
         
         async findBySlugs(
@@ -154,7 +151,7 @@ export function createCategoryService(
             }
 
             const categories =
-                await repository.getBySlugs(slugs);
+                await categoryRepository.getBySlugs(slugs);
             
             if (!categories) {
                 return [];
@@ -166,7 +163,7 @@ export function createCategoryService(
         // Query
         async list(): Promise<readonly Category[]> {
             const categories =
-                await repository.list();
+                await categoryRepository.list();
             
             if (!categories) {
                 return [];
@@ -179,7 +176,7 @@ export function createCategoryService(
         async exists(
             id: string
         ): Promise<boolean> {
-            return await repository.exists(id);
+            return await categoryRepository.exists(id);
         },
 
         // Exists Batch
@@ -191,7 +188,7 @@ export function createCategoryService(
             }
 
             const existingIds =
-                await repository.listExisting(ids);
+                await categoryRepository.listExisting(ids);
             
             if (!existingIds) {
                 return [];
@@ -208,7 +205,7 @@ export function createCategoryService(
             }
 
             const existingSlugs =
-                await repository.listExistingSlugs(slugs);
+                await categoryRepository.listExistingSlugs(slugs);
 
             if (!existingSlugs) {
                 return [];
@@ -221,19 +218,19 @@ export function createCategoryService(
         async create(
             category: CreateCategory
         ): Promise<void> {
-            await repository.create(category);
+            await categoryRepository.create(category);
         },
 
         async update(
             category: UpdateCategory
         ): Promise<void> {
-            await repository.update(category);
+            await categoryRepository.update(category);
         },
 
         async delete(
             id: string
         ): Promise<void> {
-            await repository.delete(id);
+            await categoryRepository.delete(id);
         },
 
         // Write Batch
@@ -244,7 +241,7 @@ export function createCategoryService(
                 return;
             }
 
-            await repository.createMany(categories);
+            await categoryRepository.createMany(categories);
         },
 
         async updateMany(
@@ -254,7 +251,7 @@ export function createCategoryService(
                 return;
             }
 
-            await repository.updateMany(categories);
+            await categoryRepository.updateMany(categories);
         },
 
         async deleteMany(
@@ -264,7 +261,7 @@ export function createCategoryService(
                 return;
             }
 
-            await repository.deleteMany(ids);
+            await categoryRepository.deleteMany(ids);
         },
 
         // Other
@@ -276,7 +273,7 @@ export function createCategoryService(
             }
 
             const path =
-                await repository.findPathToRoot(categoryId);
+                await categoryRepository.findPathToRoot(categoryId);
             
             if (!path) {
                 return [];

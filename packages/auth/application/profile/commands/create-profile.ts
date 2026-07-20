@@ -18,6 +18,4 @@ export interface CreateProfile {
 
     manualOverride?: string | null;
 
-
-    status: ProfileStatus;
 }

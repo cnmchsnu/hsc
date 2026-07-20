@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ChevronRight } from 'lucide-react';
+import { Suspense } from "react";
 
 export function HeroSection() {
     
@@ -22,21 +24,23 @@ export function HeroSection() {
                 href="/products"
                 className="px-6 py-3 md:px-8 md:py-4 bg-on-primary text-primary font-bold rounded-xl hover:bg-surface-container-lowest hover:scale-105 transition-all shadow-lg flex items-center gap-2"
               >
-                立即選購 <span className="material-symbols-outlined">arrow_forward</span>
+                立即選購 <ChevronRight size={20} />
               </Link>
               <button className="px-6 py-3 md:px-8 md:py-4 border-2 border-on-primary text-on-primary font-bold rounded-xl hover:bg-white/10 transition-all">
                 品牌故事
               </button>
             </div>
           </div>
-          <div className="hidden lg:block h-[500px] relative rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
-            <img
-              className="w-full h-full object-cover"
-              alt="HSNU student association merchandise"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUWvtAQ8jwpDacLRDjKfXif3YgpNgHPdV81_XHLRmFFpiA87kSaV_KSRI-yd9gT4LLW8dnrMhjeXZ8UHFc-l9e74ARxAyWhMPlB5yNqCwzU2JPLs9Y41AqPedNIXUo-AF0qKRCasIvRyxwVWCF8aCj62lyxVLJU2rMTzdAYvCoU5gN9g_uGyjAPb2MXx-WhYuiPWAmxpHenVfxkRTM3_P1Oq12ahXVAJWkor__nJaqL4Q6ZjaWrvet9Wzc3nBXywFB0qiVaKiIg4"
-            />
-            <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl"></div>
-          </div>
+          <Suspense fallback={<span className="text-on-surface-variant text-center">Loading Hero Image...</span>}>
+            <div className="hidden lg:block h-[500px] relative rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+              <img
+                className="w-full h-full object-cover"
+                alt="HSNU student association merchandise"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUWvtAQ8jwpDacLRDjKfXif3YgpNgHPdV81_XHLRmFFpiA87kSaV_KSRI-yd9gT4LLW8dnrMhjeXZ8UHFc-l9e74ARxAyWhMPlB5yNqCwzU2JPLs9Y41AqPedNIXUo-AF0qKRCasIvRyxwVWCF8aCj62lyxVLJU2rMTzdAYvCoU5gN9g_uGyjAPb2MXx-WhYuiPWAmxpHenVfxkRTM3_P1Oq12ahXVAJWkor__nJaqL4Q6ZjaWrvet9Wzc3nBXywFB0qiVaKiIg4"
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl"></div>
+            </div>
+          </Suspense>
         </div>
       </section>
     );

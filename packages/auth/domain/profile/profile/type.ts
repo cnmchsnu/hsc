@@ -20,8 +20,6 @@ export interface Profile {
 
     sync_display_name: boolean;
 
-    status: ProfileStatus;
-
     version: number;
 
 }

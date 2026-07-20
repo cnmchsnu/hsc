@@ -1,12 +1,17 @@
 import { createCommerceContainer } from '../../container';
 import { ProductSummary } from '../../application/read/product';
+import { cache } from 'react';
 
-export async function getProductSummariesBySlugs(
+export const getProductSummariesBySlugs = cache(async (
     slugs: string[],
-): Promise<ProductSummary[]> {
+): Promise<ProductSummary[]> => {
+
     const {
         productContainer,
     } = await createCommerceContainer();
 
-    return productContainer.productReadService.getProductSummariesBySlugs(slugs);
-}
+    const result = await productContainer.productReadService.getProductSummariesBySlugs(slugs);
+
+
+    return result;
+});

@@ -76,7 +76,6 @@ export class SupabaseProductImageService
             .from("product_images")
             .select("*")
             .eq("product_id", productId)
-            .eq("type", "thumbnail")
             .single();
         
         if (error) {
@@ -97,7 +96,8 @@ export class SupabaseProductImageService
             .schema("commerce")
             .from("product_images")
             .select("*")
-            .eq("product_id", productId);
+            .eq("product_id", productId)
+            .order("display_order", { ascending: true });
 
         if (error) {
             throw new Error(`Error fetching all images for product ${productId}: ${error.message}`);
@@ -142,7 +142,7 @@ export class SupabaseProductImageService
             .from("product_images")
             .select("*")
             .in("product_id", productIds)
-            .eq("is_primary", false);
+            .eq("is_primary", true);
 
         if (error) {
             throw new Error(`Error fetching thumbnail images for products ${productIds.join(", ")}: ${error.message}`);

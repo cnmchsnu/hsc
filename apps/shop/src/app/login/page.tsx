@@ -1,18 +1,19 @@
 import { SignInWithGoogleButton } from "./components";
 
-import { getCurrentUser } from "@repo/auth/server";
+import { getCurrentUserProfile } from "@repo/auth/server";
 
 import { redirect } from "next/navigation";
 
 export const metadata = {
     title: "登入 - 學生會商城",
     description: "登入學生會商城以享受更多功能。",
+    
 };
 
 
 export default async function LoginPage() {
 
-    const user = await getCurrentUser();
+    const user = await getCurrentUserProfile("LoginPage");
 
     if (user) {
         redirect("/profile");

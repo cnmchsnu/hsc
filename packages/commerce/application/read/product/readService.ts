@@ -11,7 +11,7 @@ import { VariantOptionValueService } from '../../../domain/variant-option-value'
 
 import { InventoryItemService } from '../../../domain/inventory-item';
 
-import { PriceService } from '../../../domain/price';
+import { Price, PriceService } from '../../../domain/price';
 
 // repositories
 
@@ -102,7 +102,7 @@ class DefaultProductReadService
     async getProductDetail(
         slug: string,
     ): Promise<ProductDetail | null> {
-        
+
         const product = 
             await this.productService.findBySlug(slug);
         
@@ -110,69 +110,35 @@ class DefaultProductReadService
             return null;
         }
 
-        const primaryCategory =
-            await this.productCategoryService
-                .getPrimaryByProductId(
-                    product.id
-                );
-    
-        const breadcrumbs = 
-            await this.categoryService
-                .findPathToRoot(
-                    primaryCategory?.category_id || ''
-                );
-
-        const categoriesIds =
-            await this.productCategoryService
-                .getByProductId(
-                    product.id
-                );
-
-        const categories =
-            await this.categoryService
-                .findByIds(
-                    categoriesIds.map(
-                        (relation) => relation.category_id
-                    )
-                );
-
-        const images =
-            await this.productImageService
-                .getAllById(
-                    product.id
-                );
+        const [primaryCategory, productCategoryIds, images, sku, option] =
+            await Promise.all([
+            this.productCategoryService.getPrimaryByProductId(product.id),
+            this.productCategoryService.getByProductId(product.id),
+            this.productImageService.getAllById(product.id),
+            this.skuService.getByProduct(product.id),
+            this.variantOptionService.getByProduct(product.id),
+            ])
 
         if (!images) {
             return null;
         }
+        
+        const categoriesIds = productCategoryIds.map((relation) => relation.category_id);
+        const skuIds = sku.map(sku => sku.id);
+        const optionIds = option.map(option => option.id);
 
-        const sku = 
-            await this.skuService
-                .getByProduct(
-                    product.id
-                );
 
-        const price =
-            await this.priceService
-                .getManyBySKUIds(
-                    sku.map(
-                        (sku) => sku.id
-                    )
-                );
 
-        const inventoryItems =
-            await this.inventoryItemService
-                .getMany(
-                    sku.map(
-                        (sku) => sku.id
-                    )
-                );
+        const [breadcrumbs, categories, price, inventoryItems, skuVariantValues, optionValues] =
+            await Promise.all([
+                this.categoryService.findPathToRoot(primaryCategory?.category_id || ''),
+                this.categoryService.findByIds(categoriesIds),
+                this.priceService.getManyBySKUIds(skuIds),
+                this.inventoryItemService.getMany(skuIds),
+                this.skuVariantValueRepository.getBySKUs(skuIds),
+                this.variantOptionValueService.getByOptions(optionIds),
+            ]);
 
-        const displayPrice =
-            buildDisplayPrice(
-                sku,
-                price
-            );
 
         const inventorySummary =
             buildInventorySummary(
@@ -184,30 +150,13 @@ class DefaultProductReadService
                 inventoryItems
             );
 
+
         const currentPrice =
-            sku.map((sku) => buildCurrentPrice(sku, price));
+            skuIds.map((id) => buildCurrentPrice(id, price));
 
-        const option = 
-            await this.variantOptionService
-                .getByProduct(
-                    product.id
-                );
 
-        const optionValues =
-            await this.variantOptionValueService
-                .getByOptions(
-                    option.map(
-                        (option) => option.id
-                    )
-                );
-
-        const skuVariantValues =
-            await this.skuVariantValueRepository
-                .getBySKUs(
-                    sku.map(
-                        (sku) => sku.id
-                    )
-                );
+        const displayPrice =
+            buildDisplayPrice(currentPrice);
 
         const variants =
             buildProductVariant(
@@ -218,6 +167,7 @@ class DefaultProductReadService
                 inventoryItems,
                 currentPrice
             );
+
 
         return {
             
@@ -266,7 +216,6 @@ class DefaultProductReadService
     async getProductSummaries(
         products: readonly Product[],
     ): Promise<ProductSummary[]> {
-
         if (products.length === 0) {
             return [];
         }
@@ -276,87 +225,104 @@ class DefaultProductReadService
                 product => product.id,
             );
 
-        const primaryCategories =
-            await this.productCategoryService
-                .getPrimaryByProductIds(
-                    productIds,
-                );
+
+        const [primaryCategories, thumbnails, sku] =
+            await Promise.all([
+                this.productCategoryService.getPrimaryByProductIds(productIds,),
+                this.productImageService.getThumbnailByIds(productIds,),
+                this.skuService.getByProducts(productIds,),
+            ])
 
         if (!primaryCategories) {
             return [];
         }
-                
+
+
+        const thumbnailMap = new Map(
+            thumbnails.map(t => [t.productId, t]),
+        );
+
+        const primaryCategoryMap = new Map(
+            primaryCategories.map(r => [r.product_id, r.category_id]),
+        );
+
+
         const categoryIds =
             primaryCategories!
                 .map(
                     (relation: ProductCategory) => relation.category_id,
                 );
 
-        const categories =
-            await this.categoryService
-                .findByIds(
-                    categoryIds,
-                );
-        const thumbnails =
-            await this.productImageService
-                .getThumbnailByIds(
-                    productIds,
-                );
+
+        const [categories] =
+            await Promise.all([
+                this.categoryService.findByIds(categoryIds,),
+            ]);
+
 
         const categoryMap =
             new Map(
-                categories.map(
-                    category => [
-                        category.id,
-                        category,
-                    ],
-                ),
+                categories.map(category => [category.id,category]),
             );
 
-        const sku = 
-            await this.skuService
-                .getByProducts(
-                    productIds,
-                );
 
         const skuMap = new Map(
-            sku.map(
-                sku => [
-                    sku.productId,
-                    sku,
+            productIds.map(
+                id => [
+                    id,
+                    sku.filter(sku => sku.productId === id).map(sku => sku.id) || [],
                 ],
             ),
         );
 
-        const price =
-            await this.priceService
-                .getManyBySKUIds(
-                    sku.map(
-                        (sku) => sku.id
-                    )
-                );
+        const skuIds = sku.map(sku => sku.id);
 
-        const inventoryItems =
-            await this.inventoryItemService
-                .getMany(
-                    sku.map(
-                        (sku) => sku.id
-                    )
-                );
+
+        const [price, inventoryItems] =
+            await Promise.all([
+                this.priceService.getManyBySKUIds(skuIds),
+                this.inventoryItemService.getMany(skuIds),
+            ]);
 
         const inventoryItemsMap = new Map(
             inventoryItems.map(item => [item.skuid, item])
         );
 
+        const productInventoryItemMap = new Map<string, any[]>();
+
+        skuMap.forEach((skuIds, productId) => {
+            const items = skuIds.map(id => inventoryItemsMap.get(id) || null).filter(item => item !== null);
+            productInventoryItemMap.set(productId, items);
+        });
+
+
+        const currentPrices =
+            skuIds.map((id) => buildCurrentPrice(id, price));
+
+        const currentPricesMap = new Map(
+            currentPrices
+                .filter((p): p is Price => p !== null)
+                .map(price => [price.skuId, price])
+        );
+
+        const productPriceMap = new Map<string, Price[]>();
+
+        skuMap.forEach((skuIds, productId) => {
+            const prices = skuIds
+                .map(id => currentPricesMap.get(id))
+                .filter((p): p is Price => p !== undefined);
+
+            productPriceMap.set(productId, prices);
+        });
+
+
         const displayPriceMap =
             new Map(
-                products.map(
-                    product => [
-                        product.id,
+                productIds.map(
+                    id => [
+                        id,
                         buildDisplayPrice(
-                            skuMap.get(product.id) ? [skuMap.get(product.id)!] : [],
-
-                            price,
+                            productPriceMap.get(id) || [],
                         ),
                     ],
                 ),
@@ -364,33 +330,27 @@ class DefaultProductReadService
 
         const availabilityMap =
             new Map(
-                sku.map(
-                    sku => [
-                        sku.id,
+                productIds.map(
+                    id => [
+                        id,
                         buildProductAvailability(
-                            inventoryItemsMap.get(sku.id) ? [inventoryItemsMap.get(sku.id)!] : []
+                            productInventoryItemMap.get(id) || []
                         ),
                     ],
                 ),
             );
-                
 
         return products.map(
             product => {
                 const categoryId =
-                    primaryCategories
-                        .find(
-                            (relation: ProductCategory) => relation.product_id === product.id
-                        )?.category_id;
+                    primaryCategoryMap.get(product.id);
 
                 return {
 
                     product,
 
                     thumbnail:
-                        thumbnails.find(
-                            image => image.productId === product.id
-                        ) ?? null,
+                        thumbnailMap.get(product.id) ?? null,
 
                     primaryCategory:
                         categoryId
@@ -400,14 +360,10 @@ class DefaultProductReadService
                             : null,
 
                     displayPrice:
-                        displayPriceMap.get(
-                            product.id,
-                        ) ?? null,
+                        displayPriceMap.get(product.id) ?? null,
 
                     availability:
-                        availabilityMap.get(
-                            skuMap.get(product.id)?.id || ''
-                        ) ?? null,
+                        availabilityMap.get(product.id) ?? null,
 
                 };
 

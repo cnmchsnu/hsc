@@ -3,7 +3,7 @@ import type { UpdateProductImage } from "../../../domain/product-image";
 import type { ProductCategory as UpdateProductCategory } from "../../../domain/product-category";
 import type { UpdateVariantOptionValue } from "../../../domain/variant-option-value";
 import type { UpdateSKU } from "../../../domain/sku";
-import type { UpdateInventoryItem } from "../../../domain/inventoryItem";
+import type { UpdateInventoryItem } from "../../../domain/inventory-item";
 import type { UpdatePrice } from "../../../domain/price";
 
 
@@ -18,7 +18,7 @@ interface UpdateSKUAggregate {
 }
 
 
-interface UpdateProductCommand {
+export interface UpdateProductCommand {
 
     product: UpdateProduct;
 

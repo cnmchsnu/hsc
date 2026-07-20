@@ -1,6 +1,6 @@
 import type { Permission } from "../../../../../auth/domain/authorization";
 import type { CreatePermission, UpdatePermission } from "../../../../../auth/application/authorization/permissions";
-import type { PermissionRow } from "../../../../entities";
+import type { PermissionRow } from "../../../entities";
 
 import { RepositoryMapper } from "@repo/shared";
 
@@ -48,9 +48,9 @@ export const PermissionRepositoryMapper: RepositoryMapper<
         dto: UpdatePermission,
     ): Partial<PermissionRow> {
         return {
-            key: dto.key,
-            scope: dto.scope,
-            description: dto.description,
+            ...(dto.key !== undefined && { key: dto.key }),
+            ...(dto.scope !== undefined && { scope: dto.scope }),
+            ...(dto.description !== undefined && { description: dto.description }),
         };
     },
 

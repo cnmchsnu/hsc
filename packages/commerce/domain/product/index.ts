@@ -1,6 +1,6 @@
 export type { Product, ProductSort, ProductList, ProductListOptions, ProductStatus } from './type';
 export { createProductService, type ProductService } from './service';
-export { CreateProduct } from "./create";
-export { UpdateProduct } from "./update";
+export type { CreateProduct } from "./create";
+export type { UpdateProduct } from "./update";
 
-export { ProductRepository } from "./repository";
+export type { ProductRepository } from "./repository";

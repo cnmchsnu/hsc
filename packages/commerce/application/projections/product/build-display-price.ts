@@ -1,7 +1,5 @@
 import { Price } from '../../../domain/price';
-import { SKU } from '../../../domain/sku';
-import { buildCurrentPrice } from './build-current-price';
-import { toSKUPrice } from './mappers';
+import { CurrentPrice } from './build-current-price';
 
 
 export interface DisplayPrice {
@@ -17,33 +15,28 @@ export interface DisplayPrice {
 }
 
 export function buildDisplayPrice(
-    skus: readonly SKU[],
-    prices: readonly Price[]
+    currentPrices: CurrentPrice[]
 ): DisplayPrice {
 
-    if (prices.length === 0) {
+
+    if (currentPrices.length === 0) {
         return {
             min: null,
             max: null,
             current: null,
             hasRange: false
         };
-    }
-
-    const skuPrices = skus.map(sku => toSKUPrice(sku, prices)).filter(skuPrice => skuPrice.Prices.length !== 0);
-
-    const currentPrices = skuPrices.map(skuPrice => buildCurrentPrice(skuPrice.Prices)).filter(price => price !== null);
+    };
 
     
-    const sortedPrices = currentPrices.sort((a, b) => a.amount - b.amount);
-
-    const minPrice = sortedPrices[0];
-    const maxPrice = sortedPrices[sortedPrices.length - 1];
+    const sortedPrices = [...currentPrices].sort(
+            (a, b) => a!.amount - b!.amount,
+        );
 
     return {
-        min: minPrice,
-        max: maxPrice,
-        current: null,
-        hasRange: minPrice.amount !== maxPrice.amount
+        min: sortedPrices[0] || null,
+        max: sortedPrices.at(-1) || null,
+        current: sortedPrices[0] || null,
+        hasRange: sortedPrices[0]?.amount !== sortedPrices.at(-1)!.amount
     };
 }

@@ -7,7 +7,7 @@ import * as Slider from '@radix-ui/react-slider';
 
 import type { CategoryTreeNode } from "@repo/commerce/application";
 
-import { ChevronRight, ChevronDown, Check} from 'lucide-react';
+import { ChevronRight, ChevronDown, Check } from 'lucide-react';
 
 
 
@@ -109,8 +109,9 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(["Stationery"]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState([0, 2000]);
+    const [keyword, setKeyword] = useState('');
 
     useEffect(() => {
         const categoryParam = searchParams.get('categoryIds');
@@ -146,8 +147,18 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
 
         const currentParams = new URLSearchParams(searchParams.toString());
 
-        currentParams.set('minPrice', priceRange[0].toString());
-        currentParams.set('maxPrice', priceRange[1].toString());
+        currentParams.set('minPrice', priceRange[0]?.toString() ?? '0');
+        currentParams.set('maxPrice', priceRange[1]?.toString() ?? '2000');
+
+        router.push(`${pathname}?${currentParams.toString()}`);
+
+    };
+
+    const handleKeywordKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== 'Enter') return;
+        const currentParams = new URLSearchParams(searchParams.toString());
+
+        currentParams.set('keyword', keyword);
 
         router.push(`${pathname}?${currentParams.toString()}`);
 
@@ -156,6 +167,22 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
     return (
         <aside className="w-full md:w-64 flex-shrink-0">
             <div className="sticky top-24 space-y-stack-lg bg-surface p-stack-lg rounded-xl border border-surface-variant shadow-sm">
+
+                {/* Search Box */}
+                <div className="relative hidden sm:block">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">
+                    search
+                    </span>
+                    <input
+                        className="pl-10 py-2 bg-surface rounded-full border-none focus:ring-2 focus:ring-primary-container transition-all text-sm outline-none"
+                        placeholder="搜尋商品..."
+                        type="text"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                        onKeyDown={handleKeywordKeyDown}
+                    />
+                </div>    
+
                 {/* Category Section */}
                 <div className="justify-between items-center">
                     <h3 className="font-headline-md text-[18px] text-on-surface font-bold mb-4">商品分類</h3>
@@ -172,7 +199,7 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
                 </div>
 
                 {/* Price Filter */}
-                <div className="pt-stack-md border-t border-surface-variant">
+                {/* <div className="pt-stack-md border-t border-surface-variant">
                     <h3 className="font-headline-md text-[18px] text-on-surface font-bold mb-4">價格範圍</h3>
                     <div className="space-y-4">
                         <Slider.Root
@@ -187,12 +214,12 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
                             <Slider.Track className="bg-white relative flex-grow h-1 rounded-full">
                             <Slider.Range className="absolute bg-on-primary-fixed-variant h-full rounded-full" />
                             </Slider.Track>
-                            {/* 放兩個 Thumb，就會有兩個球！ */}
+
                             <Slider.Thumb 
                             className="block w-5 h-5 bg-white border-2 border-on-primary-fixed-variant rounded-full shadow-md hover:bg-blue-50 focus:outline-none cursor-pointer" 
                             aria-label="Minimum Price"
                             />
-                            {/* 右邊控制最大值的球 */}
+                            
                             <Slider.Thumb 
                             className="block w-5 h-5 bg-white border-2 border-on-primary-fixed-variant rounded-full shadow-md hover:bg-blue-50 focus:outline-none cursor-pointer" 
                             aria-label="Maximum Price"
@@ -203,7 +230,7 @@ export function FilterPanel({categoriesTreeNode}: {categoriesTreeNode: readonly 
                             <span className="font-bold text-on-primary-fixed-variant">NT$ {priceRange[1]}</span>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Promo Banner in Sidebar */}
                 {/* <div className="rounded-lg bg-on-primary-fixed-variant p-4 text-on-primary relative overflow-hidden group">

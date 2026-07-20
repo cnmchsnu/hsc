@@ -19,8 +19,7 @@ interface CreateSKUAggregate {
 
 }
 
-
-interface CreateProductCommand {
+export interface CreateProductCommand {
 
     product: CreateProduct;
 

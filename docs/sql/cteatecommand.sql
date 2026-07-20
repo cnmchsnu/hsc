@@ -149,6 +149,12 @@ CREATE TABLE commerce.product_images (
     version BIGINT NOT NULL DEFAULT 1
 );
 
+create index idx_product_images_product_id
+on commerce.product_images(product_id);
+
+create index idx_product_images_is_primary
+on commerce.product_images(product_id, is_PRIMARY);
+
 CREATE TABLE commerce.product_snapshots (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -195,6 +201,9 @@ create table commerce.categories (
 
 create index idx_categories_parent_id
 on commerce.categories(parent_id);
+
+create index idx_categories_slug
+on commerce.categories(slug);
 
 create index idx_categories_status
 on commerce.categories(status);
@@ -465,6 +474,9 @@ CREATE TABLE inventory.inventory_items (
         ON DELETE CASCADE
 
 );
+
+create index idx_inventory_items_sku_id
+on inventory.inventory_items(sku_id);
 
 CREATE SCHEMA IF NOT EXISTS pricing;
 

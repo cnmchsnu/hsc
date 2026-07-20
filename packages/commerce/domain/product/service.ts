@@ -1,6 +1,5 @@
 import type { Product, ProductList, ProductListOptions } from './type';
 import { ProductRepository } from "./repository";
-import { ProductNotFoundError } from './error';
 
     
 export interface ProductService {
@@ -102,12 +101,8 @@ export function createProductService(
             const product = 
                 await repository.get(id);
 
-            if (!product) {
-                throw new ProductNotFoundError(
-                    `Product with id ${id} not found`,
-                );
-            }
-
+            if (!product) return null;
+            
             return product;
         },
 
@@ -121,11 +116,7 @@ export function createProductService(
             const product = 
                 await repository.findBySlug(slug);
 
-            if (!product) {
-                throw new ProductNotFoundError(
-                    `Product with slug ${slug} not found`,
-                );
-            }
+            if (!product) return null;
 
             return product;
         },
@@ -142,11 +133,7 @@ export function createProductService(
             const products = 
                 await repository.getMany(ids);
             
-            if (!products || products.length === 0) {
-                throw new ProductNotFoundError(
-                    `Products with ids ${ids.join(', ')} not found`,
-                );
-            }
+            if (!products || products.length === 0) return [];
 
             return products;
         },
@@ -161,11 +148,7 @@ export function createProductService(
             const products = 
                 await repository.findBySlugs(slugs);
 
-            if (!products || products.length === 0) {
-                throw new ProductNotFoundError(
-                    `Products with slugs ${slugs.join(', ')} not found`,
-                );
-            }
+            if (!products || products.length === 0) return [];
 
             return products;
         },

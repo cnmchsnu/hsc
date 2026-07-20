@@ -4,7 +4,7 @@ import { UserProvider } from "@repo/infra/supabase/auth";
 
 export interface UserService {
 
-    getUserById(id: string,): Promise<User | null>;
+    get(): Promise<User | null>;
 
 }
 
@@ -20,10 +20,8 @@ class DefaultUserService
         private readonly userProvider: UserProvider,
     ) {}
 
-    async getUserById(
-        id: string,
-    ): Promise<User | null> {
-        return await this.userProvider.getById(id);
+    async get(): Promise<User | null> {
+        return await this.userProvider.get();
     }
 
 }

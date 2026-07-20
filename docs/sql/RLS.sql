@@ -1,5 +1,32 @@
 ALTER TABLE identity.user_profiles ENABLE ROW LEVEL SECURITY;
 
+alter table commerce.products
+enable row level security;
+
+alter table commerce.product_images
+enable row level security;
+
+alter table commerce.categories
+enable row level security;
+
+alter table commerce.product_categories
+enable row level security;
+
+alter table commerce.product_categories
+enable row level security;
+
+alter table commerce.product_categories
+force row level security;
+
+ALTER TABLE commerce.variant_options
+ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE commerce.variant_option_values
+ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE commerce.sku_variant_values
+ENABLE ROW LEVEL SECURITY;
+
 CREATE POLICY "Users can read own profile"
 ON identity.user_profiles
 FOR SELECT
@@ -21,17 +48,7 @@ USING (
     auth.uid() = user_id
 );
 
-alter table commerce.products
-enable row level security;
 
-alter table commerce.product_images
-enable row level security;
-
-alter table commerce.categories
-enable row level security;
-
-alter table commerce.product_categories
-enable row level security;
 
 
 create policy "Public can read active products"
@@ -120,11 +137,6 @@ USING (
     auth.uid() = user_id
 );
 
-alter table commerce.product_categories
-enable row level security;
-
-alter table commerce.product_categories
-force row level security;
 
 create policy "Public can read product categories"
 on commerce.product_categories
@@ -139,58 +151,51 @@ using (
 );
 
 CREATE POLICY SKU_READ
-
 ON commerce.skus
-
 FOR SELECT
-
-TO AUTHENTICATED
-
+TO public
 USING (TRUE);
 
 CREATE POLICY INVENTORY_READ
-
 ON inventory.inventory_items
-
 FOR SELECT
-
-TO AUTHENTICATED
-
+TO public
 USING (TRUE);
 
 CREATE POLICY PRICE_READ
-
 ON pricing.prices
-
 FOR SELECT
-
-TO AUTHENTICATED
-
+TO public
 USING (TRUE);
 
-ALTER TABLE commerce.variant_options
-ENABLE ROW LEVEL SECURITY;
+
 
 CREATE POLICY variant_options_select
 ON commerce.variant_options
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
 
-ALTER TABLE commerce.variant_option_values
-ENABLE ROW LEVEL SECURITY;
+
 
 CREATE POLICY variant_option_values_select
 ON commerce.variant_option_values
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
 
-ALTER TABLE commerce.sku_variant_values
-ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY sku_variant_values_select
 ON commerce.sku_variant_values
 FOR SELECT
-TO authenticated
+TO public
 USING (TRUE);
+
+
+create policy "Public can read active pricings"
+on pricing.prices
+for select
+to public
+using (
+    true
+);

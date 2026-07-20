@@ -1,23 +1,29 @@
 import { Price } from '../../../domain/price';
-import { SKU } from '../../../domain/sku';
 
 export type CurrentPrice = Price | null;
 
 export function buildCurrentPrice(
-    skus:  SKU,
+    skusId: string,
     prices: readonly Price[]
 ): CurrentPrice {
 
-    const skuPrices = prices.filter(price => price.skuId === skus.id);
 
-    const activePrices = skuPrices.filter(price => {
-        price.effectiveFrom <= new Date() && (!price.effectiveTo || price.effectiveTo >= new Date());
-    });
+    const skuPrices = prices.filter(price => price.skuId === skusId);
 
-    activePrices.sort((a, b) => a.effectiveFrom.getTime() - b.effectiveFrom.getTime());
+    const now = new Date();
 
-    const currentPrice = activePrices[activePrices.length - 1] || null;
+    const activePrices = skuPrices.filter(price =>
+        price.effectiveFrom <= now &&
+        (!price.effectiveTo || price.effectiveTo >= now)
+    );
 
-    return currentPrice;
+
+    activePrices.sort(
+        (a, b) =>
+            b.effectiveFrom.getTime() -
+            a.effectiveFrom.getTime()
+    );
+
+    return activePrices[0] ?? null;
 }
 

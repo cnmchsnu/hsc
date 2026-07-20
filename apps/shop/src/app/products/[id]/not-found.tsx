@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default function ProductNotFound() {
   return (
@@ -36,38 +37,25 @@ export default function ProductNotFound() {
           </p>
 
           {/* Action Section */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link 
-              className="group relative px-10 py-4 bg-primary-container text-on-primary rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 overflow-hidden" 
-              href="/"
-            >
-              <span className="material-symbols-outlined">home</span>
-              <span>返回首頁</span>
-            </Link>
-            <Link 
-              className="px-10 py-4 text-primary font-bold border border-primary/20 rounded-xl hover:bg-primary/5 transition-all active:scale-95 flex items-center gap-2"
-              href="/products"
-            >
-              <span className="material-symbols-outlined">search</span>
-              <span>搜尋其他商品</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Recommended Tags */}
-        <div className="mt-16 w-full max-w-2xl">
-          <p className="text-sm font-semibold text-on-surface-variant mb-4">或許您感興趣：</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {["學生制服", "系領帶", "校慶紀念品", "運動服裝"].map((tag) => (
-              <Link
-                key={tag}
-                href={`/products?q=${encodeURIComponent(tag)}`}
-                className="px-4 py-2 bg-surface-container-low rounded-full border border-outline-variant text-on-surface-variant hover:bg-primary-container hover:text-on-primary transition-colors cursor-pointer text-xs font-semibold"
+          <Suspense fallback={<div className="text-on-surface-variant">Loading...</div>}>
+            <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link 
+                className="group relative px-10 py-4 bg-primary-container text-on-primary rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 overflow-hidden" 
+                href="/"
               >
-                {tag}
+                <span className="material-symbols-outlined">home</span>
+                <span>返回首頁</span>
               </Link>
-            ))}
-          </div>
+              <Link 
+                className="px-10 py-4 text-primary font-bold border border-primary/20 rounded-xl hover:bg-primary/5 transition-all active:scale-95 flex items-center gap-2"
+                href="/products"
+              >
+                <span className="material-symbols-outlined">search</span>
+                <span>搜尋其他商品</span>
+              </Link>
+            </div>
+          </Suspense>
+
         </div>
       </div>
     </main>

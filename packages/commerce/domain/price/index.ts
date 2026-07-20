@@ -1,5 +1,5 @@
-export { PriceRepository } from './repository';
-export { Price } from './type';
+export type { PriceRepository } from './repository';
+export type { Price } from './type';
 export type { PriceList } from './list';
 export type { PriceQuery, PriceSort } from './query';
 

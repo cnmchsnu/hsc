@@ -23,8 +23,6 @@ export interface UserProfileRow {
 
     sync_avatar: boolean;
 
-    status: ProfileStatus;
-
     version: number;
 
     created_at: string;

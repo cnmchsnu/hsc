@@ -30,14 +30,6 @@ export class SupabaseProfileRepository
             .from("user_profiles")
             .select("*");
 
-        if (options.status) {
-            query = 
-                query.in(
-                    "status",
-                    options.status
-                );
-        }
-
         if (options.profileIds) {
             query = 
                 query.in(
@@ -218,7 +210,7 @@ export class SupabaseProfileRepository
             .from("user_profiles")
             .select("*")
             .eq("user_id", userId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw error;
@@ -308,7 +300,7 @@ export class SupabaseProfileRepository
             .from("user_profiles")
             .select("user_id", { count: "exact" })
             .eq("user_id", userId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw error;
