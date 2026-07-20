@@ -7,8 +7,6 @@ export function buildCurrentPrice(
     prices: readonly Price[]
 ): CurrentPrice {
 
-    console.log("buildCurrentPrice called with skusId:", skusId, "and prices:", prices);
-
 
     const skuPrices = prices.filter(price => price.skuId === skusId);
 

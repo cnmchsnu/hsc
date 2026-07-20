@@ -2,9 +2,10 @@ import Link from "next/link";
 
 
 import { SortSelect } from "./sort-select";
+import { ProductSearchResult } from "@repo/commerce/application";
 
 
-export function ProductGrid({ products }: { products: any }) {
+export function ProductGrid({ products }: { products: ProductSearchResult }) {
     
 
     return (

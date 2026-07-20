@@ -30,8 +30,8 @@ export function SortSelect({sortcount}: {sortcount: ProductSearchResult["total"]
     const sortOptions = [
         { value: 'newest', label: '時間：最新上架' },
         { value: 'oldest', label: '時間：最早上架' },
-        { value: 'price-asc', label: '價格：由低到高' },
-        { value: 'price-desc', label: '價格：由高到低' },
+        // { value: 'price-asc', label: '價格：由低到高' },
+        // { value: 'price-desc', label: '價格：由高到低' },
         { value: 'name-asc', label: '名稱：A-Z' },
         { value: 'name-desc', label: '名稱：Z-A' },
     ];

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRight } from 'lucide-react';
+import { Suspense } from "react";
 
 export function HeroSection() {
     
@@ -30,14 +31,16 @@ export function HeroSection() {
               </button>
             </div>
           </div>
-          <div className="hidden lg:block h-[500px] relative rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
-            <img
-              className="w-full h-full object-cover"
-              alt="HSNU student association merchandise"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUWvtAQ8jwpDacLRDjKfXif3YgpNgHPdV81_XHLRmFFpiA87kSaV_KSRI-yd9gT4LLW8dnrMhjeXZ8UHFc-l9e74ARxAyWhMPlB5yNqCwzU2JPLs9Y41AqPedNIXUo-AF0qKRCasIvRyxwVWCF8aCj62lyxVLJU2rMTzdAYvCoU5gN9g_uGyjAPb2MXx-WhYuiPWAmxpHenVfxkRTM3_P1Oq12ahXVAJWkor__nJaqL4Q6ZjaWrvet9Wzc3nBXywFB0qiVaKiIg4"
-            />
-            <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl"></div>
-          </div>
+          <Suspense fallback={<span className="text-on-surface-variant text-center">Loading Hero Image...</span>}>
+            <div className="hidden lg:block h-[500px] relative rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+              <img
+                className="w-full h-full object-cover"
+                alt="HSNU student association merchandise"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUWvtAQ8jwpDacLRDjKfXif3YgpNgHPdV81_XHLRmFFpiA87kSaV_KSRI-yd9gT4LLW8dnrMhjeXZ8UHFc-l9e74ARxAyWhMPlB5yNqCwzU2JPLs9Y41AqPedNIXUo-AF0qKRCasIvRyxwVWCF8aCj62lyxVLJU2rMTzdAYvCoU5gN9g_uGyjAPb2MXx-WhYuiPWAmxpHenVfxkRTM3_P1Oq12ahXVAJWkor__nJaqL4Q6ZjaWrvet9Wzc3nBXywFB0qiVaKiIg4"
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl"></div>
+            </div>
+          </Suspense>
         </div>
       </section>
     );

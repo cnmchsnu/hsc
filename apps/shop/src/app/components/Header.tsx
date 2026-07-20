@@ -40,17 +40,6 @@ export async function Header() {
         </div>
 
         <div className="flex items-center gap-gutter">
-          {/* Search Box */}
-          {/* <div className="relative hidden sm:block">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">
-              search
-            </span>
-            <input
-              className="pl-10 pr-4 py-2 bg-surface rounded-full border-none focus:ring-2 focus:ring-primary-container w-44 lg:w-64 transition-all text-sm outline-none"
-              placeholder="搜尋商品..."
-              type="text"
-            />
-          </div> */}
 
           <div className="flex items-center gap-stack-md">
             {/* Cart Icon */}
@@ -75,7 +64,9 @@ export async function Header() {
             {/* Profile Avatar */}
             <Suspense fallback={
               <div className="h-10 w-10 md:h-10 md:w-10 rounded-full overflow-hidden cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center justify-center" >
-                <CircleUserRound className="text-primary text-[24px]" />
+                 <span className="material-symbols-outlined text-primary text-[30px]">
+                account_circle
+                </span>
               </div>
               }>
               <UserAvatar currentUserProfile={currentUserProfile} />

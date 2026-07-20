@@ -1,4 +1,4 @@
-export type { VariantOption, VariantOptionName } from "./type";
+export { type VariantOption, VariantOptionName } from "./type";
 export type { CreateVariantOption } from "./create";
 export type { UpdateVariantOption } from "./update";
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound, redirect} from "next/navigation";
+import { notFound } from "next/navigation";
+
 
 import {
   Recommendations,
@@ -10,6 +11,7 @@ import {
 import { getProductDetail } from "@repo/commerce/server";
 
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -21,6 +23,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // 從你的 API 或資料庫取得商品資料
   const product = await getProductDetail(id);
+
+  const headerList = await headers();
+  const host = headerList.get('host');
+
+  const ogImageUrl = `${host}/api/og?title=${encodeURIComponent(product?.product.name || '')}&description=${encodeURIComponent(product?.product.description || '')}&image=${encodeURIComponent(product?.images.find(img => img.isPrimary === true)?.url || '')}`;
 
   if (!product) {
     return {
@@ -35,14 +42,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: product.product.name,
       description: product.product.description  ?? "",
-      // ⭕ 在這裡動態帶入資料庫撈出來的圖片網址
       images: [
-        {
-          url: product.images.find(img => img.isPrimary === true)?.url || "/default-image.jpg", 
-          width: 500,
-          height: 500,
-          alt: product.product.name,
-        },
+        { url: ogImageUrl },
       ],
     },
   };
@@ -64,8 +65,7 @@ export default async function ProductDetail({ params, }: PageProps) {
   const breadcrumb = productData?.breadcrumb || [];
 
   if (!productData) notFound();
-
-  // const [activeThumb, setActiveThumb] = useState(0);
+;
   // const [countdown, setCountdown] = useState<Countdown>({
   //   hours: "04",
   //   minutes: "22",
@@ -127,7 +127,7 @@ export default async function ProductDetail({ params, }: PageProps) {
       <Detail />
 
       {/* Recommendations */}
-      <Recommendations />
+      <Recommendations categorySlug={productData.categories.find((c) => c.displayOrder === 0)?.slug || ""} currentProductId={productData.product.id} />
     </div>
   );
 }

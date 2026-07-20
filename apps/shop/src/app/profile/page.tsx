@@ -1,6 +1,9 @@
 
 import { getCurrentUserProfile } from "@repo/auth/server";
 import { redirect } from 'next/navigation';
+import { CircleUserRound } from 'lucide-react';
+
+import { Suspense } from "react";
 
 import { PersonnalData, Actions } from "./components/";
 
@@ -43,7 +46,12 @@ export default async function UserProfile() {
           <section className="bento-card bg-surface rounded-xl p-stack-lg flex flex-col items-center text-center border border-outline-variant shadow-sm hover:scale-[1.01] transition-transform duration-200">
             <div className="relative w-32 h-32 mb-stack-md">
               <div className="w-full h-full rounded-full border-4 border-white shadow-md overflow-hidden bg-surface-container">
-                { currentUserProfile?.avatarUrl ? ( <img src={currentUserProfile.avatarUrl!} width="128" height="128" />) : <span></span> }
+                { currentUserProfile?.avatarUrl 
+                  ? <Suspense fallback={<span className="text-primary text-[24px]">Loading...</span>}>
+                      <img src={currentUserProfile.avatarUrl!} width="128" height="128" />
+                    </Suspense>
+                  : <CircleUserRound className="text-primary text-[24px]" />
+                  }
               </div>
               {/* <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-container transition-colors flex items-center justify-center">
                 <span className="material-symbols-outlined text-sm font-bold">edit</span>

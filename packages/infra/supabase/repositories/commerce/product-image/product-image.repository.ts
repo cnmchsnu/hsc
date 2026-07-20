@@ -96,7 +96,8 @@ export class SupabaseProductImageService
             .schema("commerce")
             .from("product_images")
             .select("*")
-            .eq("product_id", productId);
+            .eq("product_id", productId)
+            .order("display_order", { ascending: true });
 
         if (error) {
             throw new Error(`Error fetching all images for product ${productId}: ${error.message}`);
