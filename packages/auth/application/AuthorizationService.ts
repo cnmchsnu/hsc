@@ -1,5 +1,4 @@
 import { CurrentUserService } from "./CurrentUserService";
-import type { UserContext } from "./UserContextService"; 
 
 export interface AuthorizationService {
 
@@ -46,8 +45,8 @@ implements AuthorizationService {
     async can(
         permission: string,
     ): Promise<boolean> {
-        const currentUser = await this.currentUserService.get();
-        return currentUser?.userContext.permissions.some(p => p.key === permission) ?? false;
+        const currentUser = await this.currentUserService.getCurrentUserAuthorizationContext();
+        return currentUser?.permissions.some(p => p.key === permission) ?? false;
     }
 
     require(

@@ -1,12 +1,17 @@
 import { createCommerceContainer } from '../../container';
 import { BreadcrumbItem } from '../../application/projections';
+import { cache } from 'react';
 
-export async function getBreadcrumb(
+export const getBreadcrumb = cache(async (
     slug: string
-): Promise<readonly BreadcrumbItem[] | null> {
+): Promise<readonly BreadcrumbItem[] | null> => {
+
     const {
         categoryContainer,
     } = await createCommerceContainer();
 
-    return categoryContainer.categoryReadService.getBreadcrumb(slug);
-}
+    const result = await categoryContainer.categoryReadService.getBreadcrumb(slug);
+
+    return result;
+    
+});

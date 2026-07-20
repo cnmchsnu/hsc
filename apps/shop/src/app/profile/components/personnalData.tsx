@@ -1,25 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { updateCurrentProfile } from "./action";
+import { CurrentUserProfile } from "../../../../../../packages/auth/application";
 
 
 
-export function PersonnalData(userData: any) {
-    const [name, setName] = useState(userData.profile?.displayName);
+export function PersonnalData(userData: CurrentUserProfile) {
+    const [name, setName] = useState(userData?.displayName);
     const [phone, setPhone] = useState("0912-345-678");
-    const [classNum, setClassNum] = useState(userData.profile?.class)
-    const [number, setnumber] = useState(userData.profile?.number)
+    const [classNum, setClassNum] = useState(userData?.class? userData.class : "");
+    const [number, setnumber] = useState(userData?.number? userData.number : "");
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-        setTimeout(() => {
-        setSaving(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-        }, 1000);
+        updateCurrentProfile({
+            id: userData?.id!,
+            displayName: name,
+            class: classNum,
+            number
+        }).then(() => {
+            setSaving(false);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        });
     };
 
     return (
@@ -41,7 +48,7 @@ export function PersonnalData(userData: any) {
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
-                        {userData.profile?.finalClassification === "student" && (
+                        {userData?.finalClassification === "student" && (
                             <div className="space-y-2">
                                 <label className="font-label-md text-label-md text-on-surface-variant block">班級</label>
                                 <input
@@ -53,7 +60,7 @@ export function PersonnalData(userData: any) {
                                 />
                             </div>
                         )}
-                        {userData.profile?.finalClassification === "student" && (
+                        {userData?.finalClassification === "student" && (
                             <div className="space-y-2">
                                 <label className="font-label-md text-label-md text-on-surface-variant block">座號</label>
                                 <input
@@ -80,7 +87,7 @@ export function PersonnalData(userData: any) {
                             <input
                                 className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all cursor-not-allowed"
                                 type="text"
-                                value={userData.profile?.studentId ?? "-"}
+                                value={userData?.studentId ?? "-"}
                                 required
                                 disabled={true}
                             />
@@ -100,7 +107,7 @@ export function PersonnalData(userData: any) {
                             <input
                                 className="w-full bg-surface border border-outline-variant/60 focus:border-primary rounded-lg p-3 font-body-md text-on-surface outline-none transition-all cursor-not-allowed"
                                 type="text"
-                                value={userData.user?.email ?? ""}
+                                value={userData?.email ?? ""}
                                 required
                                 disabled={true}
                             />

@@ -1,0 +1,1 @@
+export { SupabasePriceRepository } from './SupabasePriceRepository';

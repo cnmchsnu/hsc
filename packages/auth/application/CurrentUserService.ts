@@ -1,21 +1,25 @@
-import { UserContext, UserContextService } from './UserContextService';
-import { Session, SessionService } from "../domain/identity";
+import { UserAuthorizationContext, UserAuthorizationContextService } from './UserAuthorizationContextService';
+import { UserService } from "../domain/identity";
+import { Profile } from '../domain/profile';
+import { ProfileRepository } from '../../database/repositories/identity';
 
 
 
-export interface CurrentUser {
 
-    session: Session;
-    
-    userContext: UserContext;
-
+export interface CurrentUserProfile extends Profile {
+    email: string;
 }
+
+export type CurrentUserAuthorizationContext = UserAuthorizationContext;
+
 
 
 
 export interface CurrentUserService {
 
-    get(): Promise<CurrentUser | null>;
+    getCurrentUserProfile(): Promise<CurrentUserProfile | null>;
+
+    getCurrentUserAuthorizationContext(): Promise<CurrentUserAuthorizationContext | null>;
 
     require(): Promise<void>;
 
@@ -26,9 +30,11 @@ export interface CurrentUserService {
 
 interface CurrentUserServiceDependencies {
 
-    sessionService: SessionService;
+    userService: UserService;
 
-    userContextService: UserContextService;
+    profileRepository: ProfileRepository;
+
+    userAuthorizationContextService: UserAuthorizationContextService;
 
 
 }
@@ -37,36 +43,51 @@ class DefaultCurrentUserService
     implements CurrentUserService {
 
         constructor(
-            private readonly sessionService: SessionService,
-            private readonly userContextService: UserContextService,
+            private readonly userService: UserService,
+            private readonly profileRepository: ProfileRepository,
+            private readonly userAuthorizationContextService: UserAuthorizationContextService,
         ) {}
 
-        async get(): Promise<CurrentUser | null> {
-            const session =
-                await this.sessionService
-                .getSession();
+        async getCurrentUserProfile(): Promise<CurrentUserProfile | null> {
+            const user = await this.userService.get();
 
-            if (!session) {
+            if (!user) {
+                return null;
+            }
+
+            const profile = await this.profileRepository.findById(user.id);
+
+            if (!profile) {
+                return null;
+            }
+
+            return {
+                ...profile,
+                email: user.email
+            };
+        }
+
+        async getCurrentUserAuthorizationContext(): Promise<CurrentUserAuthorizationContext | null> {
+            const user = await this.userService.get();
+
+            if (!user) {
                 return null;
             }
 
             const userContext =
-                await this.userContextService
-                .getCurrentUser(session.userId);
+                await this.userAuthorizationContextService
+                .get(user.id);
 
             if (!userContext) {
                 return null;
             }
 
-            return {
-                session,
-                userContext
-            };
+            return userContext
         }
 
         async require(): Promise<void> {
 
-            const currentUser = await this.get();
+            const currentUser = await this.getCurrentUserProfile();
 
             if (!currentUser) {
                 throw new Error("User is not authenticated");
@@ -81,7 +102,8 @@ export function createCurrentUserService(
     dependencies: CurrentUserServiceDependencies
 ): CurrentUserService {
     return new DefaultCurrentUserService(
-        dependencies.sessionService,
-        dependencies.userContextService
+        dependencies.userService,
+        dependencies.profileRepository,
+        dependencies.userAuthorizationContextService
     );
 }

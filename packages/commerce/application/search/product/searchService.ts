@@ -65,12 +65,12 @@ class DefaultProductSearchService
         const products = await this.productService.search({
             page: criteria.page,
             pageSize: criteria.pageSize,
-            keyword: criteria.keyword,
-            minPrice: criteria.minPrice,
-            maxPrice: criteria.maxPrice,
+            ...(criteria.keyword !== undefined && { keyword: criteria.keyword }),
+            ...(criteria.minPrice !== undefined && { minPrice: criteria.minPrice }),
+            ...(criteria.maxPrice !== undefined && { maxPrice: criteria.maxPrice }),
+            ...(criteria.sort !== undefined && { sort: criteria.sort }),
             productIds: productIds.map(relation => relation.product_id),
             status: ["active"],
-            sort: criteria.sort,
         });
 
         const summaries = await this.productReadService.getProductSummaries(

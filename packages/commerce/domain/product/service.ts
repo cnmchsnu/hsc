@@ -1,6 +1,5 @@
 import type { Product, ProductList, ProductListOptions } from './type';
-import { ProductRepository } from '@repo/database/repositories';
-import { ProductNotFoundError } from './error';
+import { ProductRepository } from "./repository";
 
     
 export interface ProductService {
@@ -19,16 +18,16 @@ export interface ProductService {
 
     findByIds(
         ids: readonly string[],
-    ): Promise<Product[]>;
+    ): Promise<readonly Product[]>;
 
     findBySlugs(
         slugs: readonly string[],
-    ): Promise<Product[]>;
+    ): Promise<readonly Product[]>;
 
 
     // Query
 
-    list(): Promise<Product[]>;
+    list(): Promise<readonly Product[]>;
 
     search(
         options: ProductListOptions,
@@ -46,7 +45,7 @@ export interface ProductService {
 
     listExistingIds(
         ids: readonly string[],
-    ): Promise<string[]>;
+    ): Promise<readonly string[]>;
 
     listExistingSlugs(
         slugs: readonly string[],
@@ -100,14 +99,10 @@ export function createProductService(
             }
 
             const product = 
-                await repository.findById(id);
+                await repository.get(id);
 
-            if (!product) {
-                throw new ProductNotFoundError(
-                    `Product with id ${id} not found`,
-                );
-            }
-
+            if (!product) return null;
+            
             return product;
         },
 
@@ -121,11 +116,7 @@ export function createProductService(
             const product = 
                 await repository.findBySlug(slug);
 
-            if (!product) {
-                throw new ProductNotFoundError(
-                    `Product with slug ${slug} not found`,
-                );
-            }
+            if (!product) return null;
 
             return product;
         },
@@ -134,26 +125,22 @@ export function createProductService(
 
         async findByIds(
             ids: readonly string[],
-        ): Promise<Product[]> {
+        ): Promise<readonly Product[]> {
             if (!ids || ids.length === 0) {
                 return [];
             }
 
             const products = 
-                await repository.findByIds(ids);
+                await repository.getMany(ids);
             
-            if (!products || products.length === 0) {
-                throw new ProductNotFoundError(
-                    `Products with ids ${ids.join(', ')} not found`,
-                );
-            }
+            if (!products || products.length === 0) return [];
 
             return products;
         },
 
         async findBySlugs(
             slugs: readonly string[],
-        ): Promise<Product[]> {
+        ): Promise<readonly Product[]> {
             if (!slugs || slugs.length === 0) {
                 return [];
             }
@@ -161,11 +148,7 @@ export function createProductService(
             const products = 
                 await repository.findBySlugs(slugs);
 
-            if (!products || products.length === 0) {
-                throw new ProductNotFoundError(
-                    `Products with slugs ${slugs.join(', ')} not found`,
-                );
-            }
+            if (!products || products.length === 0) return [];
 
             return products;
         },
@@ -183,7 +166,7 @@ export function createProductService(
             options: ProductListOptions,
         ): Promise<ProductList> {
             const products = 
-                await repository.search(options);
+                await repository.find(options);
 
             return products;
         },
@@ -207,12 +190,12 @@ export function createProductService(
 
         async listExistingIds(
             ids: readonly string[],
-        ): Promise<string[]> {
+        ): Promise<readonly string[]> {
             if (!ids || ids.length === 0) {
                 return [];
             }
             const existingIds = 
-                await repository.listExistingIds(ids);
+                await repository.listExisting(ids);
 
             return existingIds;
         },

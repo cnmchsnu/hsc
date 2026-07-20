@@ -8,15 +8,19 @@ import { toUser } from "./mapper";
 export class SupabaseUserProvider
     implements UserProvider {
 
-    async getById(
-        id: string
-    ): Promise<User | null> {
+    async get(): Promise<User | null> {
 
         const supabase = await createServerClient();
+
         const { data, error } = await supabase.auth.getUser();
 
         if (error) {
-            throw new Error(`Error fetching user by ID ${id}: ${error.message}`);
+            
+            if (error.message === "Auth session missing!") {
+                return null; // 未登入是正常的，優雅地回傳 null
+            }
+
+            throw new Error(`Error fetching user: ${error.message}`);
         }
         
         if (!data) {

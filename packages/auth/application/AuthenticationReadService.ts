@@ -1,12 +1,14 @@
 import type { Session, SessionService } from "../domain/identity";
-import { CurrentUser, CurrentUserService } from "./CurrentUserService";
+import { CurrentUserProfile, CurrentUserAuthorizationContext, CurrentUserService } from "./CurrentUserService";
 import { LoginFlowService } from "./LoginFlowService";
 
 export interface AuthenticationReadService {
 
     getSession(): Promise<Session | null>;
 
-    getCurrentUser(): Promise<CurrentUser | null>;
+    getCurrentUserProfile(): Promise<CurrentUserProfile | null>;
+
+    getCurrentUserAuthorizationContext(): Promise<CurrentUserAuthorizationContext | null>;
 
     exchangeCodeForSession(code: string): Promise<void>;
 
@@ -46,9 +48,14 @@ class DefaultAuthenticationReadService
             await this.loginFlowService.execute();
         }
 
-        async getCurrentUser(): Promise<CurrentUser | null> {
+        async getCurrentUserProfile(): Promise<CurrentUserProfile | null> {
 
-            return await this.currentUserService.get();
+            return await this.currentUserService.getCurrentUserProfile();
+        }
+
+        async getCurrentUserAuthorizationContext(): Promise<CurrentUserAuthorizationContext | null> {
+
+            return await this.currentUserService.getCurrentUserAuthorizationContext();
         }
 
 

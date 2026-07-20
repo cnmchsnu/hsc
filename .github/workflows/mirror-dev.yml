@@ -5,7 +5,6 @@ on:
     branches:
       - dev
 
-
 jobs:
   mirror:
     runs-on: ubuntu-latest
@@ -14,10 +13,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      - name: Debug
+        run: |
+          git branch -a
+          git status
+          git remote -v
 
       - name: Push Mirror
         run: |
           git config --global user.name "ip192htwhsnu[bot]"
           git config --global user.email "11410541@gs.hs.ntnu.edu.tw"
+
           git remote add mirror https://x-access-token:${{ secrets.HSCSHOP_MIRROR_DEPLOY }}@github.com/ip192htwhsnu/hscshop-dev-deploy.git
+
+          git remote -v
+
           git push mirror HEAD:main --force

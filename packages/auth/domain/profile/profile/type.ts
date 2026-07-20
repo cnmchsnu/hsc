@@ -18,7 +18,7 @@ export interface Profile {
     
     finalClassification: string;
 
-    status: ProfileStatus;
+    sync_display_name: boolean;
 
     version: number;
 

@@ -1,8 +1,7 @@
-import type { Category } from "../../../../../commerce/domain/category";
-import type { CreateCategory, UpdateCategory } from "../../../../../commerce/application/command/category";
-import type { CategoryRow } from "@repo/database/entities";
+import type { Category, CreateCategory, UpdateCategory } from "../../../../../commerce/domain/category";
+import type { CategoryRow } from "../../../entities";
 
-import { RepositoryMapper } from "../../shared/repository-mapper";
+import { RepositoryMapper } from "@repo/shared";
 
 export const CategoryRepositoryMapper: RepositoryMapper<
     Category,

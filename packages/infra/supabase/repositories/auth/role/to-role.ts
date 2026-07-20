@@ -1,5 +1,5 @@
 
-import type { RoleRow } from "@repo/database/entities";
+import type { RoleRow } from "../../../entities"
 
 import { Role } from "../../../../../auth/domain/authorization";
 

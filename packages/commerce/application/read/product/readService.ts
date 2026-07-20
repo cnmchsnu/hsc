@@ -2,16 +2,34 @@
 // services
 import { CategoryService } from '../../../domain/category';
 import { ProductService } from '../../../domain/product';
-import { ProductCategoryService } from '../../../domain/product-category';
+import { ProductCategory, ProductCategoryService } from '../../../domain/product-category';
 import { ProductImageService } from '../../../domain/product-image';
 import { ProductResolveService } from '../../identifiers';
+import { SKUService } from '../../../domain/sku';
+import { VariantOptionService } from '../../../domain/variant-option';
+import { VariantOptionValueService } from '../../../domain/variant-option-value';
 
+import { InventoryItemService } from '../../../domain/inventory-item';
+
+import { Price, PriceService } from '../../../domain/price';
+
+// repositories
+
+import { SKUVariantValueRepository } from '../../../domain/sku-variant-value';
 
 
 // types
 import type { Product } from '../../../domain/product';
 import type { ProductDetail, ProductSummary } from "./type";
-import { buildBreadcrumb } from '../../projections';
+import {
+    buildBreadcrumb,
+    buildDisplayPrice,
+    buildProductAvailability,
+    buildInventorySummary,
+    buildCurrentPrice,
+    buildProductVariant
+} from '../../projections';
+
 
 
 export interface ProductReadService {
@@ -50,6 +68,18 @@ interface ProductReadServiceDependencies {
 
     productResolveService: ProductResolveService;
 
+    skuService: SKUService;
+
+    variantOptionService: VariantOptionService;
+
+    variantOptionValueService: VariantOptionValueService;
+
+    priceService: PriceService;
+
+    inventoryItemService: InventoryItemService;
+
+    skuVariantValueRepository: SKUVariantValueRepository;
+
 }
 
 class DefaultProductReadService
@@ -61,12 +91,18 @@ class DefaultProductReadService
         private readonly productCategoryService: ProductCategoryService,
         private readonly productImageService: ProductImageService,
         private readonly productResolveService: ProductResolveService,
+        private readonly priceService: PriceService,
+        private readonly inventoryItemService: InventoryItemService,
+        private readonly skuService: SKUService,
+        private readonly variantOptionService: VariantOptionService,
+        private readonly variantOptionValueService: VariantOptionValueService,
+        private readonly skuVariantValueRepository: SKUVariantValueRepository,
     ) {}
 
     async getProductDetail(
         slug: string,
     ): Promise<ProductDetail | null> {
-        
+
         const product = 
             await this.productService.findBySlug(slug);
         
@@ -74,41 +110,64 @@ class DefaultProductReadService
             return null;
         }
 
-        const primaryCategory =
-            await this.productCategoryService
-                .getPrimaryByProductId(
-                    product.id
-                );
-    
-        const breadcrumbs = 
-            await this.categoryService
-                .findPathToRoot(
-                    primaryCategory?.category_id || ''
-                );
-
-        const categoriesIds =
-            await this.productCategoryService
-                .getByProductId(
-                    product.id
-                );
-
-        const categories =
-            await this.categoryService
-                .findByIds(
-                    categoriesIds.map(
-                        (relation) => relation.category_id
-                    )
-                );
-
-        const images =
-            await this.productImageService
-                .getAllById(
-                    product.id
-                );
+        const [primaryCategory, productCategoryIds, images, sku, option] =
+            await Promise.all([
+            this.productCategoryService.getPrimaryByProductId(product.id),
+            this.productCategoryService.getByProductId(product.id),
+            this.productImageService.getAllById(product.id),
+            this.skuService.getByProduct(product.id),
+            this.variantOptionService.getByProduct(product.id),
+            ])
 
         if (!images) {
             return null;
         }
+        
+        const categoriesIds = productCategoryIds.map((relation) => relation.category_id);
+        const skuIds = sku.map(sku => sku.id);
+        const optionIds = option.map(option => option.id);
+
+
+
+        const [breadcrumbs, categories, price, inventoryItems, skuVariantValues, optionValues] =
+            await Promise.all([
+                this.categoryService.findPathToRoot(primaryCategory?.category_id || ''),
+                this.categoryService.findByIds(categoriesIds),
+                this.priceService.getManyBySKUIds(skuIds),
+                this.inventoryItemService.getMany(skuIds),
+                this.skuVariantValueRepository.getBySKUs(skuIds),
+                this.variantOptionValueService.getByOptions(optionIds),
+            ]);
+
+
+        const inventorySummary =
+            buildInventorySummary(
+                inventoryItems
+            );
+
+        const availability =
+            buildProductAvailability(
+                inventoryItems
+            );
+
+
+        const currentPrice =
+            skuIds.map((id) => buildCurrentPrice(id, price));
+
+
+        const displayPrice =
+            buildDisplayPrice(currentPrice);
+
+        const variants =
+            buildProductVariant(
+                option,
+                optionValues,
+                sku,
+                skuVariantValues,
+                inventoryItems,
+                currentPrice
+            );
+
 
         return {
             
@@ -119,6 +178,14 @@ class DefaultProductReadService
             images: images,
             
             breadcrumb: buildBreadcrumb(breadcrumbs),
+
+            variants,
+
+            displayPrice,
+
+            inventorySummary,
+
+            availability,
 
         };
 
@@ -149,7 +216,6 @@ class DefaultProductReadService
     async getProductSummaries(
         products: readonly Product[],
     ): Promise<ProductSummary[]> {
-
         if (products.length === 0) {
             return [];
         }
@@ -159,61 +225,132 @@ class DefaultProductReadService
                 product => product.id,
             );
 
-        const primaryCategories =
-            await this.productCategoryService
-                .getPrimaryByProductIds(
-                    productIds,
-                );
+
+        const [primaryCategories, thumbnails, sku] =
+            await Promise.all([
+                this.productCategoryService.getPrimaryByProductIds(productIds,),
+                this.productImageService.getThumbnailByIds(productIds,),
+                this.skuService.getByProducts(productIds,),
+            ])
 
         if (!primaryCategories) {
             return [];
         }
-                
+
+
+        const thumbnailMap = new Map(
+            thumbnails.map(t => [t.productId, t]),
+        );
+
+        const primaryCategoryMap = new Map(
+            primaryCategories.map(r => [r.product_id, r.category_id]),
+        );
+
+
         const categoryIds =
             primaryCategories!
                 .map(
-                    relation => relation.category_id,
+                    (relation: ProductCategory) => relation.category_id,
                 );
 
-        const categories =
-            await this.categoryService
-                .findByIds(
-                    categoryIds,
-                );
-        const thumbnails =
-            await this.productImageService
-                .getThumbnailByIds(
-                    productIds,
-                );
+
+        const [categories] =
+            await Promise.all([
+                this.categoryService.findByIds(categoryIds,),
+            ]);
+
 
         const categoryMap =
             new Map(
-                categories.map(
-                    category => [
-                        category.id,
-                        category,
+                categories.map(category => [category.id,category]),
+            );
+
+
+        const skuMap = new Map(
+            productIds.map(
+                id => [
+                    id,
+                    sku.filter(sku => sku.productId === id).map(sku => sku.id) || [],
+                ],
+            ),
+        );
+
+        const skuIds = sku.map(sku => sku.id);
+
+
+        const [price, inventoryItems] =
+            await Promise.all([
+                this.priceService.getManyBySKUIds(skuIds),
+                this.inventoryItemService.getMany(skuIds),
+            ]);
+
+        const inventoryItemsMap = new Map(
+            inventoryItems.map(item => [item.skuid, item])
+        );
+
+        const productInventoryItemMap = new Map<string, any[]>();
+
+        skuMap.forEach((skuIds, productId) => {
+            const items = skuIds.map(id => inventoryItemsMap.get(id) || null).filter(item => item !== null);
+            productInventoryItemMap.set(productId, items);
+        });
+
+
+        const currentPrices =
+            skuIds.map((id) => buildCurrentPrice(id, price));
+
+        const currentPricesMap = new Map(
+            currentPrices
+                .filter((p): p is Price => p !== null)
+                .map(price => [price.skuId, price])
+        );
+
+        const productPriceMap = new Map<string, Price[]>();
+
+        skuMap.forEach((skuIds, productId) => {
+            const prices = skuIds
+                .map(id => currentPricesMap.get(id))
+                .filter((p): p is Price => p !== undefined);
+
+            productPriceMap.set(productId, prices);
+        });
+
+
+        const displayPriceMap =
+            new Map(
+                productIds.map(
+                    id => [
+                        id,
+                        buildDisplayPrice(
+                            productPriceMap.get(id) || [],
+                        ),
                     ],
                 ),
             );
 
-        
+        const availabilityMap =
+            new Map(
+                productIds.map(
+                    id => [
+                        id,
+                        buildProductAvailability(
+                            productInventoryItemMap.get(id) || []
+                        ),
+                    ],
+                ),
+            );
 
         return products.map(
             product => {
                 const categoryId =
-                    primaryCategories
-                        .find(
-                            relation => relation.product_id === product.id
-                        )?.category_id;
+                    primaryCategoryMap.get(product.id);
 
                 return {
 
                     product,
 
                     thumbnail:
-                        thumbnails.find(
-                            image => image.productId === product.id
-                        ) ?? null,
+                        thumbnailMap.get(product.id) ?? null,
 
                     primaryCategory:
                         categoryId
@@ -221,6 +358,12 @@ class DefaultProductReadService
                                 categoryId,
                             ) ?? null
                             : null,
+
+                    displayPrice:
+                        displayPriceMap.get(product.id) ?? null,
+
+                    availability:
+                        availabilityMap.get(product.id) ?? null,
 
                 };
 
@@ -295,6 +438,12 @@ export function createProductReadService(
         dependencies.productCategoryService,
         dependencies.productImageService,
         dependencies.productResolveService,
+        dependencies.priceService,
+        dependencies.inventoryItemService,
+        dependencies.skuService,
+        dependencies.variantOptionService,
+        dependencies.variantOptionValueService,
+        dependencies.skuVariantValueRepository,
     );
 
 }

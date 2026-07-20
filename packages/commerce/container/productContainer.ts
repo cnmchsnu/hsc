@@ -5,7 +5,13 @@ import { createServerClient } from '@repo/infra/supabase/client/server';
 import {
     SupabaseProductRepository,
     SupabaseProductCategoryRepository,
-    SupabaseProductImageService 
+    SupabaseProductImageService,
+    SupabaseSKURepository,
+    SupabaseInventoryItemRepository,
+    SupabasePriceRepository,
+    SupabaseVariantOptionRepository,
+    SupabaseSKUVariantValueRepository,
+    SupabaseVariantOptionValueRepository
 } from '@repo/infra/supabase/repositories';
 
 import { SupabaseProductIdentifier } from '@repo/infra/supabase/identifiers';
@@ -18,7 +24,12 @@ import type { CategoryResolveService } from '../application/identifiers';
 import {
     createProductService,
     createProductCategoryService,
-    createProductImageService
+    createProductImageService,
+    createPriceService,
+    createInventoryItemService,
+    createSKUService,
+    createVariantOptionService,
+    createVariantOptionValueService,
 } from '../domain';
 
 import { createProductReadService, type ProductReadService } from '../application/read/product';
@@ -55,6 +66,25 @@ export async function createProductContainer(
     const productResolveRepository =
         new SupabaseProductIdentifier(client);
 
+    const priceRepository =
+        new SupabasePriceRepository(client);
+    
+    const inventoryItemRepository =
+        new SupabaseInventoryItemRepository(client);
+
+    const variantOptionRepository =
+        new SupabaseVariantOptionRepository(client);
+
+    const variantValueOptionRepository =
+        new SupabaseVariantOptionValueRepository(client);
+
+
+    const skuVariantValueRepository =
+        new SupabaseSKUVariantValueRepository(client);
+
+    const skuRepository =
+        new SupabaseSKURepository(client);
+
 
     const productService =
             createProductService(
@@ -75,6 +105,35 @@ export async function createProductContainer(
             createProductResolveService(
                 productResolveRepository,
             );
+
+        const priceService =
+            createPriceService(
+                priceRepository,
+            );
+
+        const inventoryItemService =
+            createInventoryItemService(
+                inventoryItemRepository,
+            );
+
+        const skuService =
+            createSKUService(
+                skuRepository,
+            );
+
+        const variantOptionService =
+            createVariantOptionService(
+                variantOptionRepository,
+            );
+
+        const variantOptionValueService =
+            createVariantOptionValueService(
+                variantValueOptionRepository,
+            );
+
+
+
+
     
 
         const productReadService =
@@ -84,6 +143,12 @@ export async function createProductContainer(
                 productCategoryService,
                 productImageService,
                 productResolveService,
+                skuService,
+                variantOptionService,
+                variantOptionValueService,
+                priceService,
+                inventoryItemService,
+                skuVariantValueRepository
             });
 
 

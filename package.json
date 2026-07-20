@@ -20,11 +20,13 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.10",
     "@supabase/ssr": "^0.12.0",
     "@types/google.accounts": "^0.0.18",
     "@types/node": "^20.19.43",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@vercel/speed-insights": "^2.0.0",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.4",
     "eslint-plugin-i18next": "^6.1.4",

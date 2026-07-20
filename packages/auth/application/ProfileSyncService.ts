@@ -32,7 +32,7 @@ class DefaultProfileSyncService
         async sync(
             userId: string,
         ): Promise<void> {
-            const user = await this.userService.getUserById(userId);
+            const user = await this.userService.get();
 
             if (!user) {
                 throw new Error(`User with ID ${userId} not found.`);
@@ -46,7 +46,7 @@ class DefaultProfileSyncService
 
             const newProfile: Profile = {
                 ...profile,
-                displayName: user.name,
+                displayName: profile.sync_display_name ? user.name : profile.displayName,
                 avatarUrl: user.avatar!,
             };
 

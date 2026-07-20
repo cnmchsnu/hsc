@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Globe, HandCoins, WalletCards } from 'lucide-react';
+
 export function Footer() {
   return (
     <footer className="bg-surface-container-highest border-t border-outline-variant mt-auto">
@@ -15,15 +17,9 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                href="#"
+                href="https://sites.google.com/gs.hs.ntnu.edu.tw/hsc/home/"
               >
-                <span className="material-symbols-outlined">public</span>
-              </a>
-              <a
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-                href="#"
-              >
-                <span className="material-symbols-outlined">mail</span>
+                <Globe className="text-[20px]" />
               </a>
             </div>
           </div>
@@ -66,15 +62,15 @@ export function Footer() {
                     隱私政策
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="#">
                     FAQ
                   </a>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-primary mb-4">校方資源</h4>
+              <h4 className="font-bold text-primary mb-4">官方連結</h4>
               <ul className="space-y-2">
                 <li>
                   <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="https://www.hs.ntnu.edu.tw/" target="_blank" rel="noreferrer">
@@ -82,8 +78,13 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="#" target="_blank" rel="noreferrer">
+                  <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="https://www.facebook.com/HsnuStudentCouncil/" target="_blank" rel="noreferrer">
                     學生會 Facebook
+                  </a>
+                </li>
+                <li>
+                  <a className="text-on-surface-variant text-label-md hover:text-primary underline transition-all" href="https://www.instagram.com/hsnu_student_council/" target="_blank" rel="noreferrer">
+                    學生會 Instagram
                   </a>
                 </li>
               </ul>
@@ -94,8 +95,8 @@ export function Footer() {
           <p className="text-label-sm font-label-sm text-on-surface-variant">© 2024 學生會商城. All rights reserved.</p>
           <div className="flex items-center gap-2">
             <span className="text-label-sm text-on-surface-variant">Payment Method:</span>
-            <span className="material-symbols-outlined text-on-surface-variant">payments</span>
-            <span className="material-symbols-outlined text-on-surface-variant">credit_card</span>
+            <HandCoins className="text-on-surface-variant" />
+            <WalletCards className="text-on-surface-variant" />
           </div>
         </div>
       </div>

@@ -1,0 +1,1 @@
+export { SupabaseInventoryItemRepository } from './SupabaseInventoryItemRepository';
