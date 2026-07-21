@@ -7,7 +7,7 @@ import { ProductGallery } from "./ProductGallery";
 
 import type { ProductDetail } from "@repo/commerce/application";
 
-import { useProductSelection } from "../hook/use-product-selection";
+import { useProductSelection } from "@repo/commerce-react";
 import { Plus, Minus } from 'lucide-react';
 
 

@@ -118,6 +118,9 @@ importers:
       '@repo/commerce':
         specifier: workspace:*
         version: link:../../packages/commerce
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@repo/infra':
         specifier: workspace:*
         version: link:../../packages/infra
@@ -307,6 +310,15 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
+
+  packages/commerce-react:
+    dependencies:
+      '@repo/commerce':
+        specifier: workspace:*
+        version: link:../commerce
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
 
   packages/database:
     dependencies:

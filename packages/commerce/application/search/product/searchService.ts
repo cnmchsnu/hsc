@@ -7,8 +7,8 @@ import type { CategoryResolveService } from "../../identifiers";
 
 // types
 import type {
-    ProductSearchCriteria,
-    ProductSearchResult
+    ProductSearchRequest,
+    ProductSearchResponse
 } from "./type";
 
 
@@ -16,8 +16,8 @@ import type {
 export interface ProductSearchService {
 
     search(
-        criteria: ProductSearchCriteria,
-    ): Promise<ProductSearchResult>;
+        criteria: ProductSearchRequest,
+    ): Promise<ProductSearchResponse>;
 
 }
 
@@ -48,12 +48,12 @@ class DefaultProductSearchService
     ) {}
 
     async search(
-        criteria: ProductSearchCriteria,
-    ): Promise<ProductSearchResult> {
+        request: ProductSearchRequest,
+    ): Promise<ProductSearchResponse> {
 
         const categoryIds = await this.categoryResolveService
             .resolveIdsBySlugs(
-                criteria.categorySlugs ?? [],
+                request.filter?.categorySlugs ?? [],
             );
 
         const productIds = await this.productCategoryService
@@ -63,14 +63,14 @@ class DefaultProductSearchService
 
 
         const products = await this.productService.search({
-            page: criteria.page,
-            pageSize: criteria.pageSize,
-            ...(criteria.keyword !== undefined && { keyword: criteria.keyword }),
-            ...(criteria.minPrice !== undefined && { minPrice: criteria.minPrice }),
-            ...(criteria.maxPrice !== undefined && { maxPrice: criteria.maxPrice }),
-            ...(criteria.sort !== undefined && { sort: criteria.sort }),
+            page: request.page ?? 1,
+            pageSize: request.pageSize ?? 10,
+            ...(request.filter?.keyword !== undefined && { keyword: request.filter.keyword }),
+            ...(request.filter?.minPrice !== undefined && { minPrice: request.filter.minPrice }),
+            ...(request.filter?.maxPrice !== undefined && { maxPrice: request.filter.maxPrice }),
+            ...(request.sort !== undefined && { sort: request.sort }),
             productIds: productIds.map(relation => relation.product_id),
-            status: ["active"],
+            status: request.filter?.status ?? ["active"],
         });
 
         const summaries = await this.productReadService.getProductSummaries(
@@ -79,10 +79,12 @@ class DefaultProductSearchService
 
         return {
             items: summaries,
-            total: products.total,
-            page: products.page,
-            pageSize: products.pageSize,
-            totalPages: products.total,
+            pagination: {
+                page: products.page,
+                pageSize: products.pageSize,
+                total: products.total,
+                hasMore: products.page * products.pageSize < products.total,
+            },
         }
 
 

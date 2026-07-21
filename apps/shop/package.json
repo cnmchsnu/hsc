@@ -14,6 +14,8 @@
     "@radix-ui/react-slider": "^1.4.2",
     "@repo/auth": "workspace:*",
     "@repo/commerce": "workspace:*",
+    "@repo/commerce-react": "workspace:*",
+    "@repo/database": "workspace:*",
     "@repo/infra": "workspace:*",
     "@repo/ui": "workspace:*",
     "@vercel/analytics": "^2.0.1",

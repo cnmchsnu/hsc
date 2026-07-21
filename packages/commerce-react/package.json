@@ -1,0 +1,11 @@
+{
+    "name": "@repo/commerce-react",
+    "private": true,
+    "dependencies": {
+        "@repo/commerce": "workspace:*",
+        "react": "19.2.4"
+    },
+    "exports": {
+       ".": "./hooks/index.ts"
+    }
+}

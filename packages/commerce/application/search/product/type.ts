@@ -1,7 +1,20 @@
-import { ProductSort } from '../../../domain/product';
+import { ProductSort, ProductStatus } from '../../../domain/product';
 import { ProductSummary } from '../../read/product/type';
 
-export interface ProductSearchCriteria {
+
+export interface ProductSearchRequest {
+
+    filter?: ProductSearchFilter;
+
+    sort?: ProductSort;
+
+    page?: number;
+
+    pageSize?: number;
+
+}
+
+export interface ProductSearchFilter {
 
     keyword?: string;
 
@@ -13,24 +26,24 @@ export interface ProductSearchCriteria {
 
     inStock?: boolean;
 
-    sort?: ProductSort;
-
-    page: number;
-
-    pageSize: number;
+    status?: ProductStatus[];
 
 }
 
-export interface ProductSearchResult {
+export interface ProductSearchResponse {
 
     items: readonly ProductSummary[];
 
-    total: number;
+    pagination: {
 
-    page: number;
+        page: number;
 
-    pageSize: number;
+        pageSize: number;
 
-    totalPages: number;
+        total: number;
+
+        hasMore: boolean;
+
+    };
 
 }

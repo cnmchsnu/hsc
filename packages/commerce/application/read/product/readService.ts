@@ -7,7 +7,7 @@ import { ProductImageService } from '../../../domain/product-image';
 import { ProductResolveService } from '../../identifiers';
 import { SKUService } from '../../../domain/sku';
 import { VariantOptionService } from '../../../domain/variant-option';
-import { VariantOptionValueService } from '../../../domain/variant-option-value';
+import { VariantOptionValue, VariantOptionValueService } from '../../../domain/variant-option-value';
 
 import { InventoryItemService } from '../../../domain/inventory-item';
 
@@ -20,14 +20,18 @@ import { SKUVariantValueRepository } from '../../../domain/sku-variant-value';
 
 // types
 import type { Product } from '../../../domain/product';
-import type { ProductDetail, ProductSummary } from "./type";
+import type { ProductDetail, ProductAdminDetail, ProductSummary } from "./type";
 import {
     buildBreadcrumb,
     buildDisplayPrice,
     buildProductAvailability,
     buildInventorySummary,
     buildCurrentPrice,
-    buildProductVariant
+    toProductVariant,
+    toProductVariantSKU,
+    toProductVariantOption,
+    toProductAdminSKU,
+    
 } from '../../projections';
 
 
@@ -37,6 +41,10 @@ export interface ProductReadService {
     getProductDetail(
         slug: string,
     ): Promise<ProductDetail | null>;
+
+    getProductAdminDetail(
+        slug: string,
+    ): Promise<ProductAdminDetail | null>;
 
     getProductSummary(
         slug: string,
@@ -158,15 +166,62 @@ class DefaultProductReadService
         const displayPrice =
             buildDisplayPrice(currentPrice);
 
-        const variants =
-            buildProductVariant(
-                option,
-                optionValues,
-                sku,
-                skuVariantValues,
-                inventoryItems,
-                currentPrice
+
+        const inventoryItemsMap =
+            new Map(inventoryItems.map(item => [item.skuid, item]));
+
+        const currentPricesMap =
+            new Map(sku.map(sku =>
+                [sku.id, currentPrice.find(price =>
+                    price?.skuId === sku.id
+                ) || null]
+            ));
+
+        const variantOptionValuesMap =
+            new Map(optionValues.map(value => [value.id, value]));
+
+        const skuVariantValuesMap =
+            new Map<string, VariantOptionValue[]>();
+
+        for (const link of skuVariantValues) {
+
+            const optionValue =
+                variantOptionValuesMap.get(link.optionValueId);
+
+            if (!optionValue) continue;
+
+            const values =
+                skuVariantValuesMap.get(link.skuId) ?? [];
+
+            values.push(optionValue);
+
+            skuVariantValuesMap.set(
+                link.skuId,
+                values,
             );
+
+        }
+
+
+        const variantSKUs = sku.map((sku) => toProductVariantSKU(
+            sku,
+            inventoryItemsMap,
+            currentPricesMap,
+            skuVariantValuesMap
+            ));
+
+        const variantOptions =
+            option.map((option) =>
+                toProductVariantOption(option, optionValues)
+            );
+
+
+
+        const variants =
+            toProductVariant(
+                variantOptions,
+                variantSKUs,
+            )
 
 
         return {
@@ -186,6 +241,150 @@ class DefaultProductReadService
             inventorySummary,
 
             availability,
+
+        };
+
+    }
+
+    async getProductAdminDetail(
+        slug: string,
+    ): Promise<ProductAdminDetail | null> {
+
+        const product = 
+            await this.productService.findBySlug(slug);
+        
+        if (!product) {
+            return null;
+        }
+
+        const [primaryCategory, productCategoryIds, images, sku, option] =
+            await Promise.all([
+            this.productCategoryService.getPrimaryByProductId(product.id),
+            this.productCategoryService.getByProductId(product.id),
+            this.productImageService.getAllById(product.id),
+            this.skuService.getByProduct(product.id),
+            this.variantOptionService.getByProduct(product.id),
+            ])
+
+        if (!images) {
+            return null;
+        }
+        
+        const categoriesIds = productCategoryIds.map((relation) => relation.category_id);
+        const skuIds = sku.map(sku => sku.id);
+        const optionIds = option.map(option => option.id);
+
+
+
+        const [breadcrumbs, categories, price, inventoryItems, skuVariantValues, optionValues] =
+            await Promise.all([
+                this.categoryService.findPathToRoot(primaryCategory?.category_id || ''),
+                this.categoryService.findByIds(categoriesIds),
+                this.priceService.getManyBySKUIds(skuIds),
+                this.inventoryItemService.getMany(skuIds),
+                this.skuVariantValueRepository.getBySKUs(skuIds),
+                this.variantOptionValueService.getByOptions(optionIds),
+            ]);
+
+
+        const inventorySummary =
+            buildInventorySummary(
+                inventoryItems
+            );
+
+        const availability =
+            buildProductAvailability(
+                inventoryItems
+            );
+
+
+        const currentPrice =
+            skuIds.map((id) => buildCurrentPrice(id, price));
+
+
+        const displayPrice =
+            buildDisplayPrice(currentPrice);
+
+        const inventoryItemsMap =
+            new Map(inventoryItems.map(item => [item.skuid, item]));
+
+        const currentPricesMap =
+            new Map(sku.map(sku =>
+                [sku.id, currentPrice.find(price =>
+                    price?.skuId === sku.id
+                ) || null]
+            ));
+
+        const variantOptionValuesMap =
+            new Map(optionValues.map(value => [value.id, value]));
+
+        const skuVariantValuesMap =
+            new Map<string, VariantOptionValue[]>();
+
+        for (const link of skuVariantValues) {
+
+            const optionValue =
+                variantOptionValuesMap.get(link.optionValueId);
+
+            if (!optionValue) continue;
+
+            const values =
+                skuVariantValuesMap.get(link.skuId) ?? [];
+
+            values.push(optionValue);
+
+            skuVariantValuesMap.set(
+                link.skuId,
+                values,
+            );
+
+        }
+
+
+        const variantSKUs = sku.map((sku) => toProductVariantSKU(
+            sku,
+            inventoryItemsMap,
+            currentPricesMap,
+            skuVariantValuesMap
+            ));
+
+        const variantOptions =
+            option.map((option) =>
+                toProductVariantOption(option, optionValues)
+            );
+
+
+
+        const variants =
+            toProductVariant(
+                variantOptions,
+                variantSKUs,
+            )
+
+
+        const skus = variantSKUs.map((variantSku) => toProductAdminSKU(variantSku));
+
+
+
+        return {
+            
+            product,
+            
+            categories: categories,
+            
+            images: images,
+            
+            breadcrumb: buildBreadcrumb(breadcrumbs),
+
+            variants,
+
+            displayPrice,
+
+            inventorySummary,
+
+            availability,
+
+            skus,
 
         };
 
