@@ -3,6 +3,7 @@ export * from './product';
 export * from './product-category';
 export * from './product-image';
 export * from './sku';
+export * from './sku-variant-value';
 export * from './variant-option';
 export * from './variant-option-value';
 export * from './price';

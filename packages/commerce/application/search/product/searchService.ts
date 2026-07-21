@@ -7,7 +7,7 @@ import type { CategoryResolveService } from "../../identifiers";
 
 // types
 import type {
-    ProductSearchCriteria,
+    ProductSearchQuery,
     ProductSearchResult
 } from "./type";
 
@@ -16,7 +16,7 @@ import type {
 export interface ProductSearchService {
 
     search(
-        criteria: ProductSearchCriteria,
+        criteria: ProductSearchQuery,
     ): Promise<ProductSearchResult>;
 
 }
@@ -48,12 +48,12 @@ class DefaultProductSearchService
     ) {}
 
     async search(
-        criteria: ProductSearchCriteria,
+        criteria: ProductSearchQuery,
     ): Promise<ProductSearchResult> {
 
         const categoryIds = await this.categoryResolveService
             .resolveIdsBySlugs(
-                criteria.categorySlugs ?? [],
+                criteria.filter?.categorySlugs ?? [],
             );
 
         const productIds = await this.productCategoryService
@@ -65,12 +65,12 @@ class DefaultProductSearchService
         const products = await this.productService.search({
             page: criteria.page,
             pageSize: criteria.pageSize,
-            ...(criteria.keyword !== undefined && { keyword: criteria.keyword }),
-            ...(criteria.minPrice !== undefined && { minPrice: criteria.minPrice }),
-            ...(criteria.maxPrice !== undefined && { maxPrice: criteria.maxPrice }),
+            ...(criteria.filter?.keyword !== undefined && { keyword: criteria.filter.keyword }),
+            ...(criteria.filter?.minPrice !== undefined && { minPrice: criteria.filter.minPrice }),
+            ...(criteria.filter?.maxPrice !== undefined && { maxPrice: criteria.filter.maxPrice }),
             ...(criteria.sort !== undefined && { sort: criteria.sort }),
             productIds: productIds.map(relation => relation.product_id),
-            status: ["active"],
+            status: criteria.filter?.status ?? ["active"],
         });
 
         const summaries = await this.productReadService.getProductSummaries(

@@ -1,10 +1,10 @@
 import { createCommerceContainer } from '../../container';
-import { ProductSearchCriteria, ProductSearchResult } from '../../application/search/product';
+import { ProductSearchQuery, ProductSearchResult } from '../../application/search/product';
 import { cache } from 'react';
 
 
 export const searchProduct = cache(async (
-    criteria: ProductSearchCriteria
+    criteria: ProductSearchQuery
 ): Promise<ProductSearchResult | null> => {
     
     const {

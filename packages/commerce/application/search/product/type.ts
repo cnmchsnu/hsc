@@ -1,7 +1,16 @@
-import { ProductSort } from '../../../domain/product';
+import { Query } from '@repo/shared';
+import { ProductSort, ProductStatus } from '../../../domain/product';
 import { ProductSummary } from '../../read/product/type';
 
-export interface ProductSearchCriteria {
+export interface ProductSearchQuery extends Query {
+
+    filter?: ProductSearchFilter;
+
+    sort?: ProductSort;
+
+}
+
+export interface ProductSearchFilter {
 
     keyword?: string;
 
@@ -13,13 +22,10 @@ export interface ProductSearchCriteria {
 
     inStock?: boolean;
 
-    sort?: ProductSort;
-
-    page: number;
-
-    pageSize: number;
+    status?: ProductStatus[];
 
 }
+
 
 export interface ProductSearchResult {
 
