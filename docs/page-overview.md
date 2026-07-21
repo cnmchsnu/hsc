@@ -829,4 +829,27 @@ Status:
 Date:
 2026-07-03
 
+---
+
+Design:
+@mockups/shop_console_product_overview
+Converted To:
+Route: apps/shop-console /products
+Status:
+[x]
+Date:
+2026-07-21
+
+---
+
+Design:
+@mockups/shop_console_product_detail
+Converted To:
+Route: apps/shop-console /products/[id]
+Status:
+[x]
+Date:
+2026-07-21
+
+
 
