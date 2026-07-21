@@ -1,11 +1,11 @@
 import { createCommerceContainer } from '../../container';
-import { ProductSearchQuery, ProductSearchResult } from '../../application/search/product';
+import { ProductSearchRequest, ProductSearchResponse } from '../../application/search/product';
 import { cache } from 'react';
 
 
 export const searchProduct = cache(async (
-    criteria: ProductSearchQuery
-): Promise<ProductSearchResult | null> => {
+    criteria: ProductSearchRequest
+): Promise<ProductSearchResponse | null> => {
     
     const {
         productContainer,

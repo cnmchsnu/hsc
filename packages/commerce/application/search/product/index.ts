@@ -1,3 +1,3 @@
 export { createProductSearchService, type ProductSearchService } from './searchService';
 
-export type { ProductSearchQuery, ProductSearchResult } from './type';
+export type { ProductSearchRequest, ProductSearchResponse } from './type';
