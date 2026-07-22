@@ -3,6 +3,8 @@ import "./globals.css";
 import { plusJakartaSans, jetBrainsMono } from "../lib/font";
 import { Sidebar } from "./components/layout/sidebar";
 import { Header } from "./components/layout/header";
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "HSNU Admin | 學生會商城管理後台",
@@ -32,6 +34,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-surface text-on-surface font-body-md overflow-x-hidden">
+        <Analytics />
+        <SpeedInsights />
         <Sidebar />
         <Header />
         <main className="ml-64 pt-16 min-h-screen bg-surface">

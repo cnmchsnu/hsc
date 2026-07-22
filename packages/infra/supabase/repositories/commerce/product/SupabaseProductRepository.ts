@@ -7,6 +7,7 @@ import type {
     CreateProduct,
     UpdateProduct,
     ProductRepository,
+    ProductStatus,
 } from "../../../../../commerce/domain/product";
 
 import type { ProductRow } from "../../../entities";
@@ -53,10 +54,17 @@ export class SupabaseProductRepository
 
         if (options.status?.length) {
 
+            let statuses =
+                (options.status ?? [])
+                    .filter(
+                        (status): status is ProductStatus =>
+                            status != null,
+                    );
+
             query =
                 query.in(
                     "status",
-                    options.status,
+                    statuses,
                 );
 
         }

@@ -1,11 +1,12 @@
+'use client';
 import { ProductSearchRequest, ProductSummary } from '@repo/commerce/application';
 
 import { useRef, useState } from 'react';
 
 
 
-export async function useProductSearch(initialRequest: ProductSearchRequest) {
-
+export function useProductSearch(initialRequest: ProductSearchRequest) {
+    
     const [request, setRequest] =
     useState<ProductSearchRequest>(initialRequest);
 
@@ -24,7 +25,7 @@ export async function useProductSearch(initialRequest: ProductSearchRequest) {
         page: number,
         append: boolean,
     ) {
-
+        console.log("fetchPage");
         setLoading(true);
 
         const response =
@@ -56,17 +57,19 @@ export async function useProductSearch(initialRequest: ProductSearchRequest) {
 
     };
 
-    async function search(
+    function search(
         nextRequest: ProductSearchRequest,
     ) {
+        console.log("search");
         setRequest(nextRequest);
         pageRef.current = 1;
-        await fetchPage(1,false,);
+        fetchPage(1,false,);
     };
 
-    async function refresh() {
+    function refresh() {
+        console.log("refresh");
         pageRef.current = 1;
-        await fetchPage(
+        fetchPage(
             1,
             false,
         );

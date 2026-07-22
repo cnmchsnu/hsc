@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from "react";
 
 import type { ProductVariant } from "@repo/commerce/application";

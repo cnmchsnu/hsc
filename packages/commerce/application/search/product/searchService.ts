@@ -61,13 +61,13 @@ class DefaultProductSearchService
                 [...categoryIds],
             );
 
-
         const products = await this.productService.search({
             page: request.page ?? 1,
             pageSize: request.pageSize ?? 10,
             ...(request.filter?.keyword !== undefined && { keyword: request.filter.keyword }),
             ...(request.filter?.minPrice !== undefined && { minPrice: request.filter.minPrice }),
             ...(request.filter?.maxPrice !== undefined && { maxPrice: request.filter.maxPrice }),
+            ...(request.filter?.status !== undefined && { status: request.filter.status }),
             ...(request.sort !== undefined && { sort: request.sort }),
             productIds: productIds.map(relation => relation.product_id),
             status: request.filter?.status ?? ["active"],

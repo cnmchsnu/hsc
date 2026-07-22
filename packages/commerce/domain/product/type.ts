@@ -1,18 +1,7 @@
 export type ProductStatus = 
-    | "draft"
-    | "active"
-    | "archived";
-
-
-// export interface ProductCategory {
-
-//     id: string;
-
-//     slug: string;
-
-//     name: string;
-
-// }
+    | 'draft'
+    | 'active'
+    | 'archived';
 
 export interface Product {
 

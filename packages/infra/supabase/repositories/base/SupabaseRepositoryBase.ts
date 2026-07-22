@@ -128,23 +128,27 @@ export abstract class SupabaseRepositoryBase<
 
     }
 
-    protected paginate(
-
-        query: any,
-
+    protected buildRange(
         page: number,
-
         pageSize: number,
-
     ) {
 
-        return query.range(
+        const safePage =
+            Math.max(page, 1);
 
-            (page - 1) * pageSize,
+        const safePageSize =
+            Math.max(pageSize, 1);
 
-            page * pageSize - 1,
+        const start =
+            (safePage - 1) * safePageSize;
 
-        );
+        const end =
+            start + safePageSize - 1;
+
+        return {
+            start,
+            end,
+        };
 
     }
 
@@ -180,17 +184,21 @@ export abstract class SupabaseRepositoryBase<
 
         } = await query;
 
-        if (error)
+        if (!error) {
 
-            throw error;
+            return {
 
-        return {
+                rows: data ?? [],
 
-            rows: data ?? [],
+                count: count ?? 0,
 
-            count: count ?? 0,
+            };
 
-        };
+        }
+
+        if (error?.code === 'PGRST103') return { rows: [], count: 0 };
+        
+        throw error;
 
     }
 
@@ -319,21 +327,22 @@ export abstract class SupabaseRepositoryBase<
     ): Promise<TList> {
 
 
-        let query = this.buildQuery(
-            this.normalizeQuery(options)
-        );
+        const normalized =
+            this.normalizeQuery(options);
 
-        query = this.paginate(
-            query,
-            options.page,
-            options.pageSize,
-        );
+        let query =
+            this.buildQuery(normalized);
+
+        const { start, end } =
+            this.buildRange(normalized.page, normalized.pageSize);
+
+        query.range(start, end);
 
         const result = await this.executeQuery(query);
 
         return this.toList(
             result,
-            options
+            normalized
         );
     }
 
