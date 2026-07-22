@@ -7,3 +7,6 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - pnpm@11.13.0
+overrides:
+  postcss: '^8.5.10'
+
