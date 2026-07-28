@@ -6,6 +6,7 @@ export interface UpdateVariantOption {
 
     sortOrder?: number;
 
-    version: number;
+    isEnabled?: boolean;
+
 
 }

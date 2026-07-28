@@ -2,7 +2,7 @@ import { UserService } from "../domain/identity";
 
 import { ProfileSyncService } from "./ProfileSyncService";
 import { ProfileInitializationService } from "./ProfileInitializationService";
-import { ProfileRepository } from "../../database/repositories/identity";
+import { ProfileRepository } from "../domain/profile";
 
 export interface LoginFlowService {
 

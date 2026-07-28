@@ -22,22 +22,10 @@ export interface ProductSearchService {
 }
 
 
-interface ProductSearchServiceDependencies {
-
-    productService: ProductService;
-
-    productCategoryService: ProductCategoryService;
-
-    productReadService: ProductReadService;
-    
-    categoryResolveService: CategoryResolveService;
-
-}
 
 
 
-
-class DefaultProductSearchService
+export class DefaultProductSearchService
     implements ProductSearchService {
     
     constructor(
@@ -61,7 +49,7 @@ class DefaultProductSearchService
                 [...categoryIds],
             );
 
-        const products = await this.productService.search({
+        const products = await this.productService.find({
             page: request.page ?? 1,
             pageSize: request.pageSize ?? 10,
             ...(request.filter?.keyword !== undefined && { keyword: request.filter.keyword }),
@@ -89,19 +77,6 @@ class DefaultProductSearchService
 
 
     }
-
-}
-
-export function createProductSearchService(
-    dependencies: ProductSearchServiceDependencies,
-):  ProductSearchService {
-
-    return new DefaultProductSearchService(
-        dependencies.productService,
-        dependencies.productCategoryService,
-        dependencies.productReadService,
-        dependencies.categoryResolveService,
-    );
 
 }
 

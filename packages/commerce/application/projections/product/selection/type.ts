@@ -1,4 +1,6 @@
-import type { ProductVariant, ProductVariantSKU } from '../build-product-variant';
+import type { ProductVariant } from '../build-product-variant';
+import type { ProductVariantSKU } from '../build-product-variant-sku';
+
 
 export interface ProductSelection {
 

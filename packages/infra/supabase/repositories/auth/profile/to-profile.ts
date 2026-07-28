@@ -1,8 +1,7 @@
 import { UserProfileRow } from "../../../entities";
 
-import { Profile } from "../../../../../auth/domain/profile";
+import { Profile, CreateProfile, UpdateProfile } from "../../../../../auth/domain/profile";
 
-import { CreateProfile, UpdateProfile } from "../../../../../auth/application/profile";
 
 import { RepositoryMapper } from "@repo/shared";
 

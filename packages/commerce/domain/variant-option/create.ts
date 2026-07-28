@@ -5,6 +5,8 @@ export interface CreateVariantOption {
     productId: string;
 
     name: VariantOptionName;
+    
+    isEnabled?: boolean;
 
     displayName: string;
 

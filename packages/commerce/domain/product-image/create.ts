@@ -10,14 +10,3 @@ export interface CreateProductImage {
 
     displayOrder: number;
 }
-
-export interface CommandCreateProductImage {
-
-    url: string;
-
-    isPrimary: boolean;
-
-    alt: string | null;
-
-    displayOrder: number;
-}

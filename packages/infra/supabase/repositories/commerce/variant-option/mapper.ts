@@ -20,6 +20,8 @@ export const VariantOptionRepositoryMapper: RepositoryMapper<
 
             productId: row.product_id,
 
+            isEnabled: row.is_enabled,
+
             name: row.name,
 
             displayName: row.display_name,
@@ -43,6 +45,8 @@ export const VariantOptionRepositoryMapper: RepositoryMapper<
         return {
 
             product_id: dto.productId,
+
+            is_enabled: dto.isEnabled ?? true,
 
             name: dto.name,
 
@@ -68,8 +72,6 @@ export const VariantOptionRepositoryMapper: RepositoryMapper<
             display_name: dto.displayName,
 
             sort_order: dto.sortOrder,
-
-            version: dto.version,
         };
 
     },

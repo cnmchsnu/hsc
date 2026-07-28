@@ -1,0 +1,1 @@
+export { UpdateProductBasicCommand } from "./update-product-basic"

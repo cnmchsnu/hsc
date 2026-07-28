@@ -1,6 +1,6 @@
 "server-only";
 
-import { createServerClient } from '@repo/infra/supabase/client/server';
+import { createSupabaseClientFactory } from '@repo/infra/supabase/client/factory';
 import { cache } from 'react';
 
 import {
@@ -49,8 +49,9 @@ export interface AuthContainer {
 
 export const createAuthContainer = cache(async (): Promise<AuthContainer> => {
 
-    const client = 
-        await createServerClient();
+    const factory = createSupabaseClientFactory();
+    
+    const client = await factory.createUserClient();
 
     const profileRepository =
         new SupabaseProfileRepository(client);
@@ -68,10 +69,10 @@ export const createAuthContainer = cache(async (): Promise<AuthContainer> => {
         new SupabaseUserRoleRepository(client);
 
     const sessionProvider =
-        new SupabaseSessionProvider();
+        new SupabaseSessionProvider(client);
 
     const userProvider =
-        new SupabaseUserProvider();
+        new SupabaseUserProvider(client);
     
     const userService = createUserService({
         userProvider

@@ -4,6 +4,8 @@ import type { ProductCategoryRepository } from "./repository";
 
 import { ProductCategory } from "./types";
 
+import { ValidationError } from "@repo/shared/application";
+
 
 export interface ProductCategoryService {
     // Relation Single
@@ -34,9 +36,6 @@ export interface ProductCategoryService {
         productIds: string[],
     ): Promise<readonly ProductCategory[]>;
 
-
-    // Write Single
-
     create(
         relation: CreateProductCategory,
     ): Promise<void>;
@@ -45,24 +44,19 @@ export interface ProductCategoryService {
         relation: ProductCategory,
     ): Promise<void>;
 
-    delete(
-        productId: string,
-        categoryId: string,
-    ): Promise<void>;
-
-    // Write Batch
-
     createMany(
         relations: readonly CreateProductCategory[],
     ): Promise<void>;
 
     updateMany(
-        relations: readonly ProductCategory[],
+        relations: readonly CreateProductCategory[],
     ): Promise<void>;
 
     deleteMany(
         relations: readonly ProductCategory[],
     ): Promise<void>;
+
+    // delete
 
     deleteManyByProductId(
         productId: string,
@@ -203,22 +197,12 @@ export function createProductCategoryService(
             relation: ProductCategory,
         ): Promise<void> {
             if (!relation) {
-                throw new Error("Relation is required");
+                throw new ValidationError("Relation is required");
             }
 
             await repository.update(relation);
         },
 
-        async delete(
-            productId: string,
-            categoryId: string,
-        ): Promise<void> {
-            if (!productId || !categoryId) {
-                return;
-            }
-
-            await repository.delete(productId, categoryId);
-        },
 
         // Write Batch
 
@@ -233,14 +217,15 @@ export function createProductCategoryService(
         },
 
         async updateMany(
-            relations: readonly ProductCategory[],
+            relations: readonly CreateProductCategory[],
         ): Promise<void> {
             if (!relations || relations.length === 0) {
-                throw new Error("Relations are required");
+                throw new ValidationError("Relations are required");
             }
 
             await repository.updateMany(relations);
         },
+
 
         async deleteMany(
             relations: readonly ProductCategory[],
@@ -249,9 +234,9 @@ export function createProductCategoryService(
                 return;
             }
 
-            await repository.deleteMany(relations);
-
+            await repository.deleteMany([],relations);
         },
+
 
         async deleteManyByProductId(
             productId: string,

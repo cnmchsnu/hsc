@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { RoleRepository } from "@repo/database/repositories";
+import { RoleRepository } from "../../../../../auth/domain/authorization";
 
 import { toRole } from "./to-role";
 import { Role, RoleList, RoleListOptions } from "../../../../../auth/domain/authorization";

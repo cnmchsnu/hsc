@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { CategoryIdentifier } from "@repo/database/identifiers";
+import type { CategoryIdentifier } from "../../../../commerce/application";
 
 
 export class SupabaseCategoryIdentifier

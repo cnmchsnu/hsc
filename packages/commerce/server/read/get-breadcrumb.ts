@@ -1,10 +1,9 @@
 import { createCommerceContainer } from '../../container';
 import { BreadcrumbItem } from '../../application/projections';
-import { cache } from 'react';
 
-export const getBreadcrumb = cache(async (
+export async function getBreadcrumb(
     slug: string
-): Promise<readonly BreadcrumbItem[] | null> => {
+): Promise<readonly BreadcrumbItem[] | null> {
 
     const {
         categoryContainer,
@@ -14,4 +13,4 @@ export const getBreadcrumb = cache(async (
 
     return result;
     
-});
+}

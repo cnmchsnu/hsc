@@ -4,16 +4,13 @@ import type {
     Permission,
     PermissionList,
     PermissionListOptions,
-} from "../../../../../auth/domain/authorization";
-
-import type {
+    PermissionRepository,
     CreatePermission,
     UpdatePermission,
-} from "../../../../../auth/application/authorization/permissions";
+} from "../../../../../auth/domain/authorization";
 
-import type {
-    PermissionRepository,
-} from "@repo/database/repositories";
+
+
 
 import { PermissionRepositoryMapper as mapper } from "./mapper";
 

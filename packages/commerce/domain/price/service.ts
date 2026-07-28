@@ -7,29 +7,22 @@ import { UpdatePrice } from './update';
 
 
 import { PriceRepository } from './repository';
-import {
-    PriceNotFoundException,
-    PriceCreateFailedException
-} from './error';
 
+import { type CRUDService, DefaultCRUDService } from "@repo/shared/service";
 
-export interface PriceService {
+export interface PriceService extends CRUDService<
+    Price,
+    string,
+    CreatePrice,
+    UpdatePrice,
+    PriceQuery,
+    PriceList
+> {
 
-    get(id: string): Promise<Price | null>;
-
-    getMany(ids: readonly string[]): Promise<readonly Price[]>;
 
     getBySKUId(skuId: string): Promise<readonly Price[]>;
 
     getManyBySKUIds(skuIds: readonly string[]): Promise<readonly Price[]>;
-
-    find(query: PriceQuery): Promise<PriceList>;
-
-    create(create: CreatePrice): Promise<Price>;
-
-    update(update: UpdatePrice): Promise<Price>;
-
-    delete(id: string): Promise<void>;
 
     validateEffectivePeriod(
         price: CreatePrice,
@@ -43,26 +36,21 @@ export interface PriceService {
 
 
 class DefaultPriceService
+    extends DefaultCRUDService<
+        Price,
+        string,
+        CreatePrice,
+        UpdatePrice,
+        PriceQuery,
+        PriceList,
+        PriceRepository
+    >
     implements PriceService {
 
     constructor(
-        private readonly repository: PriceRepository,
-    ) {}
-
-    async get(
-        id: string,
-    ): Promise<Price | null> {
-
-        return this.repository.get(id);
-
-    }
-
-    async getMany(
-        ids: readonly string[],
-    ): Promise<readonly Price[]> {
-
-        return this.repository.getMany(ids);
-
+        protected readonly repository: PriceRepository,
+    ) {
+        super(repository);
     }
 
     async getBySKUId(
@@ -77,57 +65,6 @@ class DefaultPriceService
         return this.repository.getManyBySKUIds(skuIds);
     }
 
-    async find(
-        query: PriceQuery,
-    ): Promise<PriceList> {
-
-        return this.repository.find(query);
-
-    }
-
-    async create(
-        create: CreatePrice,
-    ): Promise<Price> {
-
-        await this.validateEffectivePeriod(create);
-
-        await this.repository.create(create);
-
-        const created =
-            await this.repository.get(create.skuId);
-
-        if (!created) {
-            throw new PriceCreateFailedException(create.skuId);
-        }
-
-        return created;
-
-    }
-
-    async update(
-        update: UpdatePrice,
-    ): Promise<Price> {
-
-        await this.repository.update(update);
-
-        const updated =
-            await this.repository.get(update.id);
-
-        if (!updated) {
-            throw new PriceNotFoundException(update.id);
-        }
-
-        return updated;
-
-    }
-
-    async delete(
-        id: string,
-    ): Promise<void> {
-
-        await this.repository.delete(id);
-
-    }
 
     async validateEffectivePeriod(
         price: CreatePrice,

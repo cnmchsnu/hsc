@@ -1,58 +1,30 @@
 "server-only";
 
-import { createServerClient } from '@repo/infra/supabase/client/server';
-
-
-import { SupabaseCategoryRepository } from '@repo/infra/supabase/repositories';
-import { SupabaseCategoryIdentifier } from '@repo/infra/supabase/identifiers';
-
 import { createCategoryReadService, type CategoryReadService } from '../application/read';
-import { createCategoryService } from '../domain';
-import { CategoryService } from '../domain/category';
-import { CategoryResolveService, createCategoryResolveService } from '../application/identifiers';
+
+import { ServiceContainer } from "./productServiceContainer";
 
 
 export interface CategoryContainer {
 
     categoryReadService: CategoryReadService;
-
-    categoryService: CategoryService;
-
-    categoryResolveService: CategoryResolveService;
-
 }
 
-export async function createCategoryContainer(): Promise<CategoryContainer> {
+export function createCategoryContainer(
+    serviceContainer: ServiceContainer
+): CategoryContainer {
 
-    const client = 
-        await createServerClient();
-
-    const categoryRepository =
-        new SupabaseCategoryRepository(client);
-
-    const categoryResolveRepository =
-        new SupabaseCategoryIdentifier(client)
-
-    const categoryService =
-        createCategoryService(
-            categoryRepository,
-        );
-
-    const categoryResolveService =
-        createCategoryResolveService(
-            categoryResolveRepository,
-        );
+    
 
     const categoryReadService =
         createCategoryReadService({
-            categoryService,
+            categoryService: serviceContainer.categoryService,
         });
 
     return {
         
         categoryReadService,
-        categoryService,
-        categoryResolveService
+
 
     };
 }

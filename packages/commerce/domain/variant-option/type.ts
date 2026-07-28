@@ -16,6 +16,8 @@ export interface VariantOption {
 
     name: VariantOptionName;
 
+    isEnabled: boolean;
+
     displayName: string;
 
     sortOrder: number;

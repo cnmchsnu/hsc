@@ -3,13 +3,18 @@ import type { CategoryRepository } from "./repository";
 import type { CreateCategory } from "./create";
 import type { UpdateCategory } from "./update";
 
-export interface CategoryService {
+import { type CRUDService, DefaultCRUDService } from "@repo/shared/service";
+
+export interface CategoryService extends Omit<CRUDService<
+    Category,
+    string,
+    CreateCategory,
+    UpdateCategory,
+    any,
+    any
+>, "find"> {
 
     // Read Single
-
-    findById(
-        id: string,
-    ): Promise<Category | null>;
 
     findBySlug(
         slug: string,
@@ -18,66 +23,18 @@ export interface CategoryService {
 
     // Read Batch
 
-    findByIds(
-        ids: readonly string[],
-    ): Promise<readonly Category[]>;
-
     findBySlugs(
         slugs: readonly string[],
     ): Promise<readonly Category[]>;
-
 
     // Query
 
     list(): Promise<readonly Category[]>;
 
-
-    // Exists Single
-
-    exists(
-        id: string,
-    ): Promise<boolean>;
-
-
     // Exists Batch
-
-    listExistingIds(
-        ids: readonly string[],
-    ): Promise<readonly string[]>;
-
     listExistingSlugs(
         slugs: readonly string[],
     ): Promise<readonly string[]>;
-
-
-    // Write Single
-
-    create(
-        category: CreateCategory,
-    ): Promise<void>;
-
-    update(
-        category: UpdateCategory,
-    ): Promise<void>;
-
-    delete(
-        id: string,
-    ): Promise<void>;
-
-
-    // Write Batch
-
-    createMany(
-        categories: readonly CreateCategory[],
-    ): Promise<void>;
-
-    updateMany(
-        categories: readonly UpdateCategory[],
-    ): Promise<void>;
-
-    deleteMany(
-        ids: readonly string[],
-    ): Promise<void>;
 
 
     // Other
@@ -90,198 +47,98 @@ export interface CategoryService {
 
 }
 
-export function createCategoryService(
-    categoryRepository: CategoryRepository,
-): CategoryService {
 
-    return {
 
-                // Read Single
-        async findById(
-            id: string
-        ): Promise<Category | null> {
-            const category =
-                await categoryRepository.get(id);
+class  DefaultCategoryService
+    extends DefaultCRUDService<
+        Category,
+        string,
+        CreateCategory,
+        UpdateCategory,
+        any,
+        any,
+        CategoryRepository
+    >
+    implements CategoryService {
+
+    constructor(
+        protected readonly repository: CategoryRepository,
+    ) {
+        super(repository);
+    }
+
+    async findBySlug(
+        slug: string
+    ): Promise<Category | null> {
+        const category =
+            await this.repository.getBySlug(slug);
             
-            if (!category) {
-                return null;
-            }
+        if (!category) return null;
 
-            return category;
-        },
-        async findBySlug(
-            slug: string
-        ): Promise<Category | null> {
-            const category =
-                await categoryRepository.getBySlug(slug);
-            
-            if (!category) {
-                return null;
-            }
-
-            return category;
-        },
+        return category;
+    }
 
         // Read Batch
-        async findByIds(
-            ids: readonly string[]
-        ): Promise<readonly Category[]> {
-            if (ids.length === 0) {
-                return [];
-            }
-
-
-            const categories =
-                await categoryRepository.getMany(ids);
-               
-
-            if (!categories) {
-                return [];
-            }
-
-            return categories;
-
-        },
         
-        async findBySlugs(
-            slugs: readonly string[]
-        ): Promise<readonly Category[]> {
-            if (slugs.length === 0) {
-                return [];
-            }
+    async findBySlugs(
+        slugs: readonly string[]
+    ): Promise<readonly Category[]> {
+        if (slugs.length === 0) return [];
 
-            const categories =
-                await categoryRepository.getBySlugs(slugs);
+        const categories =
+            await this.repository.getBySlugs(slugs);
             
-            if (!categories) {
-                return [];
-            }
+        if (!categories) return [];
 
-            return categories;
-        },
+        return categories;
+    }
 
-        // Query
-        async list(): Promise<readonly Category[]> {
-            const categories =
-                await categoryRepository.list();
+    // Query
+
+    async list(): Promise<readonly Category[]> {
+        const categories =
+            await this.repository.list();
             
-            if (!categories) {
-                return [];
-            }
+        if (!categories)  return [];
 
-            return categories;
-        },
+        return categories;
+    }
 
-        // Exists Single
-        async exists(
-            id: string
-        ): Promise<boolean> {
-            return await categoryRepository.exists(id);
-        },
 
-        // Exists Batch
-        async listExistingIds(
-            ids: readonly string[]
-        ): Promise<readonly string[]> {
-            if (ids.length === 0) {
-                return [];
-            }
+    // Exists Batch
 
-            const existingIds =
-                await categoryRepository.listExisting(ids);
-            
-            if (!existingIds) {
-                return [];
-            }
 
-            return existingIds;
-        },
+    async listExistingSlugs(
+        slugs: readonly string[]
+    ): Promise<readonly string[]> {
+        if (slugs.length === 0) return [];
 
-        async listExistingSlugs(
-            slugs: readonly string[]
-        ): Promise<readonly string[]> {
-            if (slugs.length === 0) {
-                return [];
-            }
+        const existingSlugs =
+            await this.repository.listExistingSlugs(slugs);
 
-            const existingSlugs =
-                await categoryRepository.listExistingSlugs(slugs);
+        if (!existingSlugs) return [];
 
-            if (!existingSlugs) {
-                return [];
-            }
-
-            return existingSlugs;
-        },
-
-        // Write Single
-        async create(
-            category: CreateCategory
-        ): Promise<void> {
-            await categoryRepository.create(category);
-        },
-
-        async update(
-            category: UpdateCategory
-        ): Promise<void> {
-            await categoryRepository.update(category);
-        },
-
-        async delete(
-            id: string
-        ): Promise<void> {
-            await categoryRepository.delete(id);
-        },
-
-        // Write Batch
-        async createMany(
-            categories: readonly CreateCategory[]
-        ): Promise<void> {
-            if (categories.length === 0) {
-                return;
-            }
-
-            await categoryRepository.createMany(categories);
-        },
-
-        async updateMany(
-            categories: readonly UpdateCategory[]
-        ): Promise<void> {
-            if (categories.length === 0) {
-                return;
-            }
-
-            await categoryRepository.updateMany(categories);
-        },
-
-        async deleteMany(
-            ids: readonly string[]
-        ): Promise<void> {
-            if (ids.length === 0) {
-                return;
-            }
-
-            await categoryRepository.deleteMany(ids);
-        },
+        return existingSlugs;
+    }
 
         // Other
-        async findPathToRoot(
-            categoryId: string
-        ): Promise<Category[]> {
-            if (!categoryId) {
-                return [];
-            }
+    async findPathToRoot(
+        categoryId: string
+    ): Promise<Category[]> {
+        if (!categoryId) return [];
 
-            const path =
-                await categoryRepository.findPathToRoot(categoryId);
+        const path =
+            await this.repository.findPathToRoot(categoryId);
+        
+        if (!path) return [];
             
-            if (!path) {
-                return [];
-            }
-            
-            return path;
-        }
+        return path;
+    }
 
-    };
+}
 
+export function createCategoryService(
+    repository: CategoryRepository,
+): CategoryService {
+    return new DefaultCategoryService(repository);
 }

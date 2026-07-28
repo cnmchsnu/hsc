@@ -1,4 +1,4 @@
-import { ProfileRepository } from "@repo/database/repositories"
+import { ProfileRepository } from "../domain/profile";
 
 import { Profile } from "../domain/profile";
 import { UserService } from "../domain/identity";
@@ -38,7 +38,7 @@ class DefaultProfileSyncService
                 throw new Error(`User with ID ${userId} not found.`);
             }
 
-            const profile = await this.profileRepository.findById(userId);
+            const profile = await this.profileRepository.findByUid(userId);
 
             if (!profile) {
                 throw new Error(`Profile for user with ID ${userId} not found.`);
@@ -47,7 +47,7 @@ class DefaultProfileSyncService
             const newProfile: Profile = {
                 ...profile,
                 displayName: profile.sync_display_name ? user.name : profile.displayName,
-                avatarUrl: user.avatar!,
+                avatarUrl: profile.avatarUrl,
             };
 
             await this.profileRepository.update(newProfile);

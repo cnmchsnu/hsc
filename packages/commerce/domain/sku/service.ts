@@ -7,38 +7,35 @@ import { UpdateSKU } from './update';
 
 
 import { SKURepository } from './repository';
+import { SKUVariantValueRepository } from '../sku-variant-value';
+
+import { type CRUDService, DefaultCRUDService } from "@repo/shared/service";
+import { ProductSkuEditor } from '../../application/manage';
+import { ConflictError, NotFoundError, ValidationError } from '@repo/shared/application';
 
 
 
-export interface SKUService {
+export interface SKUService extends CRUDService<
+    SKU,
+    string,
+    CreateSKU,
+    UpdateSKU,
+    SKUQuery,
+    SKUList
+> {
 
-    get(id: string): Promise<SKU | null>;
+    createManyViaAggregate(commands: readonly ProductSkuEditor[]): Promise<ReadonlyMap<string, string>>;
 
-    getMany(ids: readonly string[]): Promise<readonly SKU[]>;
+    updateManyViaAggregate(commands: readonly ProductSkuEditor[]): Promise<ReadonlyMap<string, string>>;
+
+    archiveManyViaAggregate(commands: readonly SKU[]): Promise<void>;
+
 
     getByCode(code: string): Promise<SKU | null>;
 
     getByProduct(productId: string): Promise<readonly SKU[]>;
 
     getByProducts(productIds: readonly string[]): Promise<readonly SKU[]>;
-
-    find(query: SKUQuery): Promise<SKUList>;
-
-    create(create: CreateSKU): Promise<void>;
-
-    createMany(commands: readonly CreateSKU[]): Promise<void>;
-
-    update(update: UpdateSKU): Promise<void>;
-
-    updateMany(commands: readonly UpdateSKU[]): Promise<void>;
-
-    delete(id: string): Promise<void>;
-
-    createMany(commands: readonly CreateSKU[]): Promise<void>;
-
-    exists(code: string): Promise<boolean>;
-
-    listExisting(ids: readonly string[]): Promise<readonly string[]>;
 
     validateCode(code: string): Promise<void>;
 
@@ -48,58 +45,110 @@ export interface SKUService {
     
 
 
-class DefaultSKUService implements SKUService {
+
+class DefaultSKUService
+    extends DefaultCRUDService<
+        SKU,
+        string,
+        CreateSKU,
+        UpdateSKU,
+        SKUQuery,
+        SKUList,
+        SKURepository
+    >
+    implements SKUService {
 
     constructor(
+        protected readonly repository: SKURepository,
+        protected readonly SKUVariantValueRepository: SKUVariantValueRepository,
+    ) {
+        super(repository);
+    }
 
-        private readonly repository: SKURepository,
+    async createManyViaAggregate(
+        commands: readonly ProductSkuEditor[],
+    ): Promise<ReadonlyMap<string, string>> {
+        const result = new Map<string, string>();
+        for (const command of commands) {
 
-    ) {}
+            await super.create({
+                productId: command.productId,
+                code: command.code,
+                barcode: command.barcode ?? null,
+                status: command.status,
+            });
 
-    async create(
-        create: CreateSKU,
-    ): Promise<void> {
+            const sku = await this.getByCode(command.code);
 
-        let code = create.code;
+            if (!sku) {
+                throw new ConflictError(`Failed to create SKU with code: ${command.code}`);
+            }
+            result.set(command.code, sku.id);
 
-        if (!code) {
-            code = await this.generateCode(
-                create.productId,
+            await this.SKUVariantValueRepository.createMany(
+
+                command.optionValueIds.map(id => ({
+                    optionValueId: id,
+                    skuId: sku.id, 
+                })),
+
+            );
+
+        }
+        return result;
+    }
+
+    async updateManyViaAggregate(
+        commands: readonly ProductSkuEditor[],
+    ): Promise<ReadonlyMap<string, string>> {
+        const result = new Map<string, string>();
+        for (const command of commands) {
+            const existingSKU = await this.getByCode(command.code);
+
+            if (!existingSKU) {
+                throw new NotFoundError(`SKU with code ${command.code} does not exist.`);
+            }
+
+            result.set(command.code, existingSKU.id);
+
+            await super.update({
+                id: existingSKU.id,
+                code: command.code,
+                barcode: command.barcode ?? null,
+                status: command.status,
+            });
+
+            await this.SKUVariantValueRepository.replace(
+                existingSKU.id,
+                command.optionValueIds.map(id => ({
+                    optionValueId: id,
+                    skuId: existingSKU.id, 
+                })),
             );
         }
+        return result;
 
-        await this.validateCode(code);
-
-        await this.repository.create({
-            ...create,
-            code,
-        });
     }
 
-    async createMany(
-        commands: readonly CreateSKU[],
+    async archiveManyViaAggregate(
+        commands: readonly SKU[],
     ): Promise<void> {
+        for (const command of commands) {
+            const existingSKU = await this.getByCode(command.code);
 
-        await this.repository.createMany(commands);
+            if (!existingSKU) {
+                throw new NotFoundError(`SKU with code ${command.code} does not exist.`);
+            }
 
-    }
+            await super.update({
+                id: existingSKU.id,
+                code: existingSKU.code,
+                barcode: existingSKU.barcode ?? null,
+                status: 'archived',
+            });
 
-
-
-    async exists(
-        code: string,
-    ): Promise<boolean> {
-
-        return await this.repository.existsByCode(code);
-
-    }
-
-
-    async listExisting(
-        ids: readonly string[],
-    ): Promise<readonly string[]> {
-
-        return await this.repository.listExistingCode(ids);
+            await this.SKUVariantValueRepository.deleteBySKU(existingSKU.id);
+        }
     }
 
     async validateCode(
@@ -107,11 +156,11 @@ class DefaultSKUService implements SKUService {
     ): Promise<void> {
 
         if (code.trim().length === 0) {
-            throw new Error("SKU code cannot be empty.");
+            throw new ValidationError("SKU code cannot be empty.");
         }
 
         if (await this.exists(code)) {
-            throw new Error("SKU code already exists.");
+            throw new ConflictError("SKU code already exists.");
         }
 
     }
@@ -121,22 +170,6 @@ class DefaultSKUService implements SKUService {
     ): Promise<string> {
 
         return crypto.randomUUID();
-
-    }
-
-    async get(
-        id: string,
-    ): Promise<SKU | null> {
-
-        return this.repository.get(id);
-
-    }
-
-    async getMany(
-        ids: readonly string[],
-    ): Promise<readonly SKU[]> {
-
-        return this.repository.getMany(ids);
 
     }
 
@@ -162,60 +195,12 @@ class DefaultSKUService implements SKUService {
         return this.repository.getByProducts(productIds);
     }
 
-    async find(
-        query: SKUQuery,
-    ): Promise<SKUList> {
-
-        return this.repository.find(query);
-
-    }
-
-    async update(
-        update: UpdateSKU,
-    ): Promise<void> {
-
-        const exists = await this.repository.exists(update.id);
-
-        if (!exists) {
-            return;
-        }
-
-        await this.repository.update(update);
-
-    }
-
-    async updateMany(
-        commands: readonly UpdateSKU[],
-    ): Promise<void> {
-
-        const exsits = await this.repository.listExisting(
-            commands.map(c => c.id),
-        );
-
-        const row = commands.filter(c => exsits.includes(c.id));
-
-        await this.repository.updateMany(row);
-
-    }
-
-    async delete(
-        id: string,
-    ): Promise<void> {
-        await this.repository.delete(id);
-    }
-
-    async deleteMany(
-        ids: readonly string[],
-    ): Promise<void> {
-        await this.repository.deleteMany(ids);
-    }
-
-
 }
 
 
 export function createSKUService(
     repository: SKURepository,
+    SKUVariantValueRepository: SKUVariantValueRepository,
 ): SKUService {
-    return new DefaultSKUService(repository);
+    return new DefaultSKUService(repository, SKUVariantValueRepository);
 }

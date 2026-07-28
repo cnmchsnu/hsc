@@ -64,7 +64,6 @@ export const InventoryItemRepositoryMapper: RepositoryMapper<
 
             incoming_quantity: dto.incomingQuantity,
 
-            version: dto.version,
         };
     },
 

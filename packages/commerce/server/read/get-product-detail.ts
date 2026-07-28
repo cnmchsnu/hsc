@@ -1,8 +1,7 @@
 import { createCommerceContainer } from '../../container';
 import { ProductDetail } from '../../application/read/product';
-import { cache } from 'react';
 
-export const getProductDetail = cache(async (slug: string): Promise<ProductDetail | null> => {
+export async function getProductDetail(slug: string): Promise<ProductDetail | null> {
     
     const {
         productContainer,
@@ -11,4 +10,4 @@ export const getProductDetail = cache(async (slug: string): Promise<ProductDetai
     const result = await productContainer.productReadService.getProductDetail(slug);
 
     return result;
-});
+}

@@ -304,13 +304,17 @@ export abstract class SupabaseRepositoryBase<
         id: TId,
     ): Promise<TEntity | null> {
 
-        const row = await this.getRow(id);
+        const {data, error} = await this.getRow(id);
 
-        if (!row) {
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
             return null;
         }
 
-        return this.mapper.fromRow(row);
+        return this.mapper.fromRow(data);
     }
 
     async getMany(
@@ -364,11 +368,20 @@ export abstract class SupabaseRepositoryBase<
 
     async create(
         command: TCreate,
-    ): Promise<void> {
+    ): Promise<TEntity> {
+        const { data, error } = await this
+            .from()
+            .insert(this.mapper.toCreateRow(command) as any);
+            
+        if (error) {
+            throw error;
+        }
 
-        await this.createMany([
-            command,
-        ]);
+        if (!data || !data) {
+            throw new Error("Failed to create entity");
+        }
+
+        return this.mapper.fromRow(data);
     }
 
     async createMany(
@@ -389,11 +402,21 @@ export abstract class SupabaseRepositoryBase<
 
     async update(
         command: TUpdate,
-    ): Promise<void> {
+    ): Promise<TEntity> {
+        const { data, error } = await this
+            .from()
+            .insert(this.mapper.toUpdateRow(command) as any)
+            .eq("id", (command as any).id)
+            
+        if (error) {
+            throw error;
+        };
 
-        await this.updateMany([
-            command,
-        ]);
+        if (!data || !data) {
+            throw new Error("Failed to update entity");
+        }
+
+        return this.mapper.fromRow(data);
     }
 
     async updateMany(
@@ -415,6 +438,7 @@ export abstract class SupabaseRepositoryBase<
 
     async delete(
         id: TId,
+        relations?: readonly TEntity[],
     ): Promise<void> {
 
         await this.deleteMany([
@@ -424,6 +448,7 @@ export abstract class SupabaseRepositoryBase<
 
     async deleteMany(
         ids: readonly TId[],
+        relations?: readonly TEntity[],
     ): Promise<void> {
 
         await this.deleteRows(ids);

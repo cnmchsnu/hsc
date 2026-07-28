@@ -1,1 +1,1 @@
-export { SupabaseProfileRepository } from "./profile.repository";
+export { SupabaseProfileRepository } from "./SupabaseProfileRepository";

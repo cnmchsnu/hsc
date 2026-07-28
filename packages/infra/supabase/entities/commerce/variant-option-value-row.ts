@@ -4,6 +4,8 @@ export interface VariantOptionValueRow {
 
     option_id: string;
 
+    is_enabled: boolean;
+
     value: string;
 
     value_name: string;

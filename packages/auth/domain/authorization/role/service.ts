@@ -1,6 +1,6 @@
 import { Role, RoleList, RoleListOptions, RoleTypes } from "./type";
 
-import { RoleRepository } from "@repo/database/repositories"
+import { RoleRepository } from "./repository";
 
 export interface RoleService {
 

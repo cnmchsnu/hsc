@@ -1,41 +1,14 @@
 "server-only";
 
-import { createServerClient } from '@repo/infra/supabase/client/server';
-
-import {
-    SupabaseProductRepository,
-    SupabaseProductCategoryRepository,
-    SupabaseProductImageService,
-    SupabaseSKURepository,
-    SupabaseInventoryItemRepository,
-    SupabasePriceRepository,
-    SupabaseVariantOptionRepository,
-    SupabaseSKUVariantValueRepository,
-    SupabaseVariantOptionValueRepository
-} from '@repo/infra/supabase/repositories';
-
-import { SupabaseProductIdentifier } from '@repo/infra/supabase/identifiers';
 
 
-import type { CategoryService } from '../domain/category';
-import type { CategoryResolveService } from '../application/identifiers';
 
-
-import {
-    createProductService,
-    createProductCategoryService,
-    createProductImageService,
-    createPriceService,
-    createInventoryItemService,
-    createSKUService,
-    createVariantOptionService,
-    createVariantOptionValueService,
-} from '../domain';
 
 import { createProductReadService, type ProductReadService } from '../application/read/product';
-import { createProductSearchService, type ProductSearchService } from '../application/search/product';
+import { DefaultProductSearchService, type ProductSearchService } from '../application/search/product';
 
-import { createProductResolveService } from '../application/identifiers';
+import { ServiceContainer } from "./productServiceContainer";
+
 
 export interface ProductContainer {
 
@@ -45,120 +18,25 @@ export interface ProductContainer {
 
 }
 
-export async function createProductContainer(
-    categoryService: CategoryService,
-    categoryResolveService: CategoryResolveService
-): Promise<ProductContainer> {
-
-    const client = 
-        await createServerClient();
-
-    const productRepository = 
-        new SupabaseProductRepository(client);
-
-    
-    const productImageRepository =
-        new SupabaseProductImageService(client);
-
-    const productCategoryRepository =
-        new SupabaseProductCategoryRepository(client);
-
-    const productResolveRepository =
-        new SupabaseProductIdentifier(client);
-
-    const priceRepository =
-        new SupabasePriceRepository(client);
-    
-    const inventoryItemRepository =
-        new SupabaseInventoryItemRepository(client);
-
-    const variantOptionRepository =
-        new SupabaseVariantOptionRepository(client);
-
-    const variantValueOptionRepository =
-        new SupabaseVariantOptionValueRepository(client);
-
-
-    const skuVariantValueRepository =
-        new SupabaseSKUVariantValueRepository(client);
-
-    const skuRepository =
-        new SupabaseSKURepository(client);
-
-
-    const productService =
-            createProductService(
-                productRepository,
-            );
-    
-        const productImageService =
-            createProductImageService(
-                productImageRepository,
-            );
-    
-        const productCategoryService =
-            createProductCategoryService(
-                productCategoryRepository,
-            );
-
-        const productResolveService =
-            createProductResolveService(
-                productResolveRepository,
-            );
-
-        const priceService =
-            createPriceService(
-                priceRepository,
-            );
-
-        const inventoryItemService =
-            createInventoryItemService(
-                inventoryItemRepository,
-            );
-
-        const skuService =
-            createSKUService(
-                skuRepository,
-            );
-
-        const variantOptionService =
-            createVariantOptionService(
-                variantOptionRepository,
-            );
-
-        const variantOptionValueService =
-            createVariantOptionValueService(
-                variantValueOptionRepository,
-            );
-
+export function createProductContainer(
+    serviceContainer: ServiceContainer
+): ProductContainer {
 
 
 
     
 
-        const productReadService =
-            createProductReadService({
-                categoryService,
-                productService,
-                productCategoryService,
-                productImageService,
-                productResolveService,
-                skuService,
-                variantOptionService,
-                variantOptionValueService,
-                priceService,
-                inventoryItemService,
-                skuVariantValueRepository
-            });
+    const productReadService =
+        createProductReadService(serviceContainer);
 
 
-        const productSearchService =
-                createProductSearchService({
-                    productService,
-                    productCategoryService,
-                    productReadService,
-                    categoryResolveService,
-                });
+    const productSearchService =
+            new DefaultProductSearchService(
+                serviceContainer.productService,
+                serviceContainer.productCategoryService,
+                productReadService,
+                serviceContainer.categoryResolveService,
+            );
 
     return {
 

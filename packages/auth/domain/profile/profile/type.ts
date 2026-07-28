@@ -46,10 +46,6 @@ export type ProfileSort =
     | "studentId-asc"
     | "studentId-desc";
 
-export type ProfileStatus = 
-    | "active"
-    | "deactived"
-    | "deleted"
 
 export interface ProfileListOptions {
 
@@ -74,8 +70,6 @@ export interface ProfileListOptions {
     lastActiveDate?: Date;
 
     classification?: string;
-
-    status?: ProfileStatus[];
 
     sort?: ProfileSort;
 

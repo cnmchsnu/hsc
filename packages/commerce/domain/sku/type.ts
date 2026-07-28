@@ -17,6 +17,7 @@ export interface SKU {
 export type SKUStatus =
     | 'draft'
     | 'active'
+    | 'inactive'
     | 'archived';
 
 

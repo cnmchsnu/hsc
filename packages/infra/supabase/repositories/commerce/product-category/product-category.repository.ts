@@ -1,24 +1,53 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 
-import { CreateProductCategory, ProductCategory, ProductCategoryRepository } from "../../../../../commerce/domain/product-category";
+import {
+    CreateProductCategory,
+    ProductCategory,
+    ProductCategoryRepository
+} from "../../../../../commerce/domain/product-category";
 
 import { ProductCategoryRepositoryMapper as mapper } from "./mapper";
 
+import { ProductCategoryRow } from "../../../entities";
+
+import { SupabaseRepositoryBase } from "../../base/SupabaseRepositoryBase";
+
 export class SupabaseProductCategoryRepository
+    extends SupabaseRepositoryBase<
+        ProductCategory,
+        string,
+        CreateProductCategory,
+        any,
+        any,
+        any,
+        ProductCategoryRow
+    >
     implements ProductCategoryRepository {
+
         constructor(
-            private readonly client: SupabaseClient,
-        ) {}
+            protected readonly client: SupabaseClient,
+        ) {
+            super(client);
+        }
+
+        protected readonly schema = "commerce";
+
+        protected readonly table = "product_categories";
+
+        protected readonly createRpc = "create_product_category";
+
+        protected readonly updateRpc = "update_product_category";
+
+        protected readonly mapper = mapper;
 
         // Read Single
         
         async getByProductId(
             productId: string,
         ): Promise<readonly ProductCategory[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .eq("product_id", productId);
 
@@ -36,9 +65,8 @@ export class SupabaseProductCategoryRepository
         async getByCategoryId(
             categoryId: string,
         ): Promise<readonly ProductCategory[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .eq("category_id", categoryId);
 
@@ -56,9 +84,8 @@ export class SupabaseProductCategoryRepository
         async getPrimaryByProductId(
             productId: string,
         ): Promise<ProductCategory | null> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .eq("product_id", productId)
                 .eq("is_primary", true)
@@ -80,9 +107,8 @@ export class SupabaseProductCategoryRepository
         async getByProductIds(
             productIds: string[],
         ): Promise<readonly ProductCategory[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .in("product_id", [...productIds]);
 
@@ -100,9 +126,8 @@ export class SupabaseProductCategoryRepository
         async getByCategoryIds(
             categoryIds: string[],
         ): Promise<readonly ProductCategory[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .in("category_id", [...categoryIds]);
 
@@ -120,9 +145,8 @@ export class SupabaseProductCategoryRepository
         async getPrimaryByProductIds(
             productIds: string[],
         ): Promise<readonly ProductCategory[]> {
-            const { data, error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
+            const { data, error } = await this
+                .from()
                 .select("*")
                 .in("product_id", [...productIds])
                 .eq("is_primary", true);
@@ -138,120 +162,7 @@ export class SupabaseProductCategoryRepository
             return mapper.fromRows(data);
         }
 
-        // Write Single
-
-        async create(
-            relation: CreateProductCategory,
-        ): Promise<void> {
-
-            const row = mapper.toCreateRow(relation);
-
-            const { error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .insert(row);
-
-            if (error) {
-                throw error;
-            }
-
-        }
-
-        async update(
-            relation: ProductCategory,
-        ): Promise<void> {
-
-            const row = mapper.toUpdateRow(relation);
-
-            const { error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .update(row)
-                .eq("product_id", relation.product_id)
-                .eq("category_id", relation.category_id);
-            if (error) {
-                throw error;
-            }
-
-        }
-
-        async delete(
-            productId: string,
-            categoryId: string,
-        ): Promise<void> {
-            const { error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .delete()
-                .eq("product_id", productId)
-                .eq("category_id", categoryId);
-
-            if (error) {
-                throw error;
-            }
-
-        }
-
-        // Write Batch
-
-        async createMany(
-            relations: readonly CreateProductCategory[],
-        ): Promise<void> {
-
-            const rows = mapper.toCreateRows(relations);
-
-            const { error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .insert(rows);
-
-            if (error) {
-                throw error;
-            }
-
-        }
-
-        async updateMany(
-            relations: readonly ProductCategory[],
-        ): Promise<void> {
-
-            const rows = mapper.toUpdateRows(relations);
-
-            const { error } = await this.client
-                .schema("commerce")
-                .rpc(
-                    "update_product_categories", {
-                        relations: rows,
-                    },
-                );
-
-
-            if (error) {
-                throw error;
-            }
-        }
-
-        async deleteMany(
-            relations: readonly ProductCategory[],
-        ): Promise<void> {  
-            const { error } = await this.client
-                .schema("commerce")
-                .from("product_categories")
-                .delete()
-                .in(
-                    "product_id",
-                    relations.map((relation) => relation.product_id),
-                )
-                .in(
-                    "category_id",
-                    relations.map((relation) => relation.category_id),
-                );
-            
-            if (error) {
-                throw error;
-            }
-
-        }
+        // Delete
 
         async deleteManyByProductId(
             productId: string,
@@ -281,4 +192,22 @@ export class SupabaseProductCategoryRepository
             }
 
         }
+
+
+        override async deleteMany(
+            ids: readonly string[],
+            relations: readonly ProductCategory[],
+        ): Promise<void> {
+
+            const { error } = await this.client
+                .schema("commerce")
+                .rpc("delete_product_categories", {
+                    product_categories: relations
+                });
+
+            if (error) {
+                throw error;
+            }
+        }
+    
 }

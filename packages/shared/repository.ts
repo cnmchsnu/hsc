@@ -22,19 +22,12 @@ export interface Query {
 
 
 export interface Repository<
-
     TEntity,
-
     TId,
-
     TCreate,
-
     TUpdate,
-
     TOptions extends Query,
-
     TList,
-
 > {
 
     get(
@@ -47,6 +40,7 @@ export interface Repository<
 
     exists(
         id: TId,
+        secondaryId?: string,
     ): Promise<boolean>;
 
     listExisting(
@@ -59,7 +53,7 @@ export interface Repository<
 
     create(
         command: TCreate,
-    ): Promise<void>;
+    ): Promise<TEntity | null>;
 
     createMany(
         commands: readonly TCreate[],
@@ -67,7 +61,7 @@ export interface Repository<
 
     update(
         command: TUpdate,
-    ): Promise<void>;
+    ): Promise<TEntity | null>;
 
     updateMany(
         commands: readonly TUpdate[],

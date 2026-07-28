@@ -366,13 +366,9 @@ CREATE OR REPLACE FUNCTION commerce.update_product_categories(
     product_categories jsonb
 )
 RETURNS TABLE (
-
     id uuid,
-
     success boolean,
-
     reason text,
-
     version bigint
 
 )
@@ -383,90 +379,107 @@ $$
 BEGIN
 
 RETURN QUERY
-
 WITH updated AS (
-
     UPDATE commerce.product_categories AS p
-
     SET
-
         product_id = u.product_id,
-
         category_id = u.category_id,
-
         display_order = u.display_order,
-
         is_primary = u.is_primary,
-
         version = p.version + 1,
-
         updated_at = now()
 
     FROM jsonb_to_recordset(product_categories) AS u(
-
         id uuid,
-
         version bigint,
-
         product_id uuid,
-
         category_id uuid,
-
         display_order integer,
-
         is_primary boolean
-
     )
 
     WHERE
-
         p.id = u.id
-
         AND p.version = u.version
-
     RETURNING
-
         p.id,
-
         p.version
-
 )
 
 SELECT
-
     u.id,
-
     updated.id IS NOT NULL,
-
     CASE
-
         WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
-
         ELSE NULL
-
     END,
-
     COALESCE(updated.version, u.version)
 
 FROM jsonb_to_recordset(product_categories) AS u(
-
     id uuid,
-
     version bigint,
-
     product_id uuid,
-
     category_id uuid,
-
     display_order integer,
-
     is_primary boolean
+)
+LEFT JOIN updated
+ON updated.id = u.id;
 
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION commerce.delete_product_categories(
+    product_categories jsonb
+)
+RETURNS TABLE (
+    product_id uuid,
+    category_id uuid,
+    success boolean,
+    reason text
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS
+$$
+BEGIN
+
+RETURN QUERY
+
+WITH deleted AS (
+    DELETE FROM commerce.product_categories AS p
+    USING jsonb_to_recordset(product_categories) AS u(
+        product_id uuid,
+        category_id uuid,
+        is_primary boolean,
+        display_order integer
+    )
+    WHERE
+        p.product_id = u.product_id
+        AND p.category_id = u.category_id
+    RETURNING
+        p.product_id,
+        p.category_id
 )
 
-LEFT JOIN updated
-
-ON updated.id = u.id;
+SELECT
+    u.product_id,
+    u.category_id,
+    deleted.product_id IS NOT NULL AS success,
+    CASE
+        WHEN deleted.product_id IS NOT NULL THEN NULL
+        ELSE 'NOT_FOUND'
+    END AS reason
+FROM jsonb_to_recordset(product_categories) AS u(
+    product_id uuid,
+    category_id uuid,
+    is_primary boolean,
+    display_order integer
+)
+LEFT JOIN deleted
+  ON deleted.product_id = u.product_id
+ AND deleted.category_id = u.category_id;
 
 END;
 $$;

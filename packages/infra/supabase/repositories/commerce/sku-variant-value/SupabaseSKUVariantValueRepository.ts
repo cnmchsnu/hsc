@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { SKUVariantValue, SKUVariantValueRepository } from '../../../../../commerce/domain/sku-variant-value';
+import { CreateSKUVariantValue, SKUVariantValue, SKUVariantValueRepository } from '../../../../../commerce/domain/sku-variant-value';
 
 import { SKUVariantValueRepositoryMapper as mapper } from './mapper';
 
@@ -70,6 +70,19 @@ import { SKUVariantValueRepositoryMapper as mapper } from './mapper';
 
         if (error) {
 
+            throw error;
+        }
+    }
+
+    async createMany(
+        values: readonly CreateSKUVariantValue[],
+    ): Promise<void> {
+        const { error } = await this.client
+            .schema("commerce")
+            .from("sku_variant_values")
+            .insert(mapper.toCreateRows(values));
+
+        if (error) {
             throw error;
         }
     }

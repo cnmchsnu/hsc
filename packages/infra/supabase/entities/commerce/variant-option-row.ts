@@ -6,6 +6,8 @@ export interface VariantOptionRow {
 
     product_id: string;
 
+    is_enabled: boolean;
+
     name: VariantOptionName;
 
     display_name: string;

@@ -9,15 +9,13 @@ import { VariantOptionList } from "./list";
 
 
 export interface VariantOptionRepository
-    extends Omit<Repository<
+    extends Repository<
         VariantOption,
         string,
         CreateVariantOption,
         UpdateVariantOption,
         VariantOptionQuery,
         VariantOptionList
-    >, 
-        'exists'
     > {
 
     exists(

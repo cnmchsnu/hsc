@@ -29,7 +29,7 @@ export class SupabaseCategoryRepository
     implements CategoryRepository {
 
         constructor(
-            protected override readonly client: SupabaseClient,
+            protected readonly client: SupabaseClient,
         ) {
             super(client);
         }

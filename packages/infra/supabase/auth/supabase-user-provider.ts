@@ -1,4 +1,4 @@
-import { createServerClient } from "../client/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { User } from "../../../auth/domain/identity";
 import { UserProvider } from "./user-provider";
@@ -8,11 +8,18 @@ import { toUser } from "./mapper";
 export class SupabaseUserProvider
     implements UserProvider {
 
+    constructor(
+        private readonly client: SupabaseClient,
+    ) {
+        if (!client) {
+            throw new Error('SupabaseUserProvider initialized without SupabaseClient!');
+        }
+    }
+
+
     async get(): Promise<User | null> {
 
-        const supabase = await createServerClient();
-
-        const { data, error } = await supabase.auth.getUser();
+        const { data, error } = await this.client.auth.getUser();
 
         if (error) {
             
