@@ -160,15 +160,6 @@ export class SupabasePriceRepository
 
         }
 
-        const page = options.page ?? 1;
-        const pageSize = options.pageSize ?? 50;
-        const from = (page - 1) * pageSize;
-
-        query = query.range(
-            from,
-            from + pageSize - 1,
-        );
-
         return query;
     }
 

@@ -2,10 +2,8 @@ import type {
     ProductSelectionResult,
 } from "./type";
 
-import type {
-    ProductVariant,
-    ProductVariantSKU,
-} from "../build-product-variant";
+import type { ProductVariantSKU } from '../build-product-variant-sku';
+
 
 export function resolveProductSelection(
     optionCount: number,

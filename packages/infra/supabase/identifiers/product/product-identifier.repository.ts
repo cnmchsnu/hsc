@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { ProductIdentifier } from "@repo/database/identifiers";
+import type { ProductIdentifier } from "../../../../commerce/application";
 
 
 export class SupabaseProductIdentifier

@@ -3,7 +3,7 @@ import type { Permission, PermissionList, PermissionListOptions } from "./type";
 
 import type { CreatePermission, UpdatePermission } from "../../../application/authorization/permissions";
 
-import type { PermissionRepository } from "../../../../database/repositories";
+import type { PermissionRepository } from "./repository";
 
 export interface PermissionService {
 

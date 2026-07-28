@@ -1,10 +1,9 @@
 import { createCommerceContainer } from '../../container';
 import { ProductSummary } from '../../application/read/product';
-import { cache } from 'react';
 
-export const getProductSummariesByCategory = cache(async (
-    categoryId: string,
-): Promise<ProductSummary[]> => {
+export async function getProductSummariesByCategory(
+    categoryId: string
+): Promise<ProductSummary[]> {
     
 
     const {
@@ -15,4 +14,4 @@ export const getProductSummariesByCategory = cache(async (
 
 
     return result;
-});
+}

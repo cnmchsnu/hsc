@@ -10,14 +10,3 @@ export interface CreateProductCategory {
 
 }
 
-
-
-export interface CommandCreateProductCategory {
-
-    categoryId: string;
-
-    isPrimary: boolean;
-
-    displayOrder: number;
-
-}

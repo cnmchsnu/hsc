@@ -4,6 +4,8 @@ export interface VariantOptionValue {
 
     optionId: string;
 
+    isEnabled: boolean;
+
     value: string;
 
     value_name: string;

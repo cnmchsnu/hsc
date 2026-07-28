@@ -1,6 +1,7 @@
 
-import type { ProductIdentifier } from "@repo/database/identifiers";
+import type { ProductIdentifier } from "./product-identifier";
 
+import { NotFoundError } from "@repo/shared/application";
 
 export interface ProductResolveService {
 
@@ -32,7 +33,7 @@ export function createProductResolveService(
                 await productIdentifier.resolveIdBySlug(slug);
 
             if (!id) {
-                throw new Error(`Product with slug ${slug} not found`);
+                throw new NotFoundError(`Product with slug ${slug} not found`);
             }
 
             return id;
@@ -50,7 +51,7 @@ export function createProductResolveService(
                 await productIdentifier.resolveIdsBySlugs(slugs);
 
             if (!ids || ids.length === 0) {
-                throw new Error(`Slugs not found`);
+                throw new NotFoundError(`Products with slugs ${slugs.join(", ")} not found`);
             }
 
             return ids;

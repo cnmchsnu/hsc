@@ -1,179 +1,179 @@
-import { Profile, ProfileList, ProfileListOptions } from './type';
+// import { Profile, ProfileList, ProfileListOptions } from './type';
 
-import { ProfileRepository } from '@repo/database/repositories';
+// import { ProfileRepository } from './repository';
 
-export interface ProfileService {
+// export interface ProfileService {
 
-    // Read Single
+//     // Read Single
 
-    findbyId(
-        userId: string
-    ): Promise<Profile | null>;
+//     findbyId(
+//         userId: string
+//     ): Promise<Profile | null>;
 
-    // Read Batch
+//     // Read Batch
 
-    findByIds(
-        userIds: readonly string[],
-    ): Promise<readonly Profile[]>;
+//     findByIds(
+//         userIds: readonly string[],
+//     ): Promise<readonly Profile[]>;
 
-    findByClass(
-        classes: readonly string[]
-    ): Promise<readonly Profile[]>;
+//     findByClass(
+//         classes: readonly string[]
+//     ): Promise<readonly Profile[]>;
 
-    // Query
+//     // Query
 
-    list(): Promise<readonly Profile[]>;
+//     list(): Promise<readonly Profile[]>;
 
-    search(
-        options: ProfileListOptions
-    ): Promise<ProfileList>;
+//     search(
+//         options: ProfileListOptions
+//     ): Promise<ProfileList>;
 
-    // Existing Single
+//     // Existing Single
 
-    exists(
-        userId: string,
-    ): Promise<boolean>;
+//     exists(
+//         userId: string,
+//     ): Promise<boolean>;
 
-    // Existing Batch
+//     // Existing Batch
 
-    listExistingUserIds(
-        userIds: readonly string[],
-    ): Promise<string[]>;
+//     listExistingUserIds(
+//         userIds: readonly string[],
+//     ): Promise<string[]>;
 
-    // Write Single
+//     // Write Single
 
-    create(
-        userId: string,
-        profile: Profile
-    ): Promise<void>;
+//     create(
+//         userId: string,
+//         profile: Profile
+//     ): Promise<void>;
 
-    update(
-        profile: Profile
-    ): Promise<void>;
+//     update(
+//         profile: Profile
+//     ): Promise<void>;
 
-    delete(
-        userId: string
-    ): Promise<void>;
+//     delete(
+//         userId: string
+//     ): Promise<void>;
 
-    // Write Batch
+//     // Write Batch
 
-    createMany(
-        profiles: readonly Profile[],
-    ): Promise<void>;
+//     createMany(
+//         profiles: readonly Profile[],
+//     ): Promise<void>;
 
-    updateMany(
-        profiles: readonly Profile[],
-    ): Promise<void>;
+//     updateMany(
+//         profiles: readonly Profile[],
+//     ): Promise<void>;
 
-    deleteMany(
-        userIds: readonly string[],
-    ): Promise<void>;
-}
+//     deleteMany(
+//         userIds: readonly string[],
+//     ): Promise<void>;
+// }
 
-export function createProfileService(
-    repository: ProfileRepository,
-): ProfileService {
-    return {
+// export function createProfileService(
+//     repository: ProfileRepository,
+// ): ProfileService {
+//     return {
 
-        // Read Single
-        async findbyId(
-            userId: string
-        ): Promise<Profile | null> {
-            const profile = await repository.findById(userId);
+//         // Read Single
+//         async findbyId(
+//             userId: string
+//         ): Promise<Profile | null> {
+//             const profile = await repository.findById(userId);
 
-            if (!profile) {
-                throw new Error(`Profile not found for userId: ${userId}`);
-            }
-            return profile;
-        },
+//             if (!profile) {
+//                 throw new Error(`Profile not found for userId: ${userId}`);
+//             }
+//             return profile;
+//         },
 
-        // Read Batch
-        async findByIds(
-            userIds: readonly string[],
-        ): Promise<readonly Profile[]> {
-            const profiles = await repository.findByIds(userIds);
+//         // Read Batch
+//         async findByIds(
+//             userIds: readonly string[],
+//         ): Promise<readonly Profile[]> {
+//             const profiles = await repository.findByIds(userIds);
 
-            if (!profiles || profiles.length === 0) {
-                throw new Error(`Profiles not found for userIds: ${userIds.join(', ')}`);
-            }
+//             if (!profiles || profiles.length === 0) {
+//                 throw new Error(`Profiles not found for userIds: ${userIds.join(', ')}`);
+//             }
 
-            return profiles;
-        },
+//             return profiles;
+//         },
 
-        async findByClass(
-            classes: string[]
-        ): Promise<readonly Profile[]> {
-            return repository.findByClass(classes);
-        },
+//         async findByClass(
+//             classes: string[]
+//         ): Promise<readonly Profile[]> {
+//             return repository.findByClass(classes);
+//         },
 
-        // Query
-        async list(): Promise<readonly Profile[]> {
-            return repository.list();
-        },
+//         // Query
+//         async list(): Promise<readonly Profile[]> {
+//             return repository.list();
+//         },
 
-        async search(
-            options: ProfileListOptions
-        ): Promise<ProfileList> {
-            return repository.search(options);
-        },
+//         async search(
+//             options: ProfileListOptions
+//         ): Promise<ProfileList> {
+//             return repository.search(options);
+//         },
 
-        // Existing Single
-        async exists(
-            userId: string,
-        ): Promise<boolean> {
-            return repository.exists(userId);
-        },
+//         // Existing Single
+//         async exists(
+//             userId: string,
+//         ): Promise<boolean> {
+//             return repository.exists(userId);
+//         },
 
-        // Existing Batch
-        async listExistingUserIds(
-            userIds: readonly string[],
-        ): Promise<string[]> {
-            return repository.listExistingUserIds(userIds);
-        },
+//         // Existing Batch
+//         async listExistingUserIds(
+//             userIds: readonly string[],
+//         ): Promise<string[]> {
+//             return repository.listExistingUserIds(userIds);
+//         },
 
-        // Write Single
+//         // Write Single
 
-        async create(
-            userId: string,
-            profile: Partial<Profile>
-        ): Promise<void> {
-            return repository.create({
-                ...profile,
-                userId,
-            } as Profile);
-        },
+//         async create(
+//             userId: string,
+//             profile: Partial<Profile>
+//         ): Promise<void> {
+//             return repository.create({
+//                 ...profile,
+//                 userId,
+//             } as Profile);
+//         },
 
-        async update(
-            profile: Profile
-        ): Promise<void> {
-            return repository.update(profile);
-        },
+//         async update(
+//             profile: Profile
+//         ): Promise<void> {
+//             return repository.update(profile);
+//         },
 
-        async delete(
-            userId: string
-        ): Promise<void> {
-            return repository.delete(userId);
-        },
+//         async delete(
+//             userId: string
+//         ): Promise<void> {
+//             return repository.delete(userId);
+//         },
 
-        // Write Batch
+//         // Write Batch
 
-        async createMany(
-            profiles: readonly Profile[],
-        ): Promise<void> {
-            return repository.createMany(profiles);
-        },
+//         async createMany(
+//             profiles: readonly Profile[],
+//         ): Promise<void> {
+//             return repository.createMany(profiles);
+//         },
 
-        async updateMany(
-            profiles: readonly Profile[],
-        ): Promise<void> {
-            return repository.updateMany(profiles);
-        },
+//         async updateMany(
+//             profiles: readonly Profile[],
+//         ): Promise<void> {
+//             return repository.updateMany(profiles);
+//         },
 
-        async deleteMany(
-            userIds: readonly string[],
-        ): Promise<void> {
-            return repository.deleteMany(userIds);
-        }
+//         async deleteMany(
+//             userIds: readonly string[],
+//         ): Promise<void> {
+//             return repository.deleteMany(userIds);
+//         }
 
-    };
-}
+//     };
+// }

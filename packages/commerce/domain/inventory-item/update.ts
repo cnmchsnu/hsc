@@ -2,12 +2,10 @@ export interface UpdateInventoryItem {
 
     skuId: string;
 
-    availableQuantity: number;
+    availableQuantity?: number;
 
-    reservedQuantity: number;
+    reservedQuantity?: number;
 
-    incomingQuantity: number;
-
-    version: number;
+    incomingQuantity?: number;
 
 }

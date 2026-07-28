@@ -1,6 +1,5 @@
-import type { Profile } from "../domain/profile";
+import type { Profile, ProfileRepository } from "../domain/profile";
 import { AutoClassificationService } from "./AutoClassificationService";
-import { ProfileRepository } from "@repo/database/repositories";
 
 export interface ProfileInitializationService {
 
@@ -31,7 +30,7 @@ class DefaultProfileInitializationService
     ): Promise<void> {
 
         const profile =
-            await this.profileRepository.findById(userId);
+            await this.profileRepository.findByUid(userId);
 
         if (!profile) {
             const autoClassification =

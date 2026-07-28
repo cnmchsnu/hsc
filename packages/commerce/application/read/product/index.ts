@@ -1,3 +1,3 @@
 export { createProductReadService, type ProductReadService } from './readService';
 
-export type { ProductDetail, ProductAdminDetail, ProductSummary } from './type';
+export type { ProductDetail, ProductSummary } from './type';

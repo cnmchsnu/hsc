@@ -5,14 +5,14 @@ import type { UpdateProductImage } from "./update";
 import type { Repository } from "@repo/shared";
 
 export interface ProductImageRepository
-    extends Omit<Repository<
+    extends Repository<
         ProductImage,
         string,
         CreateProductImage,
         UpdateProductImage,
         any,
         any
-    >, "find"> {
+    > {
 
     // Read Single
 

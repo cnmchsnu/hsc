@@ -1,5 +1,5 @@
 export type { VariantOptionValue } from "./type";
-export type { CreateVariantOptionValue, CommandCreateVariantOptionValue } from "./create";
+export type { CreateVariantOptionValue } from "./create";
 export type { UpdateVariantOptionValue } from "./update";
 
 export type { VariantOptionValueList } from "./list";

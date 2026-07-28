@@ -16,9 +16,16 @@ export interface InventoryItemRepository
         InventoryItemList
     > {
 
+    // Query
+    list(): Promise<readonly InventoryItem[]>;
+
     getBySku(
         skuId: string
-    ): Promise<InventoryItemList | null>;
+    ): Promise<readonly InventoryItem[]>;
+
+    getBySkus(
+        skuIds: string[]
+    ): Promise<readonly InventoryItem[]>;
 
     findLowStock(
         threshold: number

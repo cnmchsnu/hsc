@@ -24,6 +24,8 @@ export const VariantOptionValueRepositoryMapper: RepositoryMapper<
 
             optionId: row.option_id,
 
+            isEnabled: row.is_enabled,
+
             value: row.value,
 
             value_name: row.value_name,
@@ -48,6 +50,8 @@ export const VariantOptionValueRepositoryMapper: RepositoryMapper<
         return {
 
             option_id: dto.optionId,
+
+            is_enabled: dto.isEnabled ?? true,
 
             value: dto.value,
 
@@ -75,8 +79,6 @@ export const VariantOptionValueRepositoryMapper: RepositoryMapper<
             display_value: dto.displayValue,
 
             sort_order: dto.sortOrder,
-
-            version: dto.version,
         };
     },
 

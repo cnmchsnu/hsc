@@ -3,9 +3,10 @@
     "private": true,
     "exports": {
         ".": {
-            "types": "./types.ts",
-            "import": "./repository.ts",
-            "require": "./repository.js"
-        }
+            "types": "./types.ts"
+        },
+        "./service": "./service.ts",
+        "./sync": "./application/sync/index.ts",
+        "./application": "./application/index.ts"
     }
 }

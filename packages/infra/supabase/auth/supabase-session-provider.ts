@@ -1,21 +1,24 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { Session } from "../../../auth/domain/identity";
 import { SessionProvider } from "./session-provider";
-import { createServerClient } from "../client/server";
 
 import { toSession } from "./mapper";
 
 export class SupabaseSessionProvider
     implements SessionProvider {
 
+    constructor(
+        private readonly client: SupabaseClient,
+    ) {}
+
     async getSession(): Promise<Session | null> {
 
-        const supabase =
-            await createServerClient();
 
         const {
             data,
             error,
-        } = await supabase.auth.getSession();
+        } = await this.client.auth.getSession();
 
         if (error) {
 
@@ -37,11 +40,8 @@ export class SupabaseSessionProvider
 
     async exchangeCodeForSession(code: string): Promise<void> {
 
-        const supabase =
-            await createServerClient();
-
-        const { error, data } =
-            await supabase.auth.exchangeCodeForSession(code);
+        const { error } =
+            await this.client.auth.exchangeCodeForSession(code);
 
         if (error) {
 
@@ -55,13 +55,10 @@ export class SupabaseSessionProvider
 
     async refreshSession(): Promise<Session | null> {
 
-        const supabase =
-            await createServerClient();
-
         const {
             data,
             error,
-        } = await supabase.auth.refreshSession();
+        } = await this.client.auth.refreshSession();
 
         if (error) {
 
@@ -83,11 +80,8 @@ export class SupabaseSessionProvider
 
     async invalidateSession(): Promise<void> {
 
-        const supabase =
-            await createServerClient();
-
         const { error } =
-            await supabase.auth.signOut();
+            await this.client.auth.signOut();
 
         if (error) {
 

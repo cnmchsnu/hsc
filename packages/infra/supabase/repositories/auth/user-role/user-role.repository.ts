@@ -1,6 +1,6 @@
  import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { UserRoleRepository } from "@repo/database/repositories";
+import { UserRoleRepository } from "../../../../../auth/domain/authorization";
 
 
 export class SupabaseUserRoleRepository

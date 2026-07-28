@@ -2,7 +2,6 @@
     "name": "@repo/commerce",
     "private": true,
     "dependencies": {
-        "@repo/database": "workspace:*",
         "@repo/infra": "workspace:*",
         "@repo/shared": "workspace:*",
         "@supabase/postgrest-js": "^2.109.0",
@@ -12,6 +11,7 @@
         "./application": "./application/index.ts",
         "./domain": "./domain/index.ts",
         "./server": "./server/index.ts",
-        "./server/browser": "./server/browser/index.ts"
+        "./server/browser": "./server/browser/index.ts",
+        "./server/manage": "./server/manage/index.ts"
     }
 }

@@ -283,6 +283,8 @@ CREATE TABLE commerce.variant_options (
 
     name TEXT NOT NULL,
 
+    is_enabled BOOLEAN NOT NULL DEFAULT true,
+
     display_name TEXT NOT NULL,
 
     sort_order INTEGER NOT NULL DEFAULT 0,
@@ -310,6 +312,8 @@ CREATE TABLE commerce.variant_option_values (
         ON DELETE CASCADE,
 
     value TEXT NOT NULL,
+
+    is_enabled BOOLEAN NOT NULL DEFAULT true,
 
     display_value TEXT NOT NULL,
 
@@ -453,6 +457,8 @@ CREATE TABLE commerce.payments (
 CREATE SCHEMA IF NOT EXISTS inventory;
 
 CREATE TABLE inventory.inventory_items (
+
+    id UUID DEFAULT gen_random_uuid(),
 
     sku_id UUID PRIMARY KEY,
 

@@ -109,31 +109,6 @@ pnpm add @supabase/supabase-js --filter @repo/auth
 
 Do not install authentication packages directly into applications.
 
----
-
-## Step 3: Is it Database-related?
-
-Examples:
-
-* Database clients
-* ORM
-* Query builders
-* Repository implementations
-
-Install into:
-
-
-packages/database
-
-
-Examples:
-
-bash
-pnpm add @supabase/supabase-js --filter @repo/database
-
-
-bash
-pnpm add drizzle-orm --filter @repo/database
 
 
 ---

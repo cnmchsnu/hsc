@@ -1,8 +1,7 @@
 import { createCommerceContainer } from '../../container';
 import { CategoryTreeNode } from '../../application/projections';
-import { cache } from 'react';
 
-export const getCategoryTree = cache(async (): Promise<readonly CategoryTreeNode[] | null> => {
+export async function getCategoryTree(): Promise<readonly CategoryTreeNode[] | null> {
 
     const {
         categoryContainer,
@@ -12,4 +11,4 @@ export const getCategoryTree = cache(async (): Promise<readonly CategoryTreeNode
 
     return result;
     
-});
+}

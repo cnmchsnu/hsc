@@ -1,8 +1,13 @@
 import { cache } from "react";
 
+import { createSupabaseClientFactory } from '@repo/infra/supabase/client/factory';
+
 
 import { createCategoryContainer, type CategoryContainer} from "./categoryContainer";
 import { createProductContainer, type ProductContainer } from "./productContainer";
+import { createServiceContainer } from "./productServiceContainer";
+import { createProductManageContainer, ProductManageContainer } from "./productManageContainer";
+// import { createProductManageContainer, type ProductManageContainer } from "./productManageContainer";
 
 export interface CommerceContainer {
 
@@ -10,26 +15,33 @@ export interface CommerceContainer {
 
     productContainer: ProductContainer;
 
+    productManageContainer: ProductManageContainer;
+
+
 }
+
+
 export const createCommerceContainer = cache(async (): Promise<CommerceContainer> => {
 
-    const categoryContainer =
-        await createCategoryContainer();
+    const factory = createSupabaseClientFactory();
     
-    const productContainer =
-        await createProductContainer(
-            categoryContainer.categoryService,
-            categoryContainer.categoryResolveService
-        );
+    const userClient = await factory.createUserClient();
 
-    
-    
+    const serviceContainer = createServiceContainer(userClient);
+
+    const categoryContainer = createCategoryContainer(serviceContainer);
+
+    const productContainer = createProductContainer(serviceContainer);
+
+    const productManageContainer = createProductManageContainer(serviceContainer);
 
     return {
 
         categoryContainer,
 
-        productContainer
+        productContainer,
+
+        productManageContainer
 
     };
 

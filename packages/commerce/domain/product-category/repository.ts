@@ -1,7 +1,16 @@
 import type { CreateProductCategory, ProductCategory } from ".";
 
+import { Repository } from "@repo/shared";
 
-export interface ProductCategoryRepository {
+export interface ProductCategoryRepository
+    extends Omit<Repository<
+        ProductCategory,
+        string,
+        CreateProductCategory,
+        any,
+        any,
+        any
+    >, "find" | "get" | "getMany" | "exists" | "listExisting" | "deleteMany" | "delete"> {
 
     // Relation Single
 
@@ -31,34 +40,7 @@ export interface ProductCategoryRepository {
         productIds: string[],
     ): Promise<readonly ProductCategory[]>;
 
-    // Write Single
 
-    create(
-        relation: CreateProductCategory,
-    ): Promise<void>;
-
-    update(
-        relation: ProductCategory,
-    ): Promise<void>;
-
-    delete(
-        productId: string,
-        categoryId: string,
-    ): Promise<void>;
-
-    // Write Batch
-
-    createMany(
-        relations: readonly CreateProductCategory[],
-    ): Promise<void>;
-
-    updateMany(
-        relations: readonly ProductCategory[],
-    ): Promise<void>;
-
-    deleteMany(
-        relations: readonly ProductCategory[],
-    ): Promise<void>;
 
     deleteManyByProductId(
         productId: string,
@@ -67,5 +49,11 @@ export interface ProductCategoryRepository {
     deleteManyByCategoryId(
         categoryId: string,
     ): Promise<void>;
+
+    deleteMany(
+        ids: readonly string[],
+        relations: readonly ProductCategory[],
+    ): Promise<void>;
+
 
 }

@@ -4,14 +4,14 @@ import type { Category, CreateCategory, UpdateCategory } from ".";
 import type { Repository } from "@repo/shared";
 
 export interface CategoryRepository 
-    extends Omit<Repository<
+    extends Repository<
     Category,
     string,
     CreateCategory,
     UpdateCategory,
     any,
     any
->, "find"> {
+> {
 
     getBySlug(
         slug: string,

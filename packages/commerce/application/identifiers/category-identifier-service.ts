@@ -1,5 +1,6 @@
 
-import type { CategoryIdentifier } from "@repo/database/identifiers";
+import type { CategoryIdentifier } from "./category-identifier";
+import { NotFoundError } from "@repo/shared/application";
 
 
 export interface CategoryResolveService {
@@ -32,7 +33,7 @@ export function createCategoryResolveService(
                 await categoryIdentifier.resolveIdBySlug(slug);
 
             if (!id) {
-                throw new Error(`Category with slug ${slug} not found`);
+                throw new NotFoundError(`Category with slug ${slug} not found`);
             }
 
             return id;
@@ -51,7 +52,7 @@ export function createCategoryResolveService(
 
             if (!ids || ids.length === 0) {
                 
-                throw new Error(`Slugs not found`);
+                throw new NotFoundError(`Categories with slugs ${slugs.join(", ")} not found`);
             }
 
             return ids;

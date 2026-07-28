@@ -6,6 +6,8 @@ import { UpdateInventoryItem } from './update';
 
 import { InventoryItemRepository } from './repository';
 
+import { type CRUDService, DefaultCRUDService } from "@repo/shared/service";
+
 import {
     InventoryItemNotFoundException,
     InvalidInventoryQuantityException,
@@ -15,25 +17,21 @@ import {
 } from './error';
 
 
-export interface InventoryItemService {
+export interface InventoryItemService extends CRUDService<
+    InventoryItem,
+    string,
+    CreateInventoryItem,
+    UpdateInventoryItem,
+    InventoryItemQuery,
+    InventoryItemList
+> {
 
-    get(skuId: string): Promise<InventoryItem | null>;
+    // Query
+    list(): Promise<readonly InventoryItem[]>;
 
-    getMany(skuIds: readonly string[]): Promise<readonly InventoryItem[]>;
+    getBySku(skuId: string): Promise<readonly InventoryItem[]>;
 
-    find(query: InventoryItemQuery): Promise<InventoryItemList>;
-
-    create(create: CreateInventoryItem): Promise<InventoryItem>;
-
-    createMany(commands: readonly CreateInventoryItem[]): Promise<void>;
-
-    update(update: UpdateInventoryItem): Promise<InventoryItem>;
-
-    updateMany(commands: readonly UpdateInventoryItem[]): Promise<void>;
-
-    delete(skuId: string): Promise<void>;
-
-    deleteMany(skuIds: readonly string[]): Promise<void>;
+    getBySkus(skuIds: string[]): Promise<readonly InventoryItem[]>;
 
     reserve(
         skuId: string,
@@ -59,12 +57,23 @@ export interface InventoryItemService {
 }
 
 
-class DefaultInventoryItemService 
+class DefaultInventoryItemService
+    extends DefaultCRUDService<
+        InventoryItem,
+        string,
+        CreateInventoryItem,
+        UpdateInventoryItem,
+        InventoryItemQuery,
+        InventoryItemList,
+        InventoryItemRepository
+    >
     implements InventoryItemService {
 
     constructor(
-        private readonly repository: InventoryItemRepository,
-    ) {}
+        protected readonly repository: InventoryItemRepository,
+    ) {
+        super(repository);
+    }
 
     private async requireInventory(
         skuId: string,
@@ -81,89 +90,29 @@ class DefaultInventoryItemService
 
     }
 
-    async create(
-        create: CreateInventoryItem,
-    ): Promise<InventoryItem> {
+    async list(): Promise<readonly InventoryItem[]> {
+        const inventoryItems = 
+            await this.repository.list();
 
-        await this.repository.create(create);
-
-        const inventory =
-            await this.repository.get(create.skuId);
-
-        if (!inventory) {
-            throw new InventoryItemNotFoundException(create.skuId);
-        }
-
-        return inventory;
+        return inventoryItems;
     }
 
-    createMany(
-        commands: readonly CreateInventoryItem[],
-    ): Promise<void> {
-
-        return this.repository.createMany(commands);
-    }
-
-    async update(
-        update: UpdateInventoryItem,
-    ): Promise<InventoryItem> {
-
-        await this.repository.update(update);
-
-        const inventory =
-            await this.repository.get(update.skuId);
-
-        if (!inventory) {
-            throw new InventoryItemNotFoundException(update.skuId);
-        }
-
-        return inventory;
-    }
-
-    updateMany(
-        commands: readonly UpdateInventoryItem[],
-    ): Promise<void> {
-        return this.repository.updateMany(commands);
-    }
-
-    async get(
+    async getBySku(
         skuId: string,
-    ): Promise<InventoryItem | null> {
-
-        const inventory =
-            await this.repository.get(skuId);
-
-        return inventory;
-    }
-
-    async getMany(
-        skuIds: readonly string[],
     ): Promise<readonly InventoryItem[]> {
-        const inventories =
-            await this.repository.getMany(skuIds);
+        const inventoryItems =
+            await this.repository.getBySku(skuId);
 
-        return inventories;
+        return inventoryItems;
     }
 
-    async find(
-        query: InventoryItemQuery,
-    ): Promise<InventoryItemList> {
-        const inventoryList =
-            await this.repository.find(query);
+    async getBySkus(
+        skuIds: string[],
+    ): Promise<readonly InventoryItem[]> {
+        const inventoryItems =
+            await this.repository.getBySkus(skuIds);
 
-        return inventoryList;
-    }
-
-    async delete(
-        skuId: string,
-    ): Promise<void> {
-        await this.repository.delete(skuId);
-    }
-
-    async deleteMany(
-        skuIds: readonly string[],
-    ): Promise<void> {
-        await this.repository.deleteMany(skuIds);
+        return inventoryItems;
     }
 
     async reserve(
@@ -195,8 +144,6 @@ class DefaultInventoryItemService
             incomingQuantity:
                 inventory.incomingQuantity,
 
-            version:
-                inventory.version,
 
         });
 
@@ -227,9 +174,6 @@ class DefaultInventoryItemService
             incomingQuantity:
                 inventory.incomingQuantity,
 
-            version:
-                inventory.version,
-
         });
 
     }
@@ -259,9 +203,6 @@ class DefaultInventoryItemService
             incomingQuantity:
                 inventory.incomingQuantity - quantity,
 
-            version:
-                inventory.version,
-
         });
 
     }
@@ -286,9 +227,6 @@ class DefaultInventoryItemService
 
             incomingQuantity:
                 inventory.incomingQuantity,
-
-            version:
-                inventory.version,
 
         });
 

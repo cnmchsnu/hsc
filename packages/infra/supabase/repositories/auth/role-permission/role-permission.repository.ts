@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { RolePermissionRepository } from "@repo/database/repositories";
+import { RolePermissionRepository } from "../../../../../auth/domain/authorization";
 
 export class SupabaseRolePermissionRepository 
 implements RolePermissionRepository {

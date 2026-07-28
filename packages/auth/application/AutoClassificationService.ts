@@ -1,5 +1,4 @@
 import { UserService } from "../domain/identity";
-import { ProfileRepository } from "@repo/database/repositories";
 
 
 export interface AutoClassificationService {
@@ -41,18 +40,18 @@ class DefaultAutoClassificationService
             const userEmail = user.email;
 
             if (this.matchEmail(userEmail, /^(\d{6}|\d{8})@gs\.hs\.ntnu\.edu\.tw$/)) {
-                return "student";
+                return "INTERNAL.STUDENT";
             }
 
-            if (this.matchEmail(userEmail, /^t+\d*@gs\.hs\.ntnu\.edu\.tw$/)) {
-                return "teacher";
+            if (this.matchEmail(userEmail, /^[tj]+\d*@gs\.hs\.ntnu\.edu\.tw$/)) {
+                return "INTERNAL.TEACHER";
             }
 
             if (this.matchEmail(userEmail, /@gs\.hs\.ntnu\.edu\.tw$/)) {
-                return "internal";
+                return "INTERNAL";
             }
 
-            return "external";
+            return "EXTERNAL";
         }
     }
 

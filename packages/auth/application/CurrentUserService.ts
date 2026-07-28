@@ -1,7 +1,7 @@
 import { UserAuthorizationContext, UserAuthorizationContextService } from './UserAuthorizationContextService';
 import { UserService } from "../domain/identity";
 import { Profile } from '../domain/profile';
-import { ProfileRepository } from '../../database/repositories/identity';
+import { ProfileRepository } from '../domain/profile';
 
 
 
@@ -55,7 +55,7 @@ class DefaultCurrentUserService
                 return null;
             }
 
-            const profile = await this.profileRepository.findById(user.id);
+            const profile = await this.profileRepository.findByUid(user.id);
 
             if (!profile) {
                 return null;

@@ -40,9 +40,3 @@ export interface ProductDetail {
     availability: ProductAvailability;
 
 }
-
-export interface ProductAdminDetail extends ProductDetail {
-
-    skus: readonly ProductAdminSKU[];
-
-}

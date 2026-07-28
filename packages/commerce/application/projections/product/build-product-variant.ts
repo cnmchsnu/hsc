@@ -1,11 +1,3 @@
-import {
-    VariantOption, 
-    VariantOptionValue, 
-    SKU, 
-    SKUVariantValue, 
-    InventoryItem
-} from '../../../domain';
-
 import { ProductVariantSKU } from './build-product-variant-sku';
 import { ProductVariantOption,  } from './build-product-variant-option';
 

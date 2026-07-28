@@ -1,10 +1,11 @@
 import {
     PermissionRepository,
-    ProfileRepository,
     RolePermissionRepository,
     RoleRepository,
     UserRoleRepository
-} from "@repo/database/repositories";
+} from "../domain/authorization";
+
+import { ProfileRepository } from "../domain/profile";
 
 import type { Profile } from "../domain/profile";
 import type { Role, Permission } from "../domain/authorization";
@@ -69,7 +70,7 @@ class DefaultUserAuthorizationContextService
 
 
 
-            const profile = await this.profileRepository.findById(userId);
+            const profile = await this.profileRepository.findByUid(userId);
 
             const rolesIds = await this.userRoleRepository.getUserRoles(userId);
 

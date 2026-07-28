@@ -5,5 +5,4 @@ export { buildProductAvailability, type ProductAvailability } from "./build-prod
 export { toProductVariant, type ProductVariant } from "./build-product-variant";
 export { toProductVariantSKU, type ProductVariantSKU } from "./build-product-variant-sku";
 export { toProductVariantOption, type ProductVariantOption } from "./build-product-variant-option";
-export { toProductAdminSKU, type ProductAdminSKU } from "./build-product-admin-sku";
 export { createProductSelection } from "./selection";

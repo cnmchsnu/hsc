@@ -12,6 +12,10 @@ export interface SKUVariantValueRepository {
         skuIds: readonly string[],
     ): Promise<readonly SKUVariantValue[]>;
 
+    createMany(
+        values: readonly CreateSKUVariantValue[],
+    ): Promise<void> 
+
     replace(
         skuId: string,
         values: readonly CreateSKUVariantValue[],

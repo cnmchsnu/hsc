@@ -1,257 +1,116 @@
 import type { Product, ProductList, ProductListOptions } from './type';
+import { CreateProduct } from './create';
+import { UpdateProduct } from './update';
 import { ProductRepository } from "./repository";
 
+import { type CRUDService, DefaultCRUDService } from "@repo/shared/service";
     
-export interface ProductService {
+export interface ProductService extends CRUDService<
+    Product,
+    string,
+    CreateProduct,
+    UpdateProduct,
+    ProductListOptions,
+    ProductList
+> {
 
     // Read Single
-    findById(
-        id: string,
-    ): Promise<Product | null>;
-
     findBySlug(
         slug: string,
     ): Promise<Product | null>;
 
 
     // Read Batch
-
-    findByIds(
-        ids: readonly string[],
-    ): Promise<readonly Product[]>;
-
     findBySlugs(
         slugs: readonly string[],
     ): Promise<readonly Product[]>;
 
 
     // Query
-
     list(): Promise<readonly Product[]>;
 
-    search(
-        options: ProductListOptions,
-    ): Promise<ProductList>;
-
-
-    // Exists Single
-
-    exists(
-        id: string,
-    ): Promise<boolean>;
-
-    
     // Exists Batch
-
-    listExistingIds(
-        ids: readonly string[],
-    ): Promise<readonly string[]>;
-
     listExistingSlugs(
         slugs: readonly string[],
     ): Promise<readonly string[]>;
+}
 
 
-    // Write Single
+class DefaultProductService
+    extends DefaultCRUDService<
+        Product,
+        string,
+        CreateProduct,
+        UpdateProduct,
+        ProductListOptions,
+        ProductList,
+        ProductRepository
+    >
+    implements ProductService {
 
-    create(
-        product: Product,
-    ): Promise<void>;
+    constructor(
+        protected readonly repository: ProductRepository,
+    ) {
+        super(repository);
+    }
 
-    update(
-        product: Product,
-    ): Promise<void>;
+    // Read Single
 
-    delete(
-        id: string,
-    ): Promise<void>;
+    async findBySlug(
+        slug: string,
+    ): Promise<Product | null> {
+        if (!slug) return null;
+              
+        const product =
+            await this.repository.findBySlug(slug);
+
+        if (!product) return null;
+
+        return product;
+    }
+
+    // Read Batch
+
+    async findBySlugs(
+        slugs: readonly string[],
+    ): Promise<readonly Product[]> {
+        if (!slugs || slugs.length === 0) return [];
+
+        const products = 
+            await this.repository.findBySlugs(slugs);
+
+        if (!products || products.length === 0) return [];
+
+        return products;
+    }
+
+    // Query
+
+    async list(): Promise<Product[]> {
+        const products = 
+            await this.repository.list();
+
+        return products;
+    }
 
 
-    // Write Batch
+    // Exists Batch
+    async listExistingSlugs(
+        slugs: readonly string[],
+    ): Promise<readonly string[]> {
+        if (!slugs || slugs.length === 0) return [];
 
-    createMany(
-        products: readonly Product[],
-    ): Promise<void>;
+        const existingSlugs = 
+            await this.repository.listExistingSlugs(slugs);
+        
+        return existingSlugs;
+    }
 
-    updateMany(
-        products: readonly Product[],
-    ): Promise<void>;
-
-    deleteMany(
-        ids: readonly string[],
-    ): Promise<void>;
 }
 
 
 export function createProductService(
     repository: ProductRepository,
 ): ProductService {
-
-    return {
-
-        // Read Single
-
-        async findById(
-            id: string,
-        ): Promise<Product | null> {
-            if (!id) {
-                return null;
-            }
-
-            const product = 
-                await repository.get(id);
-
-            if (!product) return null;
-            
-            return product;
-        },
-
-        async findBySlug(
-            slug: string,
-        ): Promise<Product | null> {
-            if (!slug) {
-                return null;
-            }
-
-            const product = 
-                await repository.findBySlug(slug);
-
-            if (!product) return null;
-
-            return product;
-        },
-
-        // Read Batch
-
-        async findByIds(
-            ids: readonly string[],
-        ): Promise<readonly Product[]> {
-            if (!ids || ids.length === 0) {
-                return [];
-            }
-
-            const products = 
-                await repository.getMany(ids);
-            
-            if (!products || products.length === 0) return [];
-
-            return products;
-        },
-
-        async findBySlugs(
-            slugs: readonly string[],
-        ): Promise<readonly Product[]> {
-            if (!slugs || slugs.length === 0) {
-                return [];
-            }
-
-            const products = 
-                await repository.findBySlugs(slugs);
-
-            if (!products || products.length === 0) return [];
-
-            return products;
-        },
-
-        // Query
-
-        async list(): Promise<Product[]> {
-            const products = 
-                await repository.list();
-
-            return products;
-        },
-
-        async search(
-            options: ProductListOptions,
-        ): Promise<ProductList> {
-            const products = 
-                await repository.find(options);
-
-            return products;
-        },
-
-        // Exists Single
-
-        async exists(
-            id: string,
-        ): Promise<boolean> {
-            if (!id) {
-                return false;
-            }
-
-            const exists = 
-                await repository.exists(id);
-
-            return exists;
-        },
-
-        // Exists Batch
-
-        async listExistingIds(
-            ids: readonly string[],
-        ): Promise<readonly string[]> {
-            if (!ids || ids.length === 0) {
-                return [];
-            }
-            const existingIds = 
-                await repository.listExisting(ids);
-
-            return existingIds;
-        },
-
-        async listExistingSlugs(
-            slugs: readonly string[],
-        ): Promise<readonly string[]> {
-            if (!slugs || slugs.length === 0) {
-                return [];
-            }
-            const existingSlugs = 
-                await repository.listExistingSlugs(slugs);
-            
-            return existingSlugs;
-        },
-
-        // Write Single
-
-        async create(
-            product: Product,
-        ): Promise<void> {
-            await repository.create(product);
-        },
-
-        async update(
-            product: Product,
-        ): Promise<void> {
-            await repository.update(product);
-        },
-
-        async delete(
-            id: string,
-        ): Promise<void> {
-            await repository.delete(id);
-        },
-
-        // Write Batch
-
-        async createMany(
-            products: readonly Product[],
-        ): Promise<void> {
-            await repository.createMany(products);
-        },
-
-        async updateMany(
-            products: readonly Product[],
-        ): Promise<void> {
-            await repository.updateMany(products);
-        },
-
-        async deleteMany(
-            ids: readonly string[],
-        ): Promise<void> {
-            await repository.deleteMany(ids);
-        }
-    
-    };
-
+    return new DefaultProductService(repository);
 }
