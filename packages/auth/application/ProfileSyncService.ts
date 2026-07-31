@@ -50,6 +50,10 @@ class DefaultProfileSyncService
                 avatarUrl: profile.avatarUrl,
             };
 
+            if (newProfile === profile) {
+                return;
+            }
+
             await this.profileRepository.update(newProfile);
         }
     }
