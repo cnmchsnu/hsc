@@ -4,9 +4,6 @@ import {
     InventoryItemSynchronizer as InventorySync,
 } from "../sync";
 
-import {
-    SkuBuilder
-} from "../builders";
 
 import { SKUService } from "../../../domain";
 import { ProductSkuWorkflowInput } from "../commands/sku";
@@ -18,9 +15,6 @@ export class SKUWorkflow {
 
         private readonly SKUService:
             SKUService,
-
-        private readonly skuBuilder:
-            SkuBuilder,
 
         private readonly skuSync:
             SkuSync,
@@ -47,13 +41,8 @@ export class SKUWorkflow {
         
         const currentSKUs = await this.SKUService.getByProduct(aggregate.product!.id);
 
-        const sku = this.skuBuilder.build(
-            currentSKUs,
-            aggregate,
-            false
-        );
 
-        const skuResult = await this.skuSync.execute(sku, currentSKUs);
+        const skuResult = await this.skuSync.execute(input.skus, currentSKUs);
         
 
         aggregate.skuReferenceMap =

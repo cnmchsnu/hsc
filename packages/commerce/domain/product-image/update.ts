@@ -1,11 +1,13 @@
 export interface UpdateProductImage {
     id: string;
 
+    productId: string;
+
     url?: string;
 
     isPrimary?: boolean;
 
-    alt?: string | null;
+    alt?: string;
 
     displayOrder?: number;
 }

@@ -61,7 +61,7 @@ export interface Repository<
 
     update(
         command: TUpdate,
-    ): Promise<TEntity | null>;
+    ): Promise<void>;
 
     updateMany(
         commands: readonly TUpdate[],

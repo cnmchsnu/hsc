@@ -10,6 +10,8 @@ export interface ProductImageRow {
 
     display_order: number;
 
+    alt: string;
+
     created_at: string;
 
     updated_at: string;

@@ -1,3 +1,3 @@
-export { DefaultProductSkuGenerator, type ProductSkuGenerator } from "./sku-editor-builder";
+export { DefaultProductSkuGenerator, type ProductSkuGenerator } from "./sku-detail-generator";
 export { DefaultProductSkuCodeGenerator, type ProductSkuCodeGenerator } from "./sku-code-generator";
-export { DefaultSkuBuilder, type SkuBuilder } from "./sku-builder";
+export { DefaultSkuRebuilder, type SkuRebuilder } from "./sku-rebuilder";

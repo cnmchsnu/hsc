@@ -40,6 +40,10 @@ class DefaultProductCategorySynchronizer
 
         const current = aggregate.productCategories;
 
+        // throw new Error ( "curretn:" + JSON.stringify(current) + " desired: " + JSON.stringify(desired));
+
+        if (!current || current.length === 0) throw new ValidationError("No existing product category data found for synchronization.");
+
         const currentMap = new Map<string, ProductCategory>(
             current.map(relation => [relation.category_id, relation])
         );
@@ -61,9 +65,7 @@ class DefaultProductCategorySynchronizer
             ),
             
             this.productCategoryService.updateMany(
-                desired.filter(relation => currentMap.has(relation.category_id)
-                ? !this.equals(currentMap.get(relation.category_id) as ProductCategory, relation)
-                : false).map(relation => ({
+                desired.filter(relation => currentMap.has(relation.category_id) && !this.equals(currentMap.get(relation.category_id) as ProductCategory, relation)).map(relation => ({
                     categoryId: relation.category_id,
                     productId: aggregate.productId!,
                     isPrimary: relation.is_primary,

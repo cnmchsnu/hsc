@@ -2,7 +2,7 @@ import { ProductEditor } from '../../application';
 import { createCommerceContainer } from '../../container';
 
 
-export async function updateCategories(
+export async function createProduct(
     input: ProductEditor
 ): Promise<void> {
 

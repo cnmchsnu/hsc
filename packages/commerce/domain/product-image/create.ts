@@ -6,7 +6,7 @@ export interface CreateProductImage {
 
     isPrimary: boolean;
 
-    alt: string | null;
+    alt: string;
 
     displayOrder: number;
 }

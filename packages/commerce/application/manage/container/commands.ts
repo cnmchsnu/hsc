@@ -59,14 +59,13 @@ export function createProductServiceUseCases(
 
     const updateImagesCommand =
         new UpdateProductImagesCommand(
-            deps.productImageService,
+            aggregateLoader,
             synchronizers.image,
             deps.transactionRunner
         );
 
     const updateCategoriesCommand =
         new UpdateProductCategoriesCommand(
-            deps.productCategoryService,
             aggregateLoader,
             synchronizers.category,
             deps.transactionRunner

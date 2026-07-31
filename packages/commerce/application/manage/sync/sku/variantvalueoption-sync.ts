@@ -10,13 +10,15 @@ export interface ProductVariantOptionValueEditor {
 
     optionName: string;
 
+    optionId?: string;
+
     value: string;
 
     valueName: string;
 
     displayValue: string;
 
-    sortOrder: number;
+    isEnabled: boolean;
 
     version: number;
 
@@ -63,7 +65,7 @@ export class VariantOptionValueSynchronizer {
             this.variantOptionValueService.createMany(
                 desired.filter(value => value.id === null).map(value => ({
                     ...value,
-                    optionId: aggregate.optionReferenceMap!.get(value.optionName)!,
+                    optionId: value.optionId || aggregate.optionReferenceMap!.get(value.optionName)!,
                 }))
             ),
 
@@ -73,8 +75,8 @@ export class VariantOptionValueSynchronizer {
                 : false).map(option => ({
                     id: option.id!,
                     displayValue: option.displayValue,
-                    sortOrder: option.sortOrder,
                     version: option.version,
+                    isEnabled: option.isEnabled,
                 }))
             ),
 
@@ -96,8 +98,7 @@ export class VariantOptionValueSynchronizer {
             current.optionId === desired.optionName &&
             current.value === desired.value &&
             current.value_name === desired.valueName &&
-            current.displayValue === desired.displayValue &&
-            current.sortOrder === desired.sortOrder
+            current.displayValue === desired.displayValue 
         );
     }
 

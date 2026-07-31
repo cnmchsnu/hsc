@@ -1,2 +1,2 @@
 export { UpdateProductImagesCommand } from "./update-images-command";
-export { ProductImageEditor } from "./type";
+export type { ProductImageEditor } from "./type";

@@ -33,11 +33,11 @@ export class UpdateProductBasicCommand {
                 throw new NotFoundError(`Product with slug ${input.slug} does not exist.`);
             }
 
-            await this.productSync.execute(
-                product.id,
-                input,
-            );
-
+            await this.productService.update({
+                ...input,
+                id: product.id,
+            });
+            
             return {
                 productId: product.id,
                 refresh: [

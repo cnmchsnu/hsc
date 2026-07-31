@@ -8,7 +8,7 @@ export interface ProductImage {
 
     isPrimary: boolean;
 
-    alt: string | null;
+    alt: string;
 
     displayOrder: number;
 }

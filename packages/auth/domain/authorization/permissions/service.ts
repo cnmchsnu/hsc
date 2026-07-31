@@ -1,7 +1,9 @@
 
 import type { Permission, PermissionList, PermissionListOptions } from "./type";
 
-import type { CreatePermission, UpdatePermission } from "../../../application/authorization/permissions";
+import type { CreatePermission } from "./create";
+
+import type { UpdatePermission } from "./update";
 
 import type { PermissionRepository } from "./repository";
 

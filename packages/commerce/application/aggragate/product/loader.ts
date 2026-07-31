@@ -75,7 +75,8 @@ export class DefaultProductAggregateLoader
                 this.skuVariantValueRepository.getBySKUs(skuIds),
                 this.variantOptionValueService.getByOptions(optionIds),
             ]);
-
+        
+        
         return {
             skuIds,
             productId: product.id,
@@ -114,13 +115,12 @@ export class DefaultProductAggregateLoader
         productId: string,
     ): Promise<ProductAggregate | null> {
         const product =
-            await this.productService.get(productId);
+            await this.productService.find({productIds: [productId], page: 1, pageSize: 1});
 
-        if (!product) {
-            return null;
-        }
+        if (!product) throw new Error(`Product with ID ${productId} not found.`);
 
-        return this.load(product);
+
+        return this.load(product.items[0]);
     }
 
 }

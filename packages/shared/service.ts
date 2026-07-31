@@ -22,7 +22,7 @@ export interface CRUDService<
     
     createMany(commands: readonly TCreate[]): Promise<void>;
     
-    update(update: TUpdate): Promise<TEntity | null>;
+    update(update: TUpdate): Promise<void>;
 
     updateMany(commands: readonly TUpdate[]): Promise<void>;
     
@@ -112,8 +112,8 @@ export abstract class DefaultCRUDService<
 
     async update(
         update: TUpdate,
-    ): Promise<TEntity | null> {
-        return await this.repository.update(update);
+    ): Promise<void> {
+        await this.repository.update(update);
     }
 
     async updateMany(

@@ -19,7 +19,7 @@ export const ProductImageRepositoryMapper: RepositoryMapper<
             url: row.storage_path,
             isPrimary: row.is_primary,
             displayOrder: row.display_order,
-            alt: null, // Assuming alt is not stored in the database and is set to null by default
+            alt: row.alt, // Assuming alt is not stored in the database and is set to null by default
         };
     },
 
@@ -37,6 +37,7 @@ export const ProductImageRepositoryMapper: RepositoryMapper<
             storage_path: dto.url,
             is_primary: dto.isPrimary,
             display_order: dto.displayOrder,
+            alt: dto.alt, 
         };
     },
 
@@ -51,9 +52,11 @@ export const ProductImageRepositoryMapper: RepositoryMapper<
     ): Partial<ProductImageRow> {
         return {
             id: dto.id,
+            product_id: dto.productId,
             storage_path: dto.url,
             is_primary: dto.isPrimary,
             display_order: dto.displayOrder,
+            alt: dto.alt,
         };
     },
 

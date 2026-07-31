@@ -2,7 +2,7 @@ import { createAuthContainer } from '../../container';
 
 import { Profile } from '../../domain/profile';
 
-import type { UpdateProfile } from '../../application/profile/commands/update-profile';
+import type { UpdateProfile } from '../../domain/profile';
 
 
 export async function updateUserProfile(command: UpdateProfile): Promise<Profile| null> {

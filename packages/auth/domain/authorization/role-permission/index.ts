@@ -1,1 +1,1 @@
-export { RolePermissionRepository } from "./repository";
+export type { RolePermissionRepository } from "./repository";

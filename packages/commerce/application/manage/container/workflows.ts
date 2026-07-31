@@ -7,7 +7,6 @@ import {
 
 import type { CommerceDependencies } from "./aggregate";
 import type { ProductSynchronizers } from "./synchronizers";
-import type { SkuBuilder } from "../builders";
 
 export interface ProductManagementWorkflows {
 
@@ -29,13 +28,11 @@ export interface ProductManagementWorkflows {
 export function createProductManagementWorkflow(
     deps: CommerceDependencies,
     synchronizers: ProductSynchronizers,
-    skuBuilder: SkuBuilder
 ): ProductManagementWorkflows {
 
     const skuWorkflow =
         new SKUWorkflow(
             deps.skuService,
-            skuBuilder,
             synchronizers.sku,
             synchronizers.price,
             synchronizers.inventory

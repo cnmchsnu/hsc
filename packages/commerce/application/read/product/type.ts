@@ -1,7 +1,8 @@
 import type { Product } from '../../../domain/product';
 import type { Category } from '../../../domain/category';
 import type { ProductImage } from '../../../domain/product-image';
-import type { BreadcrumbItem, ProductVariant, DisplayPrice, ProductAvailability, InventorySummary, ProductAdminSKU } from "../../projections";
+import type { BreadcrumbItem, ProductVariant, DisplayPrice, ProductAvailability, InventorySummary, SKUDetail, VariantDetail} from "../../projections";
+import { ProductCategory } from '../../../domain';
 
 
 
@@ -40,3 +41,23 @@ export interface ProductDetail {
     availability: ProductAvailability;
 
 }
+    
+
+export interface ProductManageDetail {
+
+    product: Product;
+
+    categories: ProductCategory[];
+
+    images: ProductImage[];
+
+    breadcrumb: readonly BreadcrumbItem[];
+
+    variantDetails: VariantDetail[];
+
+    skuDetails: SKUDetail[];
+
+    
+}
+
+

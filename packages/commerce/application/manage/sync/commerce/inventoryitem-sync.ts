@@ -55,7 +55,7 @@ class DefaultInventoryItemSynchronizer
 
         await Promise.all([
             this.inventoryItemService.createMany(
-                desired.filter(sku => !currentMap.has(sku.code)).map(sku => {
+                desired.filter(sku => !currentMap.has(sku.code) && aggregate.skuReferenceMap?.has(sku.code)).map(sku => {
                     return {
                         ...sku,
                         skuId: aggregate.skuReferenceMap!.get(sku.code)!,

@@ -5,7 +5,7 @@ import { cache } from 'react';
 import type { CurrentUserProfile } from '../../application';
 
 
-export const getCurrentUserProfile = cache(async (source: string): Promise<CurrentUserProfile | null> => {
+export async function getCurrentUserProfile(): Promise<CurrentUserProfile | null> {
     
     const { authenticationReadService } = await createAuthContainer();
 
@@ -13,4 +13,4 @@ export const getCurrentUserProfile = cache(async (source: string): Promise<Curre
 
 
     return user;
-});
+}
