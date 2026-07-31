@@ -30,6 +30,7 @@ export class SupabaseProductCategoryRepository
         ) {
             super(client);
         }
+        
 
         protected readonly schema = "commerce";
 

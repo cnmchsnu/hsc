@@ -5,5 +5,5 @@ export * from "./product-categories";
 export * from "./sku";
 export * from "./variant";
 export * from "./variant-value";
-export { ProductCommandService, DefaultProductCommandService } from "./product-command-service";
+export { type ProductCommandService, DefaultProductCommandService } from "./product-command-service";
 

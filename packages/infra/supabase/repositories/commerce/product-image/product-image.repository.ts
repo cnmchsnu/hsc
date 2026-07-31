@@ -38,9 +38,9 @@ export class SupabaseProductImageService
 
     protected readonly table = 'product_images';
 
-    protected readonly createRpc = 'create_product_image';
+    protected readonly createRpc = 'create_product_images';
 
-    protected readonly updateRpc = 'update_product_image';
+    protected readonly updateRpc = 'update_product_images';
 
     protected readonly mapper = mapper;
 

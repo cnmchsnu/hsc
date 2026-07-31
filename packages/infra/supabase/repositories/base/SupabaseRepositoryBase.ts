@@ -73,7 +73,7 @@ export abstract class SupabaseRepositoryBase<
 
             .eq("id", id)
 
-            .maybeSingle();
+            .single();
 
         if (error)
 
@@ -368,7 +368,7 @@ export abstract class SupabaseRepositoryBase<
 
     async create(
         command: TCreate,
-    ): Promise<TEntity> {
+    ): Promise<TEntity | null> {
         const { data, error } = await this
             .from()
             .insert(this.mapper.toCreateRow(command) as any);
@@ -377,7 +377,7 @@ export abstract class SupabaseRepositoryBase<
             throw error;
         }
 
-        if (!data || !data) {
+        if (!data) {
             throw new Error("Failed to create entity");
         }
 
@@ -402,21 +402,15 @@ export abstract class SupabaseRepositoryBase<
 
     async update(
         command: TUpdate,
-    ): Promise<TEntity> {
-        const { data, error } = await this
+    ): Promise<void> {
+        const { error } = await this
             .from()
-            .insert(this.mapper.toUpdateRow(command) as any)
+            .update(this.mapper.toUpdateRow(command) as any)
             .eq("id", (command as any).id)
             
         if (error) {
             throw error;
         };
-
-        if (!data || !data) {
-            throw new Error("Failed to update entity");
-        }
-
-        return this.mapper.fromRow(data);
     }
 
     async updateMany(

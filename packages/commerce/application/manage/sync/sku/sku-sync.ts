@@ -4,7 +4,7 @@ import { ValidationError } from "@repo/shared/application";
 
 export interface ProductSkuEditor {
 
-    id: string | null;
+    id?: string;
 
     productId: string;
 
@@ -42,7 +42,6 @@ class DefaultSkuSynchronizer
 
     constructor(
         private readonly skuService: SKUService,
-
     ) {}
 
     async execute(
@@ -65,7 +64,7 @@ class DefaultSkuSynchronizer
 
         const [create, update,] = await Promise.all([
             this.skuService.createManyViaAggregate(
-                desired.filter(sku => sku.id === null)
+                desired.filter(sku => !sku.id)
             ),
 
             this.skuService.updateManyViaAggregate(

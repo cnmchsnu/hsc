@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "private": true,
-  "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065",
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "dev": "dotenv -e .env.local -- turbo run dev",
     "build": "turbo build",
@@ -20,25 +20,25 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.2.10",
-    "@supabase/ssr": "^0.12.0",
+    "@next/bundle-analyzer": "^16.2.12",
+    "@supabase/ssr": "^0.12.4",
     "@types/google.accounts": "^0.0.18",
-    "@types/node": "^20.19.43",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@vercel/speed-insights": "^2.0.0",
     "dotenv-cli": "^11.0.0",
-    "eslint": "^9.39.4",
-    "eslint-plugin-i18next": "^6.1.4",
-    "prettier": "^3.8.4",
-    "supabase": "^2.108.0",
-    "turbo": "^2.9.18",
-    "typescript": "^5.9.3"
+    "eslint": "^10.8.0",
+    "eslint-plugin-i18next": "^6.1.5",
+    "prettier": "^3.9.6",
+    "supabase": "^2.110.0",
+    "turbo": "^2.10.7",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.3.1",
-    "pnpm": "^11.13.0",
-    "postcss": "8.5.18",
-    "tailwindcss": "^4.3.1"
+    "@tailwindcss/postcss": "^4.3.3",
+    "pnpm": "^11.18.0",
+    "postcss": "^8.5.25",
+    "tailwindcss": "^4.3.3"
   }
 }

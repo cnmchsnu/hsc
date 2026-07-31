@@ -25,7 +25,6 @@ export function useProductSearch(initialRequest: ProductSearchRequest) {
         page: number,
         append: boolean,
     ) {
-        console.log("fetchPage");
         setLoading(true);
 
         const response =
@@ -60,14 +59,12 @@ export function useProductSearch(initialRequest: ProductSearchRequest) {
     function search(
         nextRequest: ProductSearchRequest,
     ) {
-        console.log("search");
         setRequest(nextRequest);
         pageRef.current = 1;
         fetchPage(1,false,);
     };
 
     function refresh() {
-        console.log("refresh");
         pageRef.current = 1;
         fetchPage(
             1,

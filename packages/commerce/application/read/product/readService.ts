@@ -25,7 +25,7 @@ import type {
     Price,
 } from '../../../domain';
 
-import type { ProductDetail, ProductSummary } from "./type";
+import type { ProductDetail, ProductManageDetail, ProductSummary } from "./type";
 
 import {
     buildBreadcrumb,
@@ -36,6 +36,8 @@ import {
     toProductVariant,
     toProductVariantSKU,
     toProductVariantOption,
+    buildSKUDetail,
+    buildVariantDetail
     
 } from '../../projections';
 
@@ -48,6 +50,14 @@ export interface ProductReadService {
     getProductDetail(
         slug: string,
     ): Promise<ProductDetail | null>;
+
+    getProductManageDetail(
+        id: string,
+    ): Promise<ProductManageDetail>;
+
+    checkProductSlugExists(
+        slug: string,
+    ): Promise<boolean>;
 
     getProductSummary(
         slug: string,
@@ -159,10 +169,9 @@ class DefaultProductReadService
                 aggregate.inventory
             );
 
-
         const currentPrice =
             aggregate.skuIds.map((id) => buildCurrentPrice(id, aggregate.prices));
-
+       
 
         const displayPrice =
             buildDisplayPrice(currentPrice);
@@ -218,6 +227,53 @@ class DefaultProductReadService
 
         };
 
+    }
+
+    async getProductManageDetail(
+        id: string,
+    ): Promise<ProductManageDetail> {
+
+        const aggregate = await this.productAggregateLoader.loadBySlug(id);
+    
+
+        if (!aggregate) throw new NotFoundError(`Product with id ${id} does not exist.`);
+        
+        const skuDetails =
+            aggregate.skus.map((sku) => buildSKUDetail(
+                sku,
+                aggregate.prices,
+                aggregate.inventory
+            ));
+
+        const variantDetails =
+            aggregate.options.map((option) => buildVariantDetail(
+                option,
+                aggregate.values
+            ));
+
+        return {
+            
+            product: aggregate.product!,
+            
+            categories: [...aggregate.productCategories],
+            
+            images: [...aggregate.images],
+            
+            breadcrumb: buildBreadcrumb(aggregate.breadcrumbs),
+
+            variantDetails,
+
+            skuDetails,
+
+        };
+
+    }
+
+    async checkProductSlugExists(
+        slug: string,
+    ): Promise<boolean> {
+        const product = await this.productService.findBySlug(slug);
+        return !!product;
     }
 
     async getProductSummary(
@@ -298,7 +354,7 @@ class DefaultProductReadService
             await Promise.all([
                 this.categoryService.getMany(categoryIds),
                 this.priceService.getManyBySKUIds(skuIds),
-                this.inventoryItemService.getMany(skuIds),
+                this.inventoryItemService.getBySkus(skuIds),
             ]);
 
 

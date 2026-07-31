@@ -136,6 +136,18 @@
 }
 
 @layer components {
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* 隱藏 Firefox 的上下箭頭 */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
   /* ─── Material Symbols ───────────────────────────────────────────── */
 
   .material-symbols-outlined {

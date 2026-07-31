@@ -1,6 +1,7 @@
 import type { ProductImage, ProductImageService } from "../../../../domain";
 
-import { ChildCollectionSynchronizer, type CollectionUpdate } from "@repo/shared/sync";
+import { ValidationError } from "@repo/shared/application";
+import { ProductAggregate } from "../../../aggragate";
 
 export interface SaveProductImageCommand {
 
@@ -12,84 +13,80 @@ export interface SaveProductImageCommand {
 
     isPrimary: boolean;
 
-    alt: string | null;
+    alt: string;
 
     displayOrder: number;
     
 }
 
-export class ProductImageSynchronizer extends ChildCollectionSynchronizer<
-    string,
-    ProductImage,
-    SaveProductImageCommand
-> {
+export interface ProductImageSynchronizer {
+
+    execute(
+        aggregate: ProductAggregate,
+        desired: readonly SaveProductImageCommand[],
+    ): Promise<void>;
+
+}
+
+
+class DefaultProductImageSynchronizer
+    implements ProductImageSynchronizer {
 
     constructor(
-
         private readonly imageService: ProductImageService,
+    ) {}
 
-    ) {
-        super();
-    }
-
-    async loadCurrent(
-        productId: string,
-    ): Promise<readonly ProductImage[]> {
-
-        const result = await this.imageService.getAllById(productId);
-
-        if (!result) return [];
-
-        return result;
-    }
-
-    async createMany(
-        productId: string,
-        create: readonly SaveProductImageCommand[],
+    async execute(
+        aggregate: ProductAggregate,
+        desired: readonly SaveProductImageCommand[],
     ): Promise<void> {
-        await this.imageService.createMany(create.map((image) => ({
-            ...image,
-            productId,
-        })));
+        if (!desired || desired.length === 0) throw new ValidationError("No image data provided for synchronization.");
+        if (!aggregate) throw new ValidationError("No product aggregate provided for synchronization.");
+
+        const current = aggregate.images;
+
+        const currentMap = new Map<string, ProductImage>(
+            current.map(image => [image.id, image])
+        );
+
+        const desiredMap = new Map<string, SaveProductImageCommand>(
+            desired.map(image => [image.id ?? "", image])
+        );
+
+        await Promise.all([
+            this.imageService.createMany(
+                desired.filter(image => !currentMap.has(image.id!)).map(image => ({
+                    productId: aggregate.productId!,
+                    url: image.url,
+                    isPrimary: image.isPrimary,
+                    alt: image.alt,
+                    displayOrder: image.displayOrder,
+                }))
+            ),
+
+            this.imageService.updateMany(
+                desired.filter(image => currentMap.has(image.id!) && !this.equals(currentMap.get(image.id!) as ProductImage, image)).map(image => ({
+                    id: image.id!,
+                    productId: aggregate.productId!,
+                    url: image.url,
+                    isPrimary: image.isPrimary,
+                    alt: image.alt,
+                    displayOrder: image.displayOrder,
+                }))
+            ),
+
+            this.imageService.deleteMany(
+                current.filter(image => !desiredMap.has(image.id)).map(image => image.id)
+            )
+        ])
     }
 
-    async updateMany(
-        update: readonly CollectionUpdate<
-            ProductImage,
-            SaveProductImageCommand
-        >[],
-    ): Promise<void> {
-        await this.imageService.updateMany(update.map((item) => ({
-            ...item.desired,
-            id: item.current.id,
-        })));
-    }
-
-    async deleteMany(
-        deleteIds: readonly string[],
-    ): Promise<void> {
-        await this.imageService.deleteMany(deleteIds);
-    }
-
-    currentKey(
-        current: ProductImage,
-    ): string {
-        return current.id;
-    }
-
-    desiredKey(
-        desired: SaveProductImageCommand,
-    ): string | null {
-        return desired.id ?? null;
-    }
-
-    equals(
+    
+    private equals(
         current: ProductImage,
         desired: SaveProductImageCommand,
     ): boolean {
         return (
-
-            current.url === desired.url &&
             current.alt === desired.alt &&
             current.displayOrder === desired.displayOrder &&
             current.isPrimary === desired.isPrimary
@@ -101,5 +98,5 @@ export class ProductImageSynchronizer extends ChildCollectionSynchronizer<
 export function createProductImageSynchronizer(
     imageService: ProductImageService,
 ): ProductImageSynchronizer {
-    return new ProductImageSynchronizer(imageService);
+    return new DefaultProductImageSynchronizer(imageService);
 }

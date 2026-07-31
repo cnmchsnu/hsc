@@ -6,3 +6,6 @@ export { toProductVariant, type ProductVariant } from "./build-product-variant";
 export { toProductVariantSKU, type ProductVariantSKU } from "./build-product-variant-sku";
 export { toProductVariantOption, type ProductVariantOption } from "./build-product-variant-option";
 export { createProductSelection } from "./selection";
+
+export { buildSKUDetail, type SKUDetail } from "./build-sku-detail";
+export { buildVariantDetail, type VariantDetail } from "./build-variant-detail";

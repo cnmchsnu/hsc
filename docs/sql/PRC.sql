@@ -247,123 +247,144 @@ ON updated.id = u.id;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION commerce.update_product_images(
-    product_images jsonb
+CREATE OR REPLACE FUNCTION public.create_product_images(
+    items jsonb
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = commerce, public
+AS $$
+BEGIN
+  INSERT INTO commerce.product_images (
+    id,
+    product_id,
+    storage_path,
+    display_order,
+    is_primary,
+    alt,
+    version,
+    created_at,
+    updated_at
+  )
+  SELECT 
+    -- 如果前端沒傳 id 則由 DB 自動生成 UUID
+    COALESCE((item->>'id')::uuid, gen_random_uuid()),
+    -- 支援 product_id 或 productId
+    COALESCE((item->>'product_id')::uuid, (item->>'productId')::uuid),
+    -- 支援 storage_path, url, storagePath
+    COALESCE(item->>'storage_path', item->>'url', item->>'storagePath'),
+    -- 預設排序為 0
+    COALESCE((item->>'display_order')::integer, (item->>'displayOrder')::integer, 0),
+    -- 預設非主圖
+    COALESCE((item->>'is_primary')::boolean, (item->>'isPrimary')::boolean, false),
+    COALESCE((item->>'alt')::text, (item->>'ALT')::text, ''),
+    1, -- 初始版本號
+    now(),
+    now()
+  FROM jsonb_array_elements(items) AS item;
+END;
+$$;
+CREATE OR REPLACE FUNCTION public.update_product_images(
+    items jsonb
 )
 RETURNS TABLE (
-
     id uuid,
-
     success boolean,
-
     reason text,
-
     version bigint
-
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = commerce, public
 AS
 $$
 BEGIN
-
 RETURN QUERY
-
 WITH updated AS (
-
     UPDATE commerce.product_images AS p
-
     SET
-
-        product_id = u.product_id,
-
-        storage_path = u.storage_path,
-
-        display_order = u.display_order,
-
-        is_primary = u.is_primary,
-
-        status = u.status,
-
+        product_id = COALESCE(u."productId", u.product_id, p.product_id),
+        storage_path = COALESCE(u.url, u."storagePath", u.storage_path, p.storage_path),
+        display_order = COALESCE(u."displayOrder", u.display_order, p.display_order),
+        is_primary = COALESCE(u."isPrimary", u.is_primary, p.is_primary),
+        alt = COALESCE(u.alt, p.alt), -- ⭕ 補入 alt 欄位更新
         version = p.version + 1,
-
         updated_at = now()
-
-    FROM jsonb_to_recordset(product_images) AS u(
-
+    FROM jsonb_to_recordset(items) AS u(
         id uuid,
-
         version bigint,
-
+        "productId" uuid,
         product_id uuid,
-
+        url text,
+        "storagePath" text,
         storage_path text,
-
+        "displayOrder" integer,
         display_order integer,
-
+        "isPrimary" boolean,
         is_primary boolean,
-
-        status text
-
+        alt text                   -- ⭕ 解析 JSON 裡面的 alt 欄位
     )
-
     WHERE
-
         p.id = u.id
-
-        AND p.version = u.version
-
+        -- 樂觀鎖：如果沒傳 version 就跳過，有傳則比對
+        AND (u.version IS NULL OR p.version = u.version)
     RETURNING
-
         p.id,
-
         p.version
-
 )
-
 SELECT
-
     u.id,
-
-    updated.id IS NOT NULL,
-
+    updated.id IS NOT NULL AS success,
     CASE
-
-        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT'
-
+        WHEN updated.id IS NULL THEN 'VERSION_CONFLICT_OR_ID_NOT_FOUND'
         ELSE NULL
-
-    END,
-
-    COALESCE(updated.version, u.version)
-
-FROM jsonb_to_recordset(product_images) AS u(
-
+    END AS reason,
+    COALESCE(updated.version, u.version, 1) AS version
+FROM jsonb_to_recordset(items) AS u(
     id uuid,
-
     version bigint,
-
+    "productId" uuid,
     product_id uuid,
-
+    url text,
+    "storagePath" text,
     storage_path text,
-
+    "displayOrder" integer,
     display_order integer,
-
+    "isPrimary" boolean,
     is_primary boolean,
-
-    status text
-
+    alt text                       -- ⭕ 解析 JSON 裡面的 alt 欄位
 )
-
-LEFT JOIN updated
-
-ON updated.id = u.id;
+LEFT JOIN updated ON updated.id = u.id;
 
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION commerce.update_product_categories(
-    product_categories jsonb
+
+
+CREATE OR REPLACE FUNCTION public.create_product_category(items jsonb)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO commerce.product_categories (
+    product_id,
+    category_id,
+    is_primary,
+    display_order
+  )
+  SELECT 
+    (item->>'product_id')::uuid,
+    (item->>'category_id')::uuid,
+    COALESCE((item->>'is_primary')::boolean, false),
+    COALESCE((item->>'display_order')::integer, 0)
+  FROM jsonb_array_elements(items) AS item;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.update_product_categories(
+    items jsonb
 )
 RETURNS TABLE (
     id uuid,
@@ -389,7 +410,7 @@ WITH updated AS (
         version = p.version + 1,
         updated_at = now()
 
-    FROM jsonb_to_recordset(product_categories) AS u(
+    FROM jsonb_to_recordset(items) AS u(
         id uuid,
         version bigint,
         product_id uuid,
@@ -415,7 +436,7 @@ SELECT
     END,
     COALESCE(updated.version, u.version)
 
-FROM jsonb_to_recordset(product_categories) AS u(
+FROM jsonb_to_recordset(items) AS u(
     id uuid,
     version bigint,
     product_id uuid,
@@ -430,7 +451,7 @@ END;
 $$;
 
 
-CREATE OR REPLACE FUNCTION commerce.delete_product_categories(
+CREATE OR REPLACE FUNCTION public.delete_product_categories(
     product_categories jsonb
 )
 RETURNS TABLE (

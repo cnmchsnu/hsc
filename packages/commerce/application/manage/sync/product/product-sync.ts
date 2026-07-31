@@ -41,30 +41,18 @@ class DefaultProductSynchronizer
 
         if (!desired) throw new ValidationError("No product data provided for synchronization.");
 
-        const [, result] = await Promise.all([
-            this.productService.update({...desired, id: productId}),
+        
+        await this.productService.update({...desired, id: productId});
+        
 
-            this.productService.get(productId)
-        ]);
-
-        return result;
+        return {
+            ...desired,
+            id: productId,
+        };
 
     }
 
 
-
-    equals(
-        current: Product,
-        desired: ProductEditorInfo,
-    ): boolean {
-        return (
-
-            current.name === desired.name &&
-            current.status === desired.status &&
-            current.description === desired.description 
-
-        );
-    }
 
 }
 

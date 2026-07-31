@@ -220,7 +220,8 @@ export function createProductCategoryService(
             relations: readonly CreateProductCategory[],
         ): Promise<void> {
             if (!relations || relations.length === 0) {
-                throw new ValidationError("Relations are required");
+                console.warn("No relations provided for updateMany. Skipping update.");
+                return;
             }
 
             await repository.updateMany(relations);

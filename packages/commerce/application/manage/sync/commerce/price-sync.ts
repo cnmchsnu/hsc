@@ -7,6 +7,8 @@ export interface ProductPriceEditor {
 
     id: string | null;
 
+    skuId?: string;
+
     code: string;
 
     amount: number;
@@ -64,10 +66,10 @@ class DefaultPriceSynchronizer
 
         await Promise.all([
             this.priceService.createMany(
-                desired.filter(sku => !currentMap.has(sku.code)).map(sku => {
+                desired.filter(sku => !currentMap.has(sku.code) && aggregate.skuReferenceMap?.has(sku.code)).map(sku => {
                     return {
                         ...sku,
-                        skuId: aggregate.skuReferenceMap!.get(sku.code)!,
+                        skuId: sku.skuId || aggregate.skuReferenceMap!.get(sku.code)!,
                     };
                 })
             ),
@@ -76,7 +78,7 @@ class DefaultPriceSynchronizer
                 desired.filter(sku => currentMap.has(sku.code)).map(sku => ({
                     ...sku,
                     id: currentMap.get(sku.code)!.id,
-                    skuId: aggregate.skuReferenceMap!.get(sku.code)!,
+                    skuId: sku.skuId || aggregate.skuReferenceMap!.get(sku.code)!,
                 }))
             )
         ])

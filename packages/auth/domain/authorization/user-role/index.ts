@@ -1,1 +1,1 @@
-export { UserRoleRepository } from "./repository";
+export type { UserRoleRepository } from "./repository";

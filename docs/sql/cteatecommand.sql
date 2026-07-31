@@ -144,8 +144,12 @@ CREATE TABLE commerce.product_images (
 
     display_order INTEGER NOT NULL DEFAULT 0,
 
+    alt TEXT NOT NULL DEFAULT '',
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
     version BIGINT NOT NULL DEFAULT 1
 );
 

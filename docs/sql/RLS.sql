@@ -151,7 +151,13 @@ CREATE POLICY "Public can read enabled variant options"
 ON commerce.variant_options
 FOR SELECT
 TO public
-USING (is_enabled);
+USING (
+    is_enabled
+    and
+    (EXISTS ( SELECT 1
+    FROM commerce.products p
+    WHERE ((p.id = variant_options.product_id) AND (p.status = 'active'::text))))
+);
 
 
 
@@ -202,7 +208,7 @@ USING (
         select 1
         from commerce.skus p
         where p.id = inventory_items.sku_id
-        and p.status == 'active'
+        and p.status = 'active'
     )
 );
 
@@ -215,7 +221,7 @@ USING (
         select 1
         from commerce.skus p
         where p.id = prices.sku_id
-        and p.status == 'active'
+        and p.status = 'active'
     )
     and
     (effective_from IS NULL OR effective_from <= NOW())

@@ -1,4 +1,4 @@
-export interface ProfileProfileRow {
+export interface UserProfileRow {
     user_id: string;
 
     display_name: string | null;

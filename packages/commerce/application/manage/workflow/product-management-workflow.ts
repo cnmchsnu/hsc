@@ -47,7 +47,7 @@ export class ProductManagementWorkflow {
 
         const [product,,] = await Promise.all([
             this.productSync.execute(aggregate.productId,input.product),
-            this.imageSync.execute(aggregate.productId, input.images),
+            this.imageSync.execute(aggregate, input.images),
             this.categorySync.execute(aggregate,input.categories),
         ]);
 

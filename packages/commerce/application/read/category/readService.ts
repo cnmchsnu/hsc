@@ -1,6 +1,6 @@
 
 // services
-import { CategoryService } from '../../../domain/category';
+import { Category, CategoryService } from '../../../domain/category';
 
 
 // types
@@ -31,6 +31,8 @@ export interface CategoryReadService {
         slug: string,
     ): Promise<CategoryPage | null>;
 
+    getCategoryies(): Promise<readonly Category[]>;
+
     getCategoryTree(): Promise<readonly CategoryTreeNode[]>;
 
     // getNavigation(
@@ -56,6 +58,10 @@ class DefaultCategoryReadService
         private readonly categoryService: CategoryService,
     ) {}
 
+    async getCategoryies() {
+        return this.categoryService.list();
+    }
+
     async getCategoryTree() {
 
         const categories = await this.categoryService.list();
@@ -70,7 +76,7 @@ class DefaultCategoryReadService
 
         return treeNodes;
 
-    }  
+    } 
 
     async getBreadcrumb(
         slug: string,
