@@ -41,7 +41,7 @@ class DefaultLoginFlowService
             throw new Error("No active user found.");
         }
 
-        const existProfile = await this.profileRepository.get(user.id);
+        const existProfile = await this.profileRepository.findByUid(user.id);
 
         if (!existProfile) {
             await this.profileInitializationService.initialize(user.id);
