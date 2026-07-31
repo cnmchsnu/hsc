@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { DraftPannel } from "./components/DraftPannel";
-import { ProductTable } from "./components/ProductTable";
+import { ProductList } from "./components/ProductList";
 
 export default function ProductOverviewContent() {
 
@@ -30,7 +30,7 @@ export default function ProductOverviewContent() {
       <DraftPannel />
 
       {/* Product Table Area */}
-      <ProductTable />
+      <ProductList />
       
     </div>
   );

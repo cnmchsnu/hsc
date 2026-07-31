@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export function DraftPannel() {
     const { loading, products, hasMore, loadMore, refresh } = useProductSearch({
         filter: {
-            status: ["active"],
+            status: ["draft"],
         },
         sort: "newest",
         page: 1,
@@ -65,7 +65,7 @@ export function DraftPannel() {
                         </div>
                     </div>
                     <Link
-                        href="/products/1"
+                        href={`/products/${draft.product.slug}`}
                         className="w-full block text-center bg-surface-container-high py-2 rounded-lg text-xs font-bold text-on-primary-fixed-variant hover:bg-primary-container hover:text-white transition-colors"
                     >
                         繼續編輯

@@ -15,7 +15,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-50">
+    <aside className="fixed left-0 top-0 h-full w-50 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-6 z-50">
       <div className="px-6 mb-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-on-primary-fixed-variant rounded-lg flex items-center justify-center">
           <span className="material-symbols-outlined text-white">school</span>

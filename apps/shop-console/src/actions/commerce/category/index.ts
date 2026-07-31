@@ -1,0 +1,1 @@
+export { getCategoriesAction } from './get-categories';

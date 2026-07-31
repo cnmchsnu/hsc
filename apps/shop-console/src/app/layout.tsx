@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
-  title: "HSNU Admin | 學生會商城管理後台",
+  title: "商城管理後台",
   description: "師大附中學生會商城管理系統",
 };
 
@@ -38,7 +38,7 @@ export default function RootLayout({
         <SpeedInsights />
         <Sidebar />
         <Header />
-        <main className="ml-64 pt-16 min-h-screen bg-surface">
+        <main className="ml-50 pt-16 min-h-screen bg-surface">
           {children}
         </main>
       </body>

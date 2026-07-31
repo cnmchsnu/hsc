@@ -1,0 +1,1 @@
+export { getCurrentUserProfileAction } from "./get-current-user-profile";
