@@ -5,7 +5,6 @@ import {
     SKUWorkflow
 } from "../workflow";
 
-import type { CommerceDependencies } from "./aggregate";
 import type { ProductSynchronizers } from "./synchronizers";
 
 export interface ProductManagementWorkflows {
@@ -16,9 +15,6 @@ export interface ProductManagementWorkflows {
     variantWorkflow:
         VariantWorkflow;
 
-    variantValueWorkflow:
-        VariantValueWorkflow;
-
     skuWorkflow:
         SKUWorkflow;
 
@@ -26,29 +22,22 @@ export interface ProductManagementWorkflows {
 
 
 export function createProductManagementWorkflow(
-    deps: CommerceDependencies,
     synchronizers: ProductSynchronizers,
 ): ProductManagementWorkflows {
 
     const skuWorkflow =
         new SKUWorkflow(
-            deps.skuService,
             synchronizers.sku,
             synchronizers.price,
             synchronizers.inventory
-        );
-
-    const variantValueWorkflow =
-        new VariantValueWorkflow(
-            synchronizers.value,
-            skuWorkflow
         );
 
 
     const variantWorkflow =
         new VariantWorkflow(
             synchronizers.option,
-            variantValueWorkflow
+            synchronizers.value,
+            skuWorkflow
         );
 
     const productManagementWorkflow =
@@ -62,7 +51,6 @@ export function createProductManagementWorkflow(
     return {
         productManagementWorkflow,
         variantWorkflow,
-        variantValueWorkflow,
         skuWorkflow
     };
 }

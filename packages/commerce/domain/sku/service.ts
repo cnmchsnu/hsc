@@ -28,7 +28,7 @@ export interface SKUService extends CRUDService<
 
     updateManyViaAggregate(commands: readonly ProductSkuEditor[]): Promise<ReadonlyMap<string, string>>;
 
-    archiveManyViaAggregate(commands: readonly SKU[]): Promise<void>;
+    archiveMany(commands: readonly SKU[]): Promise<void>;
 
 
     getByCode(code: string): Promise<SKU | null>;
@@ -130,7 +130,7 @@ class DefaultSKUService
 
     }
 
-    async archiveManyViaAggregate(
+    async archiveMany(
         commands: readonly SKU[],
     ): Promise<void> {
         for (const command of commands) {

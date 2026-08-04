@@ -15,12 +15,12 @@ export async function rebuildSKU(
         productManageContainer,
     } = await createCommerceContainer();
 
-    return productManageContainer.skuRebuilder.build(
+    return productManageContainer.skuRebuilder.build({
         current,
         desired,
         product,
         includeDisabled
-    )
+    })
 
     
 }

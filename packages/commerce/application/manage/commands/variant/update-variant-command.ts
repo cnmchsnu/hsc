@@ -23,9 +23,9 @@ export class UpdateProductVariantCommand {
         input: ProductVariantWorkflowInput,
     ): Promise<ProductCommandResult> {
         return this.transactionRunner.run(async () => {
-            const aggregate = await this.aggregateLoader.loadById(input.productId);
+            const aggregate = await this.aggregateLoader.loadBySlug(input.productSlug);
 
-            if (!aggregate) throw new NotFoundError(`Product with ID ${input.productId} does not exist.`);
+            if (!aggregate) throw new NotFoundError(`Product with slug ${input.productSlug} does not exist.`);
 
 
             await this.variantWorkflow.execute(

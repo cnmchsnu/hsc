@@ -43,10 +43,6 @@ export interface ProductCommandService {
         input: ProductVariantWorkflowInput,
     ): Promise<ProductCommandResult>;
 
-    updateVariantValues(
-        input: ProductVariantValueWorkflowInput,
-    ): Promise<ProductCommandResult>;
-
     updateSkus(
         input: ProductSkuWorkflowInput,
     ): Promise<ProductCommandResult>;
@@ -131,12 +127,6 @@ implements ProductCommandService {
         input: ProductVariantWorkflowInput,
     ): Promise<ProductCommandResult> {
         return await this.updateVariantsCommand.execute(input);
-    }
-
-    async updateVariantValues(
-        input: ProductVariantValueWorkflowInput,
-    ): Promise<ProductCommandResult> {
-        return await this.updateVariantValuesCommand.execute(input);
     }
 
     async updateSkus(

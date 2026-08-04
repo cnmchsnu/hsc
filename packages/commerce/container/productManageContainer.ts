@@ -24,7 +24,7 @@ export function createProductManageContainer(
 
     const synchronizers = createProductSynchronizers(serviceContainer);
 
-    const workflow = createProductManagementWorkflow(serviceContainer, synchronizers);
+    const workflow = createProductManagementWorkflow(synchronizers);
 
     const useCases = createProductServiceUseCases(serviceContainer, synchronizers, workflow, serviceContainer.productAggregateLoader);
 

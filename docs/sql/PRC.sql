@@ -629,599 +629,317 @@ $$;
 
 
 CREATE OR REPLACE FUNCTION COMMERCE.CREATE_SKUS(
-
     ITEMS JSONB
-
 )
-
 RETURNS SETOF COMMERCE.SKUS
-
 LANGUAGE PLPGSQL
-
 SECURITY DEFINER
-
 AS $$
-
 BEGIN
-
     RETURN QUERY
-
     INSERT INTO COMMERCE.SKUS (
-
         PRODUCT_ID,
-
         CODE,
-
         BARCODE,
-
         STATUS
-
     )
-
     SELECT
-
         X.PRODUCT_ID,
-
         X.CODE,
-
         X.BARCODE,
-
         X.STATUS
-
     FROM
-
         JSONB_TO_RECORDSET(ITEMS)
-
     AS X(
-
         PRODUCT_ID UUID,
-
         CODE TEXT,
-
         BARCODE TEXT,
-
         STATUS TEXT
-
     )
-
     RETURNING *;
-
 END;
-
 $$;
-
 UPDATE
-
 COMMERCE.SKUS
-
 SET
-
 CODE = X.CODE,
-
 BARCODE = X.BARCODE,
-
 STATUS = X.STATUS
-
 FROM ...
-
 WHERE
-
 SKUS.ID = X.ID
-
 AND SKUS.VERSION = X.VERSION
 
-CREATE OR REPLACE FUNCTION INVENTORY.CREATE_INVENTORY_ITEMS(
 
+
+CREATE OR REPLACE FUNCTION public.CREATE_INVENTORY_ITEMS(
     ITEMS JSONB
-
 )
-
 RETURNS SETOF INVENTORY.INVENTORY_ITEMS
-
 LANGUAGE PLPGSQL
-
 SECURITY DEFINER
-
 SET SEARCH_PATH = INVENTORY
-
 AS $$
-
 BEGIN
-
     RETURN QUERY
-
     INSERT INTO INVENTORY.INVENTORY_ITEMS (
-
         SKU_ID,
-
         AVAILABLE_QUANTITY,
-
         RESERVED_QUANTITY,
-
         INCOMING_QUANTITY
-
     )
-
     SELECT
-
         X.SKU_ID,
-
         COALESCE(X.AVAILABLE_QUANTITY, 0),
-
         COALESCE(X.RESERVED_QUANTITY, 0),
-
         COALESCE(X.INCOMING_QUANTITY, 0)
-
     FROM
-
         JSONB_TO_RECORDSET(ITEMS)
-
     AS X(
-
         SKU_ID UUID,
-
         AVAILABLE_QUANTITY INTEGER,
-
         RESERVED_QUANTITY INTEGER,
-
-        INCOMING_QUANTITY INTEGER
-
-    )
-
-    RETURNING *;
-
-END;
-
-$$;
-
-CREATE OR REPLACE FUNCTION INVENTORY.UPDATE_INVENTORY_ITEMS(
-
-    ITEMS JSONB
-
-)
-
-RETURNS SETOF INVENTORY.INVENTORY_ITEMS
-
-LANGUAGE PLPGSQL
-
-SECURITY DEFINER
-
-SET SEARCH_PATH = INVENTORY
-
-AS $$
-
-BEGIN
-
-    RETURN QUERY
-
-    UPDATE INVENTORY.INVENTORY_ITEMS I
-
-    SET
-
-        AVAILABLE_QUANTITY = X.AVAILABLE_QUANTITY,
-
-        RESERVED_QUANTITY = X.RESERVED_QUANTITY,
-
-        INCOMING_QUANTITY = X.INCOMING_QUANTITY
-
-    FROM
-
-        JSONB_TO_RECORDSET(ITEMS)
-
-    AS X(
-
-        SKU_ID UUID,
-
-        AVAILABLE_QUANTITY INTEGER,
-
-        RESERVED_QUANTITY INTEGER,
-
         INCOMING_QUANTITY INTEGER,
-
         VERSION BIGINT
-
     )
-
-    WHERE
-
-        I.SKU_ID = X.SKU_ID
-
-    AND
-
-        I.VERSION = X.VERSION
-
-    RETURNING I.*;
-
-END;
-
-$$;
-
-
-CREATE OR REPLACE FUNCTION PRICING.CREATE_PRICES(
-
-    ITEMS JSONB
-
-)
-
-RETURNS SETOF PRICING.PRICES
-
-LANGUAGE PLPGSQL
-
-SECURITY DEFINER
-
-SET SEARCH_PATH = PRICING
-
-AS $$
-
-BEGIN
-
-    RETURN QUERY
-
-    INSERT INTO PRICING.PRICES (
-
-        SKU_ID,
-
-        CURRENCY,
-
-        AMOUNT,
-
-        COMPARE_AT,
-
-        COST,
-
-        EFFECTIVE_FROM,
-
-        EFFECTIVE_TO
-
-    )
-
-    SELECT
-
-        X.SKU_ID,
-
-        X.CURRENCY,
-
-        X.AMOUNT,
-
-        X.COMPARE_AT,
-
-        X.COST,
-
-        X.EFFECTIVE_FROM,
-
-        X.EFFECTIVE_TO
-
-    FROM
-
-        JSONB_TO_RECORDSET(ITEMS)
-
-    AS X(
-
-        SKU_ID UUID,
-
-        CURRENCY TEXT,
-
-        AMOUNT BIGINT,
-
-        COMPARE_AT BIGINT,
-
-        COST BIGINT,
-
-        EFFECTIVE_FROM TIMESTAMPTZ,
-
-        EFFECTIVE_TO TIMESTAMPTZ
-
-    )
-
     RETURNING *;
-
 END;
-
 $$;
 
-CREATE OR REPLACE FUNCTION PRICING.UPDATE_PRICES(
 
+
+CREATE OR REPLACE FUNCTION public.UPDATE_INVENTORY_ITEMS(
     ITEMS JSONB
-
 )
-
-RETURNS SETOF PRICING.PRICES
-
+RETURNS SETOF INVENTORY.INVENTORY_ITEMS
 LANGUAGE PLPGSQL
-
 SECURITY DEFINER
-
-SET SEARCH_PATH = PRICING
-
+SET SEARCH_PATH = INVENTORY
 AS $$
-
 BEGIN
-
     RETURN QUERY
-
-    UPDATE PRICING.PRICES P
-
+    UPDATE INVENTORY.INVENTORY_ITEMS I
     SET
-
-        CURRENCY = X.CURRENCY,
-
-        AMOUNT = X.AMOUNT,
-
-        COMPARE_AT = X.COMPARE_AT,
-
-        COST = X.COST,
-
-        EFFECTIVE_FROM = X.EFFECTIVE_FROM,
-
-        EFFECTIVE_TO = X.EFFECTIVE_TO
-
+        AVAILABLE_QUANTITY = X.AVAILABLE_QUANTITY,
+        RESERVED_QUANTITY = X.RESERVED_QUANTITY,
+        INCOMING_QUANTITY = X.INCOMING_QUANTITY
     FROM
-
         JSONB_TO_RECORDSET(ITEMS)
-
     AS X(
-
-        ID UUID,
-
-        CURRENCY TEXT,
-
-        AMOUNT BIGINT,
-
-        COMPARE_AT BIGINT,
-
-        COST BIGINT,
-
-        EFFECTIVE_FROM TIMESTAMPTZ,
-
-        EFFECTIVE_TO TIMESTAMPTZ,
-
+        SKU_ID UUID,
+        AVAILABLE_QUANTITY INTEGER,
+        RESERVED_QUANTITY INTEGER,
+        INCOMING_QUANTITY INTEGER,
         VERSION BIGINT
-
     )
-
     WHERE
-
-        P.ID = X.ID
-
+        I.SKU_ID = X.SKU_ID
     AND
+        I.VERSION = X.VERSION
+    RETURNING I.*;
+END;
+$$;
 
+
+
+CREATE OR REPLACE FUNCTION public.CREATE_PRICES(
+    ITEMS JSONB
+)
+RETURNS SETOF PRICING.PRICES
+LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET SEARCH_PATH = PRICING
+AS $$
+BEGIN
+    RETURN QUERY
+    INSERT INTO PRICING.PRICES (
+        SKU_ID,
+        CURRENCY,
+        AMOUNT,
+        COMPARE_AT,
+        COST,
+        EFFECTIVE_FROM,
+        EFFECTIVE_TO
+    )
+    SELECT
+        X.SKU_ID,
+        X.CURRENCY,
+        X.AMOUNT,
+        X.COMPARE_AT,
+        X.COST,
+        X.EFFECTIVE_FROM,
+        X.EFFECTIVE_TO
+    FROM
+        JSONB_TO_RECORDSET(ITEMS)
+    AS X(
+        SKU_ID UUID,
+        CURRENCY TEXT,
+        AMOUNT BIGINT,
+        COMPARE_AT BIGINT,
+        COST BIGINT,
+        EFFECTIVE_FROM TIMESTAMPTZ,
+        EFFECTIVE_TO TIMESTAMPTZ
+    )
+    RETURNING *;
+END;
+$$;
+
+
+
+CREATE OR REPLACE FUNCTION public.UPDATE_PRICES(
+    ITEMS JSONB
+)
+RETURNS SETOF PRICING.PRICES
+LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET SEARCH_PATH = PRICING
+AS $$
+BEGIN
+    RETURN QUERY
+    UPDATE PRICING.PRICES P
+    SET
+        CURRENCY = X.CURRENCY,
+        AMOUNT = X.AMOUNT,
+        COMPARE_AT = X.COMPARE_AT,
+        COST = X.COST,
+        EFFECTIVE_FROM = X.EFFECTIVE_FROM,
+        EFFECTIVE_TO = X.EFFECTIVE_TO
+    FROM
+        JSONB_TO_RECORDSET(ITEMS)
+    AS X(
+        ID UUID,
+        CURRENCY TEXT,
+        AMOUNT BIGINT,
+        COMPARE_AT BIGINT,
+        COST BIGINT,
+        EFFECTIVE_FROM TIMESTAMPTZ,
+        EFFECTIVE_TO TIMESTAMPTZ,
+        VERSION BIGINT
+    )
+    WHERE
+        P.ID = X.ID
+    AND
         P.VERSION = X.VERSION
-
     RETURNING P.*;
-
 END;
-
 $$;
 
 
-CREATE OR REPLACE FUNCTION commerce.create_variant_options(
 
-    variants JSONB
-
+CREATE OR REPLACE FUNCTION public.create_variant_options(
+    items JSONB
 )
-
 RETURNS VOID
-
 LANGUAGE plpgsql
-
 AS $$
-
 BEGIN
-
     INSERT INTO commerce.variant_options (
-
         product_id,
-
         name,
-
+        is_enabled,
         display_name,
-
         sort_order
-
     )
-
     SELECT
-
         (item->>'product_id')::UUID,
-
         item->>'name',
-
+        item->>'is_enabled' = 'true',
         item->>'display_name',
-
         COALESCE((item->>'sort_order')::INTEGER, 0)
-
-    FROM jsonb_array_elements(variants) AS item;
-
+    FROM jsonb_array_elements(items) AS item;
 END;
-
 $$;
 
-CREATE OR REPLACE FUNCTION commerce.update_variant_options(
 
-    variants JSONB
 
+CREATE OR REPLACE FUNCTION public.update_variant_options(
+    items JSONB
 )
-
 RETURNS VOID
-
 LANGUAGE plpgsql
-
 AS $$
-
 DECLARE
-
     item JSONB;
-
 BEGIN
-
     FOR item IN
-
         SELECT *
-
-        FROM jsonb_array_elements(variants)
-
+        FROM jsonb_array_elements(items)
     LOOP
-
         UPDATE commerce.variant_options
-
         SET
-
-            display_name = item->>'display_name',
-
+            display_name = COALESCE(item->>'display_name', display_name),
+            is_enabled = COALESCE((item->>'is_enabled')::BOOLEAN, is_enabled),
             sort_order = COALESCE(
-
                 (item->>'sort_order')::INTEGER,
-
                 sort_order
-
             )
-
         WHERE id = (item->>'id')::UUID;
-
     END LOOP;
-
 END;
-
 $$;
 
-CREATE OR REPLACE FUNCTION commerce.create_variant_option_values(
 
-    values JSONB
 
+CREATE OR REPLACE FUNCTION public.create_variant_option_values(
+    items JSONB
 )
-
 RETURNS VOID
-
 LANGUAGE plpgsql
-
 AS $$
-
 BEGIN
-
     INSERT INTO commerce.variant_option_values (
-
         option_id,
-
         value,
-
+        is_enabled,
+        value_name
         display_value,
-
         sort_order
-
     )
-
     SELECT
-
         (item->>'option_id')::UUID,
-
         item->>'value',
-
+        COALESCE((item->>'is_enabled')::BOOLEAN, true),
+        item->>'value_name',
         item->>'display_value',
-
         COALESCE((item->>'sort_order')::INTEGER, 0)
-
-    FROM jsonb_array_elements(values) AS item;
-
+    FROM jsonb_array_elements(items) AS item;
 END;
-
 $$;
 
-CREATE OR REPLACE FUNCTION commerce.create_variant_option_values(
 
-    value JSONB
 
+CREATE OR REPLACE FUNCTION public.update_variant_option_values(
+    items JSONB
 )
-
 RETURNS VOID
-
 LANGUAGE plpgsql
-
 AS $$
-
-BEGIN
-
-    INSERT INTO commerce.variant_option_values (
-
-        option_id,
-
-        value,
-
-        display_value,
-
-        sort_order
-
-    )
-
-    SELECT
-
-        (item->>'option_id')::UUID,
-
-        item->>'value',
-
-        item->>'display_value',
-
-        COALESCE((item->>'sort_order')::INTEGER, 0)
-
-    FROM jsonb_array_elements(values) AS item;
-
-END;
-
-$$;
-
-CREATE OR REPLACE FUNCTION commerce.update_variant_option_values(
-
-    value JSONB
-
-)
-
-RETURNS VOID
-
-LANGUAGE plpgsql
-
-AS $$
-
 DECLARE
-
     item JSONB;
-
 BEGIN
-
     FOR item IN
-
         SELECT *
-
-        FROM jsonb_array_elements(values)
-
+        FROM jsonb_array_elements(items)
     LOOP
-
         UPDATE commerce.variant_option_values
-
         SET
-
-            display_value = item->>'display_value',
-
+            is_enabled = COALESCE((item->>'is_enabled')::BOOLEAN, is_enabled),
+            display_value = COALESCE(item->>'display_value', display_value),
             sort_order = COALESCE(
-
                 (item->>'sort_order')::INTEGER,
-
                 sort_order
-
             )
-
         WHERE id = (item->>'id')::UUID;
-
     END LOOP;
-
 END;
-
 $$;
 
 
-CREATE OR REPLACE FUNCTION commerce.replace_sku_variant_values(
+CREATE OR REPLACE FUNCTION public.replace_sku_variant_values(
 
     p_sku_id UUID,
 
-    p_option_value_ids UUID[]
+    p_values UUID[]
 
 )
 
@@ -1254,7 +972,7 @@ BEGIN
 
         FROM commerce.variant_option_values
 
-        WHERE id = ANY(p_option_value_ids)
+        WHERE id = ANY(p_values)
 
         GROUP BY option_id
 
@@ -1288,7 +1006,7 @@ BEGIN
 
         p_sku_id,
 
-        unnest(p_option_value_ids);
+        unnest(p_values);
 
 END;
 

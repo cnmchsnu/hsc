@@ -55,7 +55,7 @@ class DefaultInventoryItemSynchronizer
 
         await Promise.all([
             this.inventoryItemService.createMany(
-                desired.filter(sku => !currentMap.has(sku.code) && aggregate.skuReferenceMap?.has(sku.code)).map(sku => {
+                desired.filter(sku => aggregate.skuReferenceMap?.has(sku.code) && !currentMap.has(aggregate.skuReferenceMap!.get(sku.code)!)).map(sku => {
                     return {
                         ...sku,
                         skuId: aggregate.skuReferenceMap!.get(sku.code)!,
@@ -64,9 +64,9 @@ class DefaultInventoryItemSynchronizer
             ),
 
             this.inventoryItemService.updateMany(
-                desired.filter(sku => currentMap.has(sku.code)).map(sku => ({
+                desired.filter(sku => aggregate.skuReferenceMap?.has(sku.code) && currentMap.has(aggregate.skuReferenceMap!.get(sku.code)!)).map(sku => ({
                     ...sku,
-                    skuId: currentMap.get(sku.code)!.skuid,
+                    skuId: currentMap.get(aggregate.skuReferenceMap!.get(sku.code)!)!.skuid,
                 }))
             )
         ])
@@ -76,7 +76,7 @@ class DefaultInventoryItemSynchronizer
     }
     
 
-    equals(
+    private equals(
         current: InventoryItem,
         desired: ProductInventoryItemEditor,
     ): boolean {

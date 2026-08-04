@@ -53,7 +53,7 @@ export interface Repository<
 
     create(
         command: TCreate,
-    ): Promise<TEntity | null>;
+    ): Promise<void>;
 
     createMany(
         commands: readonly TCreate[],

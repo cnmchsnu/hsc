@@ -1,12 +1,12 @@
 import { VariantOptionSynchronizer as VariantSync, } from "../sync";
 
+import { VariantOptionValueSynchronizer as VariantValueSync, } from "../sync";
 
 
-
-import { VariantValueWorkflow } from "./variant-value-workflow";
 
 import { ProductVariantWorkflowInput } from "../commands/variant";
 import { ProductAggregate } from "../../aggragate";
+import { SKUWorkflow } from "./sku-workflow";
 
 export class VariantWorkflow {
 
@@ -16,8 +16,11 @@ export class VariantWorkflow {
         private readonly variantSync:
             VariantSync,
 
-        private readonly variantValueWorkflow:
-            VariantValueWorkflow,
+        private readonly variantValueSync:
+            VariantValueSync,
+                
+        private readonly skuWorkflow:
+            SKUWorkflow
 
 
     ) {}
@@ -41,7 +44,11 @@ export class VariantWorkflow {
 
         aggregate.options = options.options;
 
-        await this.variantValueWorkflow.execute(
+        const values = await this.variantValueSync.execute(aggregate,input.values);
+
+        aggregate.values = values;
+
+        await this.skuWorkflow.execute(
             aggregate,
             input,
         );

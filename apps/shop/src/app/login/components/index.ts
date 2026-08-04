@@ -1,1 +1,0 @@
-export { SignInWithGoogleButton } from './sign-in-with-google';

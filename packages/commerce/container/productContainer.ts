@@ -4,6 +4,7 @@
 
 
 
+import { createSkuRebuilder } from '../application/manage';
 import { createProductReadService, type ProductReadService } from '../application/read/product';
 import { DefaultProductSearchService, type ProductSearchService } from '../application/search/product';
 
@@ -23,11 +24,16 @@ export function createProductContainer(
 ): ProductContainer {
 
 
-
+    const skurebuilder = createSkuRebuilder();
     
 
     const productReadService =
-        createProductReadService(serviceContainer);
+        createProductReadService({
+            ...serviceContainer,
+            skurebuilder
+        });
+
+
 
 
     const productSearchService =

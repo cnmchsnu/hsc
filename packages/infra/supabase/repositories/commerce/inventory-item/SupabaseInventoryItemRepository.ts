@@ -37,9 +37,9 @@ export class SupabaseInventoryItemRepository
 
     protected readonly table = "inventory_items";
 
-    protected readonly createRpc = "create_inventory_item";
+    protected readonly createRpc = "create_inventory_items";
 
-    protected readonly updateRpc = "update_inventory_item";
+    protected readonly updateRpc = "update_inventory_items";
 
     protected readonly mapper = mapper;
 
@@ -143,6 +143,19 @@ export class SupabaseInventoryItemRepository
             total: count ?? 0,
             page: 1,
             pageSize: (data || []).length || 1,
+        };
+    }
+
+    async update(
+        command: UpdateInventoryItem,
+    ): Promise<void> {
+        const { error } = await this
+            .from()
+            .update(this.mapper.toUpdateRow(command) as any)
+            .eq("sku_id", command.skuId);
+            
+        if (error) {
+            throw error;
         };
     }
 

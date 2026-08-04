@@ -65,7 +65,7 @@ import { SKUVariantValueRepositoryMapper as mapper } from './mapper';
             .schema("commerce")
             .rpc("replace_sku_variant_values", {
                 p_sku_id: skuId,
-                p_values: mapper.toCreateRows(values),
+                p_values: mapper.toCreateRows(values).map(v => v.option_value_id),
             });
 
         if (error) {
