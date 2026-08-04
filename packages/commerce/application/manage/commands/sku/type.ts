@@ -1,5 +1,5 @@
+import { ProductSkuDraft } from "../../builders";
 import {
-    ProductSkuEditor,
     ProductPriceEditor,
     ProductInventoryItemEditor,
 } from "../../sync";
@@ -8,9 +8,9 @@ import {
 
 export interface ProductSkuWorkflowInput {
 
-    productId: string;
+    productSlug: string;
 
-    skus: readonly ProductSkuEditor[];
+    skus: readonly ProductSkuDraft[];
 
     prices: readonly ProductPriceEditor[];
 

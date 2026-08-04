@@ -368,7 +368,7 @@ export abstract class SupabaseRepositoryBase<
 
     async create(
         command: TCreate,
-    ): Promise<TEntity | null> {
+    ): Promise<void> {
         const { data, error } = await this
             .from()
             .insert(this.mapper.toCreateRow(command) as any);
@@ -377,11 +377,6 @@ export abstract class SupabaseRepositoryBase<
             throw error;
         }
 
-        if (!data) {
-            throw new Error("Failed to create entity");
-        }
-
-        return this.mapper.fromRow(data);
     }
 
     async createMany(

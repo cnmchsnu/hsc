@@ -1,6 +1,6 @@
+import { ProductSkuDraft } from "../../builders";
 import {
     ProductVariantOptionValueEditor,
-    ProductSkuEditor,
     ProductPriceEditor,
     ProductInventoryItemEditor,
 } from "../../sync";
@@ -9,11 +9,11 @@ import {
 
 export interface ProductVariantValueWorkflowInput {
 
-    productId: string;
+    productSlug: string;
 
     values: readonly ProductVariantOptionValueEditor[];
 
-    skus: readonly ProductSkuEditor[];
+    skus: readonly ProductSkuDraft[];
 
     prices: readonly ProductPriceEditor[];
 

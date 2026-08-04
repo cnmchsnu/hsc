@@ -25,6 +25,7 @@ export interface ProductAggregate {
         string  // optionId
     >;
 
+
     skuIds: readonly string[];
 
     product: Product | null;

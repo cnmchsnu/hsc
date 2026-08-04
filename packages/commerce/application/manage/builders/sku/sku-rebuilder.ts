@@ -6,16 +6,22 @@ import { SKUDetail, VariantDetail } from "../../../projections";
 
 
 import { ConflictError } from "@repo/shared/application";
+import { SKUDraftDetail } from "./product-sku-draft";
+
+export interface SKURebuilderInput {
+    current: readonly SKUDetail[];
+    desired: readonly VariantDetail[];
+    product: Product;
+    includeDisabled?: boolean;
+
+}
 
 
 export interface SkuRebuilder {
 
     build(
-        current: readonly SKUDetail[],
-        desired: readonly VariantDetail[],
-        product: Product,
-        includeDisabled?: boolean,
-    ): SKUDetail[]
+        input: SKURebuilderInput
+    ): SKUDraftDetail[]
 
 }
 
@@ -29,34 +35,34 @@ export class DefaultSkuRebuilder
 
     private merge(
         sku: SKUDetail,
-        desired: SKUDetail,
-    ): SKUDetail {
+        desired: SKUDraftDetail,
+    ): SKUDraftDetail {
         return {
             ...sku,
             sku: {
                 ...sku.sku,
                 status: desired.sku.status,
+                variantRefs: desired.sku.variantRefs,
             }
         };
     }
 
     build(
-        current: readonly SKUDetail[],
-        desired: readonly VariantDetail[],
-        product: Product,
-        includeDisabled: boolean = false,
-    ): SKUDetail[] {
+        input: SKURebuilderInput
+    ): SKUDraftDetail[] {
 
         const generated =
-            this.generator.generate(desired, product);
+            this.generator.generate(input.desired, input.product);
 
-        if (!includeDisabled) {
-            current = current.filter(detail => detail.sku.status === 'active');
+        if (!input.includeDisabled) {
+            input.current = input.current.filter(detail => detail.sku.status === 'active');
         }
+
+        input.desired = input.desired.filter(detail => detail.option.isEnabled && detail.values.some(value => value.isEnabled));
         
         const currentMap = new Map<string, SKUDetail>
         
-        for (const sku of current) {
+        for (const sku of input.current) {
 
             if (currentMap.has(sku.sku.code)) {
                 throw new ConflictError(

@@ -307,32 +307,35 @@ CREATE TABLE commerce.variant_options (
 CREATE INDEX idx_variant_options_product
 ON commerce.variant_options(product_id);
 
-CREATE TABLE commerce.variant_option_values (
+create table commerce.variant_option_values (
 
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id uuid not null default gen_random_uuid(),
 
-    option_id UUID NOT NULL
-        REFERENCES commerce.variant_options(id)
-        ON DELETE CASCADE,
+  option_id uuid not null,
 
-    value TEXT NOT NULL,
+  value text not null,
 
-    is_enabled BOOLEAN NOT NULL DEFAULT true,
+  value_name text not null,
+  
 
-    display_value TEXT NOT NULL,
+  display_value text not null,
 
-    sort_order INTEGER NOT NULL DEFAULT 0,
+  is_enabled boolean not null default true,
 
-    version INTEGER NOT NULL DEFAULT 1,
+  sort_order integer not null default 0,
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  version integer not null default 1,
 
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_at timestamp with time zone not null default now(),
 
-    CONSTRAINT uq_variant_option_value
-        UNIQUE (option_id, value)
+  updated_at timestamp with time zone not null default now(),
 
-);
+  constraint variant_option_values_pkey primary key (id),
+  constraint uq_variant_option_value unique (option_id, value),
+  constraint variant_option_values_option_id_value_name_key unique (option_id, value_name),
+  constraint variant_option_values_option_id_fkey foreign KEY (option_id) references commerce.variant_options (id) on delete CASCADE
+) TABLESPACE pg_default;
+
 
 CREATE INDEX idx_variant_option_values_option
 ON commerce.variant_option_values(option_id);

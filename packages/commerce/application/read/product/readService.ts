@@ -43,6 +43,7 @@ import {
 
 
 import { NotFoundError } from "@repo/shared/application";
+import { SkuRebuilder } from '../../manage';
 
 
 export interface ProductReadService {
@@ -81,6 +82,8 @@ interface ProductReadServiceDependencies {
 
     productAggregateLoader: ProductAggregateLoader;
 
+    skurebuilder: SkuRebuilder;
+
     categoryService: CategoryService;
 
     productService: ProductService;
@@ -110,6 +113,7 @@ class DefaultProductReadService
 
     constructor(
         protected readonly productAggregateLoader: ProductAggregateLoader,
+        protected readonly skubuilder: SkuRebuilder,
         protected readonly categoryService: CategoryService,
         protected readonly productService: ProductService,
         protected readonly productCategoryService: ProductCategoryService,
@@ -187,10 +191,10 @@ class DefaultProductReadService
 
 
         const variantSKUs = aggregate.skus.map((sku) => toProductVariantSKU(
-            sku,
-            inventoryItemsMap,
-            currentPricesMap,
-            skuVariantValuesMap
+                sku,
+                inventoryItemsMap,
+                currentPricesMap,
+                skuVariantValuesMap
             ));
 
         const variantOptions =
@@ -237,19 +241,26 @@ class DefaultProductReadService
     
 
         if (!aggregate) throw new NotFoundError(`Product with id ${id} does not exist.`);
-        
-        const skuDetails =
-            aggregate.skus.map((sku) => buildSKUDetail(
-                sku,
-                aggregate.prices,
-                aggregate.inventory
-            ));
 
         const variantDetails =
             aggregate.options.map((option) => buildVariantDetail(
                 option,
                 aggregate.values
             ));
+
+        const skuDraftDetail = this.skubuilder.build({
+            current: aggregate.skus.map((sku) => buildSKUDetail(
+                {
+                    ...sku,
+                    variantRefs: []
+                },
+                aggregate.prices,
+                aggregate.inventory
+            )),
+            desired: variantDetails,
+            product: aggregate.product!,
+        });
+
 
         return {
             
@@ -263,7 +274,7 @@ class DefaultProductReadService
 
             variantDetails,
 
-            skuDetails,
+            skuDraftDetail,
 
         };
 
@@ -273,6 +284,11 @@ class DefaultProductReadService
         slug: string,
     ): Promise<boolean> {
         const product = await this.productService.findBySlug(slug);
+
+        if (!product || product.status === "draft") {
+            return false;
+        }
+
         return !!product;
     }
 
@@ -515,6 +531,7 @@ export function createProductReadService(
 
     return new DefaultProductReadService(
         dependencies.productAggregateLoader,
+        dependencies.skurebuilder,
         dependencies.categoryService,
         dependencies.productService,
         dependencies.productCategoryService,

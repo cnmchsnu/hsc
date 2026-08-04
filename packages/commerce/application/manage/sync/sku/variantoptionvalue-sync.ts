@@ -63,14 +63,14 @@ export class VariantOptionValueSynchronizer {
 
         await Promise.all([
             this.variantOptionValueService.createMany(
-                desired.filter(value => value.id === null).map(value => ({
+                desired.filter(value => !currentMap.has(value.valueName!)).map(value => ({
                     ...value,
                     optionId: value.optionId || aggregate.optionReferenceMap!.get(value.optionName)!,
                 }))
             ),
 
             this.variantOptionValueService.updateMany(
-                desired.filter(value => currentMap.has(value.valueName!)
+                desired.filter(value => !!currentMap.has(value.valueName!)
                 ? !this.equals(currentMap.get(value.valueName!) as VariantOptionValue, value)
                 : false).map(option => ({
                     id: option.id!,
@@ -85,9 +85,11 @@ export class VariantOptionValueSynchronizer {
             )
         ]);
 
+        const result = await this.variantOptionValueService.getByOptions([...aggregate.optionReferenceMap!.values()]);
 
+        
 
-        return await this.variantOptionValueService.getByOptions([...aggregate.optionReferenceMap!.values()]);
+        return result;
     }
 
     private equals(

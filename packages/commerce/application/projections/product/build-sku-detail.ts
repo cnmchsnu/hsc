@@ -1,9 +1,10 @@
 
 import type { InventoryItem, Price, SKU } from '../../../domain';
+import { ProductSkuDraft } from '../../manage';
 
 export interface SKUDetail {
 
-    sku: SKU
+    sku: ProductSkuDraft
 
     price: Price[] | null;
 
@@ -12,7 +13,7 @@ export interface SKUDetail {
 }
 
 export function buildSKUDetail(
-    sku: SKU,
+    sku: ProductSkuDraft,
     prices: readonly Price[],
     inventoryItems: readonly InventoryItem[]
 ): SKUDetail {

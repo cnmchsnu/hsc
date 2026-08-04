@@ -1,8 +1,20 @@
-import type { Product } from '../../../domain/product';
-import type { Category } from '../../../domain/category';
-import type { ProductImage } from '../../../domain/product-image';
-import type { BreadcrumbItem, ProductVariant, DisplayPrice, ProductAvailability, InventorySummary, SKUDetail, VariantDetail} from "../../projections";
-import { ProductCategory } from '../../../domain';
+import type {
+    Product,
+    Category,
+    ProductImage,
+    ProductCategory
+} from '../../../domain';
+
+import type {
+    BreadcrumbItem,
+    ProductVariant,
+    DisplayPrice,
+    ProductAvailability,
+    InventorySummary,
+    VariantDetail
+} from "../../projections";
+
+import { SKUDraftDetail } from '../../manage';
 
 
 
@@ -55,7 +67,7 @@ export interface ProductManageDetail {
 
     variantDetails: VariantDetail[];
 
-    skuDetails: SKUDetail[];
+    skuDraftDetail: SKUDraftDetail[];
 
     
 }

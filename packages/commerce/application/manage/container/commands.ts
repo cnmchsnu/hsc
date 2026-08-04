@@ -5,7 +5,6 @@ import {
     UpdateProductBasicCommand,
     UpdateProductCategoriesCommand,
     UpdateProductVariantCommand,
-    UpdateVariantValueCommand,
     UpdateProductSKUsCommand,
 } from "../commands"
 
@@ -22,7 +21,6 @@ export interface ProductCommandServices {
     updateImagesCommand: UpdateProductImagesCommand;
     updateCategoriesCommand: UpdateProductCategoriesCommand;
     updateVariantsCommand: UpdateProductVariantCommand;
-    updateVariantValuesCommand: UpdateVariantValueCommand;
     updateSkusCommand: UpdateProductSKUsCommand;
 }
 
@@ -77,13 +75,6 @@ export function createProductServiceUseCases(
             workflows.variantWorkflow,
             deps.transactionRunner
         );
-
-    const updateVariantValuesCommand =
-        new UpdateVariantValueCommand(
-            aggregateLoader,
-            workflows.variantValueWorkflow,
-            deps.transactionRunner
-        );
     
     const updateSkusCommand =
         new UpdateProductSKUsCommand(
@@ -99,8 +90,7 @@ export function createProductServiceUseCases(
         updateImagesCommand,
         updateCategoriesCommand,
         updateVariantsCommand,
-        updateVariantValuesCommand,
-        updateSkusCommand
+        updateSkusCommand,
     }
 
 }

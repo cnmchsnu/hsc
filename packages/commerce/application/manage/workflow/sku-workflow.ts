@@ -5,16 +5,13 @@ import {
 } from "../sync";
 
 
-import { SKUService } from "../../../domain";
 import { ProductSkuWorkflowInput } from "../commands/sku";
 import { ProductAggregate } from "../../aggragate";
+
 
 export class SKUWorkflow {
 
     constructor(
-
-        private readonly SKUService:
-            SKUService,
 
         private readonly skuSync:
             SkuSync,
@@ -39,10 +36,9 @@ export class SKUWorkflow {
 
     ) {
         
-        const currentSKUs = await this.SKUService.getByProduct(aggregate.product!.id);
+        
 
-
-        const skuResult = await this.skuSync.execute(input.skus, currentSKUs);
+        const skuResult = await this.skuSync.execute(aggregate, input.skus);
         
 
         aggregate.skuReferenceMap =

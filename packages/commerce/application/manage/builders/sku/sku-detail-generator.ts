@@ -1,5 +1,6 @@
-import type { Product, VariantOptionValue } from "../../../../domain";
-import { SKUDetail, VariantDetail } from "../../../projections";
+import type { Product, VariantOption, VariantOptionValue } from "../../../../domain";
+import { VariantDetail } from "../../../projections";
+import { SKUDraftDetail, VariantCombinationValue } from "./product-sku-draft";
 
 import { ProductSkuCodeGenerator } from "./sku-code-generator";
 
@@ -14,7 +15,7 @@ export interface ProductSkuGenerator {
 
         product: Product,
 
-    ): readonly SKUDetail[];
+    ): readonly SKUDraftDetail[];
     
 }
 
@@ -29,8 +30,8 @@ export class DefaultProductSkuGenerator
 
 
     private cartesian(
-        groups: VariantOptionValue[][],
-    ): VariantOptionValue[][] {
+        groups: VariantCombinationValue[][],
+    ): VariantCombinationValue[][] {
         if (!groups || groups.length === 0) return [];
         if (groups.some((group) => group.length === 0)) return [];
 
@@ -40,7 +41,7 @@ export class DefaultProductSkuGenerator
         }
 
 
-        return groups.reduce<VariantOptionValue[][]>(
+        return groups.reduce<VariantCombinationValue[][]>(
             (accumulator, currentGroup) =>
             accumulator.flatMap((accItem) =>
                 currentGroup.map((item) => [...accItem, item])
@@ -51,17 +52,21 @@ export class DefaultProductSkuGenerator
 
     private buildSKU(
         product: Product,
-        combination: VariantOptionValue[],
-    ): SKUDetail {
+        combination: VariantCombinationValue[],
+    ): SKUDraftDetail {
 
         return{
             sku: {
                 id: "",
                 productId: product.id,
-                code: this.skuCodeGenerator.generate(product, combination),
+                code: this.skuCodeGenerator.generate(product, combination.map(value => value.value)),
                 barcode: "",
                 status: 'active',
                 version: 1,
+                variantRefs: combination.map(value => ({
+                    optionName: value.option.name,
+                    valueName: value.value.value_name,
+                })),
             },
             price: [{
                 id: "",
@@ -87,13 +92,20 @@ export class DefaultProductSkuGenerator
     generate(
         desired: readonly VariantDetail[],
         product: Product,
-    ): readonly SKUDetail[] {
+    ): readonly SKUDraftDetail[] {
 
         const valueMap = desired.map(option => ({ option: option, values: option.values }));
 
         const sortedValueMap = [...valueMap].sort((a, b) => a.option.option.sortOrder - b.option.option.sortOrder);
 
-        const combinations = this.cartesian(sortedValueMap.map(group => group.values));
+        const combinations = this.cartesian(sortedValueMap.map(group => {
+            return group.values.map(value => (
+                {
+                    option: group.option.option,
+                    value: value
+                }
+            ));
+        }));
 
         const generated = combinations.map(combination => this.buildSKU(product, combination));
 
