@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { SKUDetail } from '@repo/commerce/application';
 
 
-import { updateSkusAction } from "@/actions/commerce"
+import { updateVariantAction } from "@/actions/commerce"
 
 
 import { ProductManageDetail } from "@repo/commerce/application";
@@ -22,74 +22,118 @@ interface EditModalProps {
 }
 
 export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProps) {
-  const [formData, setFormData] = useState<SKUDetail | null>(null);
+    const [formData, setFormData] = useState<SKUDetail | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 當傳進來的 data 改變時，更新內部的 formData State
-  useEffect(() => {
-    if (sku) setFormData(sku);
-  }, [sku]);
+    useEffect(() => {
+        if (sku) setFormData(sku);
+    }, [sku]);
 
-  // 監聽 Esc 鍵關閉 & 阻止背景頁面捲動
-  useEffect(() => {
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    // 監聽 Esc 鍵關閉 & 阻止背景頁面捲動
+    useEffect(() => {
+        
+        const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") onClose();
+        };
+
+        if (isOpen) {
+        document.addEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "hidden"; // 鎖定背景捲動
+        }
+
+        return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "unset";
+        };
+    }, [isOpen, onClose]);
+
+    // 如果沒開啟或是沒有資料，不渲染任何東西
+    if (!isOpen || !formData) return null;
+
+    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        e.stopPropagation();
+        setError(null);
+        setSuccessMessage(null);
+        setIsSaving(true);
+        try {
+            const nextSkuDraftDetail = data.skuDraftDetail.map(detail =>
+                detail.sku.code === formData.sku.code
+                    ? formData
+                    : detail
+            );
+
+            onChange(prev => ({
+                ...prev,
+                skuDraftDetail: nextSkuDraftDetail,
+            }));
+            await updateVariantAction({
+                productSlug: data.product.slug,
+                options: data.variantDetails.map((v) => v.option),
+                values: data.variantDetails.flatMap((v) => {
+                    return v.values.map((val) => ({
+                        id: val.id.includes("new") ? "" : val.id,
+                        optionId: v.option.id,
+                        optionName: v.option.id,
+                        isEnabled: val.isEnabled,
+                        value: val.value,
+                        valueName: val.value_name,
+                        displayValue: val.displayValue,
+                        sortOrder: val.sortOrder,
+                        version: val.version,
+                    }));
+                }),
+                skus: nextSkuDraftDetail.flatMap(detail => detail.sku.code == formData.sku.code ? [formData.sku] : [detail.sku]),
+                prices: nextSkuDraftDetail
+                .flatMap(detail => {
+                    const prices =
+                        detail.sku.code === formData.sku.code
+                            ? formData.price
+                            : detail.price;
+
+                    return (prices ?? []).map((price) => ({
+                        id: price!.id,
+                        skuId: price!.skuId,
+                        code: detail.sku.code,
+                        amount: price!.amount,
+                        currency: price!.currency,
+                        compareAt: price!.compareAt,
+                        cost: price!.cost,
+                        effectiveFrom: price!.effectiveFrom,
+                        effectiveTo: price!.effectiveTo,
+                        version: price!.version,
+                    }));
+                }),
+                inventory: nextSkuDraftDetail.filter((detail) => !!detail.inventory).map((detail) => {
+                    const inventory = detail.sku.code === formData.sku.code ? formData.inventory : detail.inventory;
+                    return {
+                        skuid: inventory!.skuid,
+                        code: detail.sku.code,
+                        availableQuantity: inventory!.availableQuantity,
+                        reservedQuantity: inventory!.reservedQuantity,
+                        incomingQuantity: inventory!.incomingQuantity,
+                        version: inventory!.version,
+                    };
+                }),
+            });
+            setSuccessMessage("變更已儲存！");
+            timerRef.current = setTimeout(() => {
+                setSuccessMessage(null);
+            }, 5000);
+            onClose();
+        } catch (error) {
+            console.error("更新 SKU 資訊時發生錯誤:", error);
+            setError("儲存變更時發生錯誤，請稍後再試。");
+        } finally {
+            setIsSaving(false);
+        }
+
+        
     };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden"; // 鎖定背景捲動
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, onClose]);
-
-  // 如果沒開啟或是沒有資料，不渲染任何東西
-  if (!isOpen || !formData) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onChange((prev) => {
-      const updatedSKUs = prev.skuDetails.map((sku) =>
-        sku.sku.code === formData.sku.code ? formData : sku
-      );
-      return { ...prev, skuDetails: updatedSKUs };
-    });
-    // updateSkusAction({
-    //     ...data,
-    //     skus: data.skuDetails.map((skuDetail) => skuDetail.sku.code === formData.sku.code ? formData.sku : skuDetail.sku),
-    //     prices: data.skuDetails
-    //     .filter((sku) => !!sku.price)
-    //     .flatMap((sku) => {
-    //         const priceList = Array.isArray(sku.price) ? sku.price : [sku.price];
-    //         return priceList.map((price) => ({
-    //             id: price!.id,
-    //             skuId: price!.skuId,
-    //             code: sku.sku.code,
-    //             amount: price!.amount,
-    //             currency: price!.currency,
-    //             compareAt: price!.compareAt,
-    //             cost: price!.cost,
-    //             effectiveFrom: price!.effectiveFrom,
-    //             effectiveTo: price!.effectiveTo,
-    //             version: price!.version,
-    //         }));
-    //     }),
-    //     inventory: data.skuDetails.filter((sku) => !!sku.inventory).map((sku) => ({
-    //         skuid: sku.inventory!.skuid,
-    //         code: sku.sku.code,
-    //         availableQuantity: sku.inventory!.availableQuantity,
-    //         reservedQuantity: sku.inventory!.reservedQuantity,
-    //         incomingQuantity: sku.inventory!.incomingQuantity,
-    //         version: sku.inventory!.version,
-    //     })),
-    // });
-
-    onClose();        // 關閉視窗
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in">
@@ -121,9 +165,9 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                                 <table className="w-full min-w-[500px] text-center">
                                 <thead className="bg-surface text-on-surface-variant font-mono text-base uppercase tracking-widest">
                                     <tr>
-                                    <th className="px-4 py-3">可用現貨</th>
-                                    <th className="px-4 py-3">已預定(未出貨)</th>
-                                    <th className="px-4 py-3">待入庫</th>
+                                        <th className="px-4 py-3">可用現貨</th>
+                                        <th className="px-4 py-3">已預定(未出貨)</th>
+                                        <th className="px-4 py-3">待入庫</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-outline-variant">
@@ -146,7 +190,7 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                                         />
                                     </td>
                                     <td className="px-4 py-4 text-lg text-on-surface-variant">
-                                        {formData.inventory?.reservedQuantity ?? 0}
+                                        <span className="px-2 py-1.5 bg-surface text-center">{formData.inventory?.reservedQuantity ?? 0}</span>
                                     </td>
                                     <td className="px-4 py-4 text-lg font-semibold text-on-surface">
                                         <input
@@ -190,12 +234,12 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                                 <table className="w-full min-w-[550px] text-center border-collapse">
                                 {/* ⭕ 1. 利用 colgroup 精準控制每一欄的寬度，減少不必要的橫向撐開 */}
                                 <colgroup>
-                                    <col className="w-16" />   {/* 幣值 (短) */}
-                                    <col className="w-28" />   {/* 價格 */}
-                                    <col className="w-28" />   {/* 比較價 */}
-                                    <col className="w-28" />   {/* 成本 */}
-                                    <col className="w-36" />   {/* 生效日期 */}
-                                    <col className="w-36" />   {/* 結束日期 */}
+                                    <col className="w-16" />
+                                    <col className="w-28" />
+                                    <col className="w-28" />
+                                    <col className="w-28" />
+                                    <col className="w-36" /> 
+                                    <col className="w-36" />
                                 </colgroup>
 
                                 <thead className="bg-surface text-on-surface-variant font-mono text-xs uppercase tracking-widest border-b border-outline-variant">
@@ -210,11 +254,11 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                                 </thead>
 
                                 <tbody className="divide-y divide-outline-variant">
-                                    {formData.price!.map((price) => (
+                                    {formData!.price!.map((price) => (
                                     <tr key={price.currency} className="group transition-colors hover:bg-surface-container-high/30">
                                         {/* 幣值 */}
                                         <td className="px-1.5 py-2 text-base font-bold text-on-surface-variant whitespace-nowrap">
-                                        {price.currency ?? "N/A"}
+                                            <span className="px-2 py-1 bg-surface rounded-lg">{price.currency}</span>
                                         </td>
 
                                         {/* 價格 */}
@@ -357,30 +401,34 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                                         <td className="px-1.5 py-2 text-sm text-on-surface-variant">
                                         <div className="relative inline-block w-full group/item">
                                             <input
-                                            type="date"
-                                            className={`w-full pl-2 pr-6 py-1 bg-surface text-center focus:outline-none rounded-lg focus:ring-on-primary-fixed-variant focus:ring-2 text-xs ${
-                                                !price.effectiveTo ? "text-transparent select-none" : "text-on-surface"
-                                            }`}
-                                            value={
-                                                price.effectiveTo
-                                                ? new Date(price.effectiveTo).toISOString().split("T")[0]
-                                                : ""
-                                            }
-                                            onChange={(e) => {
-                                                const inputValue = e.target.value;
-                                                const newDate = inputValue ? new Date(`${inputValue}T00:00:00`) : null;
-                                                setFormData({
-                                                ...formData,
-                                                price: formData.price!.map((p) =>
-                                                    p.currency === price.currency
-                                                    ? { ...p, effectiveTo: newDate }
-                                                    : p
-                                                ),
-                                                });
-                                            }}
+                                                type="date"
+                                                className={`w-full pl-2 pr-6 py-1 bg-surface text-center focus:outline-none rounded-lg focus:ring-on-primary-fixed-variant focus:ring-2 text-xs ${
+                                                    !price.effectiveTo ? "text-transparent select-none" : "text-on-surface"
+                                                }`}
+                                                value={
+                                                    price.effectiveTo
+                                                    ? new Date(price.effectiveTo).toISOString().split("T")[0]
+                                                    : ""
+                                                }
+                                                onClick={(e) => e.currentTarget.showPicker()}
+                                                onChange={(e) => {
+                                                    const inputValue = e.target.value;
+                                                    const newDate = inputValue ? new Date(`${inputValue}T00:00:00`) : null;
+                                                    setFormData({
+                                                        ...formData,
+                                                        price: formData.price!.map((p) =>
+                                                            p.currency === price.currency
+                                                            ? { ...p, effectiveTo: newDate }
+                                                            : p
+                                                        ),
+                                                    });
+                                                }}
                                             />
                                             {!price.effectiveTo && (
-                                            <div className="absolute inset-0 flex items-center justify-center bg-surface text-on-surface-variant/60 font-medium rounded-lg pointer-events-none text-xs">
+                                            <div 
+                                                className="absolute inset-0 flex items-center justify-center bg-surface text-on-surface-variant/60 font-medium rounded-lg pointer-events-none text-xs"
+                            
+                                            >
                                                 N/A (永久)
                                             </div>
                                             )}
@@ -415,19 +463,24 @@ export function SKUModal({ isOpen, onClose, sku, data, onChange }: EditModalProp
                 </div>
 
                 <div className="flex flex-col-reverse gap-3 bg-surface-container-low/50 px-5 py-5 sm:flex-row sm:justify-end sm:px-8">
+                    {error && <span className="text-error text-sm">{error}</span>}
+                    {successMessage && <span className="text-success text-sm">{successMessage}</span>}
                     <button
-                    type="button"
-                    onClick={onClose}
-                    className="rounded-full border border-outline-variant bg-background px-5 py-3 text-sm font-semibold text-on-surface-variant shadow-sm transition-all hover:bg-surface-container-low active:scale-95"
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-full border border-outline-variant bg-background px-5 py-3 text-sm font-semibold text-on-surface-variant shadow-sm transition-all hover:bg-surface-container-low active:scale-95"
                     >
-                    取消
+                        取消
                     </button>
-                    <button
-                    type="submit"
-                    className="rounded-full bg-primary-container px-6 py-3 text-sm font-black tracking-wide text-on-primary shadow-sm transition-all hover:brightness-110 active:scale-95"
-                    >
-                    儲存變更
-                    </button>
+                    {isSaving && <span className="px-6 py-3 text-on-surface-variant text-sm">儲存中...</span>}
+                    {!isSaving && (
+                        <button
+                            type="submit"
+                            className={`rounded-full bg-primary-container px-6 py-3 text-sm font-black tracking-wide text-on-primary shadow-sm transition-all hover:brightness-110 active:scale-95 ${!formData ? 'cursor-not-allowed opacity-50' : ''}`}
+                        >
+                            儲存變更
+                        </button>
+                    )}
                 </div>
             </form>
         </div>

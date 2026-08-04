@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Image } from "@imagekit/next";
 import { X } from "lucide-react";
 
 interface ImageModalProps {

@@ -27,6 +27,12 @@
   --error-container: #ffdad6;
   --on-error-container: #93000a;
 
+  /* 成功提示色彩 */
+  --success: #4caf50;
+  --on-success: #ffffff;
+  --success-container: #81c784;
+  --on-success-container: #2e7d32;
+
   /* 背景與表面色 (Surface 系統) */
   --background: #FFFFFF;
   --on-background: #251917;

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { ProductManageDetail } from "@repo/commerce/application";
 
 import { updateProductBasicAction, checkSlugAction } from "@/actions/commerce"
 
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 
 interface FormInputs {
   name: string;
@@ -26,12 +26,14 @@ export function General({ productData, onChange }: GeneralProps) {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [product, setProduct] = useState(productData.product);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       setIsSaving(true);
       setError(null);
       setSuccessMessage(null);
+      onChange({ ...productData, product: { ...productData.product, name: product.name, slug: product.slug, description: product.description } });
         try {
             await updateProductBasicAction(product);
             setSuccessMessage("商品基本資訊已成功更新！");
@@ -41,6 +43,9 @@ export function General({ productData, onChange }: GeneralProps) {
             setError("更新商品基本資訊時發生錯誤，請稍後再試。");
         }
       setIsSaving(false);
+      timerRef.current = setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     };
 
     const handleSlugValidation = async (slug: string) => {
@@ -53,19 +58,16 @@ export function General({ productData, onChange }: GeneralProps) {
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newName = e.target.value;
         onChange({ ...productData, product: { ...productData.product, name: newName } });
-        setProduct({ ...product, name: newName });
     }
     
     const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSlug = e.target.value;
-        onChange({ ...productData, product: { ...productData.product, slug: newSlug } });
-        setProduct({ ...product, slug: newSlug });
+        onChange({ ...productData, product: { ...productData.product, slug: newSlug.replace(/\s+/g, '-') } });
     }
 
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newDescription = e.target.value;
         onChange({ ...productData, product: { ...productData.product, description: newDescription } });
-        setProduct({ ...product, description: newDescription });
     }
 
     const {
@@ -148,9 +150,9 @@ export function General({ productData, onChange }: GeneralProps) {
                           },
                         })}
                         className={`w-full px-4 py-3 rounded-xl border border-outline-variant text-sm focus:ring-2 focus:ring-primary-container/20 ${
-                          productData.product.status !== 'draft' ? 'cursor-not-allowed bg-surface-container-low' : 'bg-surface'
+                          !!productData.product.id ? 'cursor-not-allowed bg-surface-container-low' : 'bg-surface'
                         }`}
-                        disabled={productData.product.status !== 'draft'}
+                        disabled={!!productData.product.id}
                         required
                         type="text"
                         value={productData.product.slug}
@@ -162,7 +164,7 @@ export function General({ productData, onChange }: GeneralProps) {
                         </span>
                       )}
                       {errors.slug && (
-                        <p className="text-xs text-red-500 mt-1">{errors.slug.message}</p>
+                        <p className="text-xs text-error mt-1">{errors.slug.message}</p>
                       )}
 
                       {/* 當通過驗證且沒有錯誤時，顯示綠色勾勾提示 */}

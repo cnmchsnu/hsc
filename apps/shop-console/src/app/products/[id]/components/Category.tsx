@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { ProductManageDetail } from "@repo/commerce/application";
 
@@ -22,6 +22,7 @@ export function ProductCategory({ productData, onChange }: CategoryProps) {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [productCategories, setProductCategories] = useState(productData.categories);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 
     const [primaryCategory, setPrimaryCategory] = useState<string>("");
@@ -117,6 +118,9 @@ export function ProductCategory({ productData, onChange }: CategoryProps) {
             setError("更新商品分類時發生錯誤，請稍後再試。");
         }
       setIsSaving(false);
+      timerRef.current = setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     };
 
 
