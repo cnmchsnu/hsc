@@ -238,6 +238,25 @@ export class SupabaseProfileRepository
         return mapper.fromRows(data);
     }
 
+    async exists(
+        userId: string,
+    ): Promise<boolean> {
+        const { data, error } = await this.client
+            .schema("identity")
+            .from("user_profiles")
+            .select("user_id", { count: "exact" })
+            .eq("user_id", userId)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+
+        return !!data;
+
+    }
+
 
     // Query
 
@@ -254,5 +273,23 @@ export class SupabaseProfileRepository
         return mapper.fromRows(data);
     }
     
+    async update(
+        profile: Profile
+    ): Promise<void> {
+
+        const row = mapper.toUpdateRow(profile);
+
+
+        const { error } = await this.client
+            .schema("identity")
+            .from("user_profiles")
+            .update(row)
+            .eq("user_id", profile.id);
+
+        if (error) {
+            throw error;
+        }
+
+    }
 
 }
