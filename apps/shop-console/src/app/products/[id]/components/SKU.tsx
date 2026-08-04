@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 
 import { ProductManageDetail } from "@repo/commerce/application";
 
 
-import { updateImagesAction } from "@/actions/commerce"
+import { updateVariantAction } from "@/actions/commerce"
 
 
 import { SKUStatus } from "@repo/commerce/domain";
@@ -24,15 +24,91 @@ export function SKU({ productData, onChange }: SKUProps) {
 
     const [collapsedCard, setCollapsedCard] = useState(false);
     const [selectedSKU, setSelectedSKU] = useState<string>('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const [skuDraftDetail, setSKUDraftDetail] = useState(productData.skuDraftDetail);
+
+    useEffect(() => {
+        setSKUDraftDetail(productData.skuDraftDetail);
+    }, [productData]);
+
+    const handleSaveChanges = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        setError(null);
+        setSuccessMessage(null);
+        setIsSaving(true);
+        try {
+            onChange((prev) => ({
+                ...prev,
+                skuDraftDetail: skuDraftDetail,
+            }));
+            await updateVariantAction({
+                productSlug: productData.product.slug,
+                options: productData.variantDetails.map((v) => v.option),
+                values: productData.variantDetails.flatMap((v) => {
+                    return v.values.map((val) => ({
+                        id: val.id.includes("new") ? "" : val.id,
+                        optionId: v.option.id,
+                        optionName: v.option.id,
+                        isEnabled: val.isEnabled,
+                        value: val.value,
+                        valueName: val.value_name,
+                        displayValue: val.displayValue,
+                        sortOrder: val.sortOrder,
+                        version: val.version,
+                    }));
+                }),
+                skus: skuDraftDetail.flatMap((sku) => sku.sku),
+                prices: skuDraftDetail
+                .filter((sku) => !!sku.price)
+                .flatMap((sku) => {
+                    const priceList = Array.isArray(sku.price) ? sku.price : [sku.price];
+
+                    return priceList.map((price) => ({
+                    id: price!.id,
+                    skuId: price!.skuId,
+                    code: sku.sku.code,
+                    amount: price!.amount,
+                    currency: price!.currency,
+                    compareAt: price!.compareAt,
+                    cost: price!.cost,
+                    effectiveFrom: price!.effectiveFrom,
+                    effectiveTo: price!.effectiveTo,
+                    version: price!.version,
+                    }));
+                }),
+                inventory: skuDraftDetail.filter((sku) => !!sku.inventory).map((sku) => ({
+                    skuid: sku.inventory!.skuid,
+                    code: sku.sku.code,
+                    availableQuantity: sku.inventory!.availableQuantity,
+                    reservedQuantity: sku.inventory!.reservedQuantity,
+                    incomingQuantity: sku.inventory!.incomingQuantity,
+                    version: sku.inventory!.version,
+                })),
+            });
+            setSuccessMessage("變更已儲存！");
+        } catch (error) {
+            console.error("儲存變更時發生錯誤:", error);
+            setError("儲存變更時發生錯誤，請稍後再試。");
+        } finally {
+            setIsSaving(false);
+        }
+        
+        timerRef.current = setTimeout(() => {
+            setSuccessMessage(null);
+        }, 3000);
+    };
 
 
     
     const handleDisableSKU = (code: string,) => {
-        const value = productData.skuDetails.find((v) => v.sku.code === code);
+        const value = skuDraftDetail.find((v) => v.sku.code === code);
 
         if (!value) return;
 
-        const updatedValues = productData.skuDetails.map((v) => {
+        const updatedValues = skuDraftDetail.map((v) => {
             if (v.sku.code === code) {
                 return {
                     ...v,
@@ -45,10 +121,8 @@ export function SKU({ productData, onChange }: SKUProps) {
             return v;
         });
 
-        onChange({
-            ...productData,
-            skuDetails: updatedValues,
-        });
+        setSKUDraftDetail(updatedValues);
+        
     }
 
 
@@ -75,13 +149,25 @@ export function SKU({ productData, onChange }: SKUProps) {
                     </p>
                     </div>
                 </div>
-                <button
-                    type="button"
-                    className="px-4 py-2 bg-surface-container text-on-primary-fixed-variant font-bold rounded-xl hover:bg-surface-container-high transition-colors text-sm"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    儲存變更
-                </button>
+                <div className="flex items-center gap-4">
+                    {error && <span className="text-error text-sm">{error}</span>}
+                    {successMessage && <span className="text-success text-sm">{successMessage}</span>}
+                    {isSaving && <span className="text-on-surface-variant text-sm">儲存中...</span>}
+                    {!isSaving && (
+                        <button
+                            type="button"
+                            className={`px-4 py-2 bg-surface-container text-on-primary-fixed-variant font-bold rounded-xl hover:bg-surface-container-high transition-colors text-sm${
+                                isSaving || !productData.product.id || productData.skuDraftDetail === skuDraftDetail
+                                ? 'cursor-not-allowed bg-surface-container-low'
+                                : 'bg-surface-container hover:bg-surface-container-high'
+                            }`}
+                            onClick={handleSaveChanges}
+                            disabled={isSaving || productData.product.id === "" || productData.skuDraftDetail === skuDraftDetail}
+                        >
+                            儲存變更
+                        </button>
+                    )}
+                </div>
                 </div>
                 {!collapsedCard && (
                     <div className="px-8 pb-8">
@@ -100,7 +186,7 @@ export function SKU({ productData, onChange }: SKUProps) {
                             </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant">
-                            {productData.skuDetails.filter((detail) => detail.sku.status === 'inactive' || detail.sku.status === 'active').map((detail) => (
+                            {skuDraftDetail.filter((detail) => detail.sku.status === 'inactive' || detail.sku.status === 'active').map((detail) => (
                                 <tr
                                 key={detail.sku.code}
                                 className="hover:bg-surface transition-colors group"
@@ -126,7 +212,7 @@ export function SKU({ productData, onChange }: SKUProps) {
                                     ${detail.price?.find(p => p.currency === 'TWD')?.compareAt ?? 0}
                                 </td>
                                 <td className={`px-4 py-4 ${!(detail.sku.status === 'active') ? "opacity-40 pointer-events-none select-none" : ""}`}>
-                                    {detail.inventory?.availableQuantity ?? 0}
+                                    {(detail.inventory?.availableQuantity ?? 0) + (detail.inventory?.incomingQuantity ?? 0)}
                                 </td>
                                 <td className={`px-4 py-4 font-mono text-xs ${!(detail.sku.status === 'active') ? "opacity-40 pointer-events-none select-none" : ""}`}>
                                     {detail.sku.barcode || "N/A"}
@@ -140,14 +226,14 @@ export function SKU({ productData, onChange }: SKUProps) {
                                             more_vert
                                         </span>
                                     </button>
+                                    <SKUModal
+                                        isOpen={selectedSKU === detail.sku.code}
+                                        onClose={() => setSelectedSKU('')}
+                                        sku={detail}
+                                        data={productData}
+                                        onChange={onChange}
+                                    />
                                 </td>
-                                <SKUModal
-                                    isOpen={selectedSKU === detail.sku.code}
-                                    onClose={() => setSelectedSKU('')}
-                                    sku={detail}
-                                    data={productData}
-                                    onChange={onChange}
-                                />
                                 </tr>
                             ))}
                             </tbody>

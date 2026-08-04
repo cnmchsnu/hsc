@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { ProductManageDetail } from "@repo/commerce/application";
 import { ProductImage } from "@repo/commerce/domain";
@@ -32,6 +32,7 @@ export function Media({ productData, onChange }: MediaProps) {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [images, setImages] = useState<ProductImage[]>(productData.images);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 
     const handleImageAltChange = (imgurl: string, newAlt: string) => {
@@ -88,6 +89,9 @@ export function Media({ productData, onChange }: MediaProps) {
             setError("發生錯誤，請稍後再試。");
         }
         setIsSaving(false);
+        timerRef.current = setTimeout(() => {
+            setSuccessMessage(null);
+        }, 3000);
     };
 
 
@@ -205,7 +209,7 @@ export function Media({ productData, onChange }: MediaProps) {
                                         )}
                                         <button
                                             type="button"
-                                            className="p-1 text-error hover:bg-error-container/20 rounded-lg transition-colors"
+                                            className="p-1 text-error hover:cursor-pointer hover:bg-error-container/20 rounded-lg transition-colors"
                                             onClick={(e) => handleDelete(e, img.url)}
                                         >
                                             <span className="material-symbols-outlined text-lg">delete</span>
