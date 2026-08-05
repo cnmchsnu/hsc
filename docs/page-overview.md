@@ -851,5 +851,160 @@ Status:
 Date:
 2026-07-21
 
+---
+
+Design:
+@mockups/studio/行動裝置-首頁
+Converted To:
+Route: apps/studio /
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/活動總覽(computer & 活動總覽(mobile
+Converted To:
+Route: apps/studio /events
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/活動細節(mobile
+Converted To:
+Route: apps/studio /events/[id]
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/活動設定(computer & 活動設定(mobile
+Converted To:
+Route: apps/studio /events/[id]/settings
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/活動外觀設定(computer & 活動外觀設定(mobile
+Converted To:
+Route: apps/studio /events/[id]/appearance
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/訂單-總覽(computer only
+Converted To:
+Route: apps/studio /orders
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/訂單-對帳(computer
+Converted To:
+Route: apps/studio /orders/reconciliation
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/訂單-列印(computer only
+Converted To:
+Route: apps/studio /orders/[id]/print
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/QRcode掃描器(mobile only
+Converted To:
+Route: apps/studio /scanner
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/掃描結果-票券-成功(mobile only
+Converted To:
+Route: apps/studio /scanner/result/ticket
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/掃描結果-商品-領貨(mobile only
+Converted To:
+Route: apps/studio /scanner/result/pickup
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/掃描結果-商品-收款(mobile only
+Converted To:
+Route: apps/studio /scanner/result/payment
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/campaign_engine_studio & campaign_engine_studio_v2
+Converted To:
+Route: apps/studio /campaigns
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+@mockups/studio/landingpage設定(computer
+Converted To:
+Route: apps/studio /settings/landing-page
+Status:
+[x]
+Date:
+2026-08-05
+
+
 
 
