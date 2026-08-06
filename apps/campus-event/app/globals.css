@@ -1,0 +1,160 @@
+@import "tailwindcss";
+@import "@repo/ui/styles/globals.css";
+@source "../../**/*.tsx";
+
+/* ─── Design Tokens ──────────────────────────────────────────────── */
+
+:root {
+  /* Color palette — Material Design 3 inspired, HSNU brand */
+  /* 主要色彩與基礎設定 */
+  --primary: var(--color-primary, #2563eb);
+  --on-primary: var(--color-on-primary, #ffffff);
+  --primary-container: var(--color-primary-container, #2563eb);
+  --on-primary-container: var(--color-on-primary-container, #eeefff);
+
+  --secondary: var(--color-secondary, #515f74);
+  --on-secondary: var(--color-on-secondary, #ffffff);
+  --secondary-container: var(--color-secondary-container, #d5e3fc);
+  --on-secondary-container: var(--color-on-secondary-container, #57657a);
+
+  --tertiary: var(--color-tertiary, #943700);
+  --on-tertiary: var(--color-on-tertiary, #ffffff);
+  --tertiary-container: var(--color-tertiary-container, #bc4800);
+  --on-tertiary-container: var(--color-on-tertiary-container, #ffede6);
+
+  /* 錯誤提示色彩 */
+  --error: var(--color-error, #dc2626);
+  --on-error: var(--color-on-error, #ffffff);
+  --error-container: var(--color-error-container, #ffdad6);
+  --on-error-container: var(--color-on-error-container, #93000a);
+
+  /* 背景與表面色 (Surface 系統) */
+  --background: var(--color-background, #faf8ff);
+  --on-background: var(--color-on-background, #191b23);
+
+  --surface: var(--color-surface, #faf8ff);
+  --on-surface: var(--color-on-surface, #191b23);
+  --surface-dim: var(--color-surface-dim, #d9d9e5);
+  --surface-bright: var(--color-surface-bright, #faf8ff);
+  --surface-variant: var(--color-surface-variant, #e1e2ed);
+  --on-surface-variant: var(--color-on-surface-variant, #434655);
+
+  /* 容器階層表面色 */
+  --surface-container-lowest: var(--color-surface-container-lowest, #ffffff);
+  --surface-container-low: var(--color-surface-container-low, #f3f3fe);
+  --surface-container: var(--color-surface-container, #ededf9);
+  --surface-container-high: var(--color-surface-container-high, #e7e7f3);
+  --surface-container-highest: var(--color-surface-container-highest, #e1e2ed);
+
+  /* 外框與反轉色彩 */
+  --outline: var(--color-outline, #737686);
+  --outline-variant: var(--color-outline-variant, #c3c6d7);
+
+  --inverse-surface: var(--color-inverse-surface, #2e3039);
+  --inverse-on-surface: var(--color-inverse-on-surface, #f0f0fb);
+  --inverse-primary: var(--color-inverse-primary, #b4c5ff);
+  --surface-tint: var(--color-surface-tint, #0053db);
+
+  /* 固定色彩 (Fixed 系列) */
+  --primary-fixed: var(--color-primary-fixed, #dbe1ff);
+  --primary-fixed-dim: var(--color-primary-fixed-dim, #b4c5ff);
+  --on-primary-fixed: var(--color-on-primary-fixed, #00174b);
+  --on-primary-fixed-variant: var(--color-on-primary-fixed-variant, #003ea8);
+  
+  --secondary-fixed: var(--color-secondary-fixed, #d5e3fc);
+  --secondary-fixed-dim: var(--color-secondary-fixed-dim, #b9c7df);
+  --on-secondary-fixed: var(--color-on-secondary-fixed, #0d1c2e);
+  --on-secondary-fixed-variant: var(--color-on-secondary-fixed-variant, #3a485b);
+
+  --tertiary-fixed: var(--color-tertiary-fixed, #ffdbcd);
+  --tertiary-fixed-dim: var(--color-tertiary-fixed-dim, #ffb596);
+  --on-tertiary-fixed: var(--color-on-tertiary-fixed, #360f00);
+  --on-tertiary-fixed-variant: var(--color-on-tertiary-fixed-variant, #7d2d00);
+
+  /* 文字與特殊用途色彩 */
+  --text-primary: var(--color-text-primary, #191b23);
+  --text-secondary: var(--color-text-secondary, #434655);
+  --lto-timer: var(--color-lto-timer, #dc2626);
+
+  --neon-cyan: var(--color-neon-cyan, #00f2ff);
+  --neon-magenta: var(--color-neon-magenta, #fe00fe);
+  --neon-lime: var(--color-neon-lime, #34fc0d);
+}
+
+/* --- Theme 1: Neon Pulse Theme --- */
+[data-theme="neon_pulse"],
+.theme-neon-pulse {
+  --background: #131313;
+  --on-background: #e5e2e1;
+  --surface: #131313;
+  --surface-dim: #131313;
+  --surface-bright: #3a3939;
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1c1b1b;
+  --surface-container: #201f1f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353534;
+  --on-surface: #e5e2e1;
+  --on-surface-variant: #b9cacb;
+  --outline: #849495;
+  --outline-variant: #3a494b;
+
+  --primary: #e1fdff;
+  --on-primary: #00363a;
+  --primary-container: #00f2ff;
+  --on-primary-container: #006a71;
+
+  --secondary: #ffabf3;
+  --on-secondary: #5b005b;
+  --secondary-container: #fe00fe;
+  --on-secondary-container: #500050;
+
+  --tertiary: #e4ffd6;
+  --on-tertiary: #053900;
+  --tertiary-container: #34fc0d;
+  --on-tertiary-container: #106f00;
+
+  --text-primary: #e5e2e1;
+  --text-secondary: #b9cacb;
+
+  --neon-cyan: #00f2ff;
+  --neon-magenta: #fe00fe;
+  --neon-lime: #34fc0d;
+}
+
+/* --- Theme 2: Campus Yellow Theme --- */
+[data-theme="campus_yellow"],
+.theme-campus-yellow {
+  --background: #f9f9f9;
+  --on-background: #1a1c1c;
+  --surface: #f9f9f9;
+  --surface-dim: #dadada;
+  --surface-bright: #f9f9f9;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f3f3f3;
+  --surface-container: #eeeeee;
+  --surface-container-high: #e8e8e8;
+  --surface-container-highest: #e2e2e2;
+  --on-surface: #1a1c1c;
+  --on-surface-variant: #4d4732;
+  --outline: #7e775f;
+  --outline-variant: #d0c6ab;
+
+  --primary: #705d00;
+  --on-primary: #ffffff;
+  --primary-container: #ffd700;
+  --on-primary-container: #705e00;
+
+  --secondary: #5f5e5e;
+  --on-secondary: #ffffff;
+  --secondary-container: #e2dfde;
+  --on-secondary-container: #636262;
+
+  --tertiary: #0060ac;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #c5dbff;
+  --on-tertiary-container: #0060ac;
+
+  --text-primary: #1a1c1c;
+  --text-secondary: #4d4732;
+}

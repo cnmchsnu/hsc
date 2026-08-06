@@ -396,7 +396,7 @@ Route:
 /events
 
 Status:
-[ ]
+[x]
 
 Description:
 Browse events.
@@ -409,7 +409,7 @@ Route:
 /events/[id]
 
 Status:
-[ ]
+[x]
 
 Description:
 Event information.
@@ -850,6 +850,84 @@ Status:
 [x]
 Date:
 2026-07-21
+
+---
+
+Design:
+campus-event/Linding Page
+Converted To:
+Route: apps/campus-event /
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/活動主頁
+Converted To:
+Route: apps/campus-event /events
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/商品主頁-活動-電競霓虹主題
+Converted To:
+Route: apps/campus-event /events/[id]
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/商品主頁-票券-黃色主題
+Converted To:
+Route: apps/campus-event /tickets/[id]
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/商品主頁-商品-棕色主題
+Converted To:
+Route: apps/campus-event /products/[id]
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/活動報名表單
+Converted To:
+Route: apps/campus-event /events/[id]/register
+Status:
+[x]
+Date:
+2026-08-05
+
+---
+
+Design:
+campus-event/付款
+Converted To:
+Route: apps/campus-event /checkout
+Status:
+[x]
+Date:
+2026-08-05
+
 
 
 

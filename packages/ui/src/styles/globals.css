@@ -56,6 +56,10 @@
   --color-primary-fixed: var(--primary-fixed);
   --color-inverse-on-surface: var(--inverse-on-surface);
 
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-magenta: var(--neon-magenta);
+  --color-neon-lime: var(--neon-lime);
+
   /* Spacing scale */
 
   --spacing-gutter: 24px;
